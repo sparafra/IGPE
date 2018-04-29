@@ -7,7 +7,7 @@ import interfaces.Collides;
 import interfaces.Drawable;
 import interfaces.GravityDependent;
 
-public class Character extends GameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove{
+public class Player extends DynamicGameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove{
 
 	float damage;
 	float baseAttack;
@@ -16,12 +16,12 @@ public class Character extends GameObject implements Collides, CanFight, CanJump
 	float atkRange;
 	float weight;
 	
-	public Character() {}
-	public Character(int Height, int Width) 
+	
+	public Player(float x,float y, float Width,float Height) 
 	{
-		super();
-		this.Height = Height;
-		this.Width = Width;
+		super(x, y, Width, Height, ObjectId.PLAYER);
+		this.height = Height;
+		this.width = Width;
 	}
 	public void getHit(float hitDmg) 
 	{ 

@@ -5,16 +5,20 @@ import java.awt.Image;
 import interfaces.Clickable;
 import interfaces.Drawable;
 
-public class Control extends GameObject implements Clickable, Drawable {
+public abstract class Control extends StaticGameObject implements Clickable, Drawable {
 	
 	Image x;
 	
-	public Control() { }
-	public Control(int Height, int Width) 
+	public Control(float x,float y ,ObjectId id) 
 	{
-		super();
-		this.Height = Height;
-		this.Width = Width;
+		super(x, y, id);
+		
+	}
+	
+	public Control(float x,float y ,int Height, int Width,ObjectId id) 
+	{
+		super(x, y,Width,Height, id);
+		
 	}
 	
 }
