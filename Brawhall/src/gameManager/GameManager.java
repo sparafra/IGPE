@@ -2,7 +2,7 @@ package gameManager;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.beans.EventHandler;
+import gameManager.EventHandler;
 import java.util.LinkedList;
 
 import object.GameObject;
@@ -43,7 +43,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	public void start() {
 		if(running )return;
-		
+		ev=new EventHandler(this);
 		running =true;
 		super.start();
 	}
@@ -89,6 +89,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	public GameManager() {
 		
+		
 		renderers=new LinkedList<ObjectRenderer>();
 		objects=new LinkedList<GameObject>();
 		initGui();
@@ -98,6 +99,7 @@ public class GameManager extends Thread implements Runnable{
 		
 		GameObject p=new Player(10,10);
 		w.addObject(p);
+		w.setPlayer((Player)p);
 		ObjectRenderer r=new ObjectRenderer(p,this);
 		renderers.add(r);
 		
@@ -111,6 +113,14 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public int ConvertY(float wy) {
 		return (int) ((wy*p.getHeight())/w.getHeight()) ;
+		
+	}
+	public int ConvertPanelX(float px) {
+		return (int) ((px*w.getWidth())/p.getWidth()) ;
+		
+	}
+	public int ConvertPanelY(float py) {
+		return (int) ((py*w.getHeight())/p.getHeight()) ;
 		
 	}
 	

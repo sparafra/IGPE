@@ -4,6 +4,7 @@ import interfaces.CanFight;
 import interfaces.CanJump;
 import interfaces.CanMove;
 import interfaces.Collides;
+import interfaces.Direction;
 import interfaces.Drawable;
 import interfaces.GravityDependent;
 import object.BoundingBox.Side;
@@ -12,10 +13,12 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 
 	float damage;
 	float baseAttack;
-	float moveSpeed;
+	float moveSpeed=0.2f;
+	float maxMoveSpeed=2.0f;
 	float atkSpeed;
 	float atkRange;
 	float weight=0.0f;
+	Direction dir=Direction.REST;
 	
 	public Player(float x,float y) 
 	{
@@ -43,8 +46,26 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		//return BaseAttack
 	}
 	@Override
+	public void ChangeDirection(Direction d) {
+		dir=d;
+		
+	}
+	@Override
 	public void move() {
 		super.move();
+		if (dir==Direction.RIGHT) {
+			velX+=moveSpeed;
+			if(velX>maxMoveSpeed) {
+			velX=maxMoveSpeed;
+			}
+		}
+		else if(dir==Direction.REST) {
+			if(velX>0) {
+				velX-=moveSpeed;
+			}
+		}
+		
+			
 	}
 	@Override
 	public void fall() {
@@ -58,6 +79,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	@Override
 	public void tick() {
 		super.tick();
+		move();
 		fall();
 	}
 
@@ -80,6 +102,9 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			
 		return b;
 	}
+
+
+	
 	
 	
 }
