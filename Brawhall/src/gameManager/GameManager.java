@@ -5,25 +5,41 @@ import java.awt.Toolkit;
 import java.beans.EventHandler;
 import java.util.LinkedList;
 
-import object.Block;
 import object.GameObject;
 import object.ObjectRenderer;
+import object.Player;
+import windows.MyFrame;
 import windows.MyPanel;
 import world.World;
 
 public class GameManager extends Thread implements Runnable{
+	
+	static final int panelWidth=1440;
+	static final int panelHeight=900;
 
+	
+	
 	Toolkit tk = Toolkit.getDefaultToolkit();
 	Image BackgroundMenu;
 	
-
-	LinkedList<object.ObjectRenderer> m;
-	LinkedList<ObjectRenderer>l;
+	LinkedList<ObjectRenderer> m;
+	
+	LinkedList<ObjectRenderer>renderers;
+	LinkedList<GameObject> objects;
+	
 	EventHandler ev;
 	World w;
 	MyPanel p;
+	
 	boolean running=false;
-	boolean menu=false;
+	boolean menu;
+	
+	public void initGui() {
+		MyFrame f= new MyFrame(panelWidth,panelHeight);
+		MyPanel pn=new MyPanel(panelWidth, panelHeight);
+		p=pn;
+		f.setContentPane(p);
+	}
 	
 	public void start() {
 		if(running )return;
@@ -31,8 +47,6 @@ public class GameManager extends Thread implements Runnable{
 		running =true;
 		super.start();
 	}
-	
-	
 	
 	public void run() {
 		
@@ -68,29 +82,28 @@ public class GameManager extends Thread implements Runnable{
 	public void tick() {
 		
 		w.Update();
+			p.render(renderers);
 		
-		if (menu) { 	
-			p.render(m);
-		}
-		else {
-			p.render(l);
-		}
+			
 	}
 	
-	public GameManager(MyPanel pn) {
+	public GameManager() {
 		
-		l=new LinkedList<ObjectRenderer>();
-		m=new LinkedList<ObjectRenderer>();
+		renderers=new LinkedList<ObjectRenderer>();
+		objects=new LinkedList<GameObject>();
+		initGui();
+		menu=true;
 		
-		p=pn;
-		w=new World(50,50);
-		GameObject j= new Block(25,25);
-		ObjectRenderer r =new ObjectRenderer(j,this);
-		m.add(r);
-		Block b= new Block(10,10);
-		ObjectRenderer rb =new ObjectRenderer(b,this);
-		l.add(rb);
+		w=new World(200,200,objects);
+		
+		GameObject p=new Player(10,10);
+		w.addObject(p);
+		ObjectRenderer r=new ObjectRenderer(p,this);
+		renderers.add(r);
+		
+		
 	}
+
 
 	public int ConvertX(float wx) {
 		return (int) ((wx*p.getWidth())/w.getWidth()) ;
@@ -99,5 +112,11 @@ public class GameManager extends Thread implements Runnable{
 	public int ConvertY(float wy) {
 		return (int) ((wy*p.getHeight())/w.getHeight()) ;
 		
+	}
+	
+	public static void main(String[] args) {
+		
+		GameManager gm= new GameManager();
+		gm.start();
 	}
 }

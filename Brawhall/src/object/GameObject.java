@@ -47,4 +47,5 @@ public abstract class GameObject {
 		this.posY = posY;
 	}
 
+	public abstract void tick();
 }

@@ -4,6 +4,7 @@ import interfaces.Collides;
 import interfaces.Drawable;
 import interfaces.GravityDependent;
 import interfaces.Pickable;
+import object.BoundingBox.Side;
 
 public class Drop extends StaticGameObject implements Collides, Drawable, Pickable, GravityDependent{
 
@@ -15,6 +16,27 @@ public class Drop extends StaticGameObject implements Collides, Drawable, Pickab
 		super(x, y, ObjectId.DROP);
 		this.height = Height;
 		this.width = Width;
+	}
+
+
+	@Override
+	public void fall() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void tick() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public BoundingBox getBounds(Side s) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
