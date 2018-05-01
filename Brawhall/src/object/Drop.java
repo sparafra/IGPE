@@ -6,7 +6,7 @@ import interfaces.GravityDependent;
 import interfaces.Pickable;
 import object.BoundingBox.Side;
 
-public class Drop extends StaticGameObject implements Collides, Drawable, Pickable, GravityDependent{
+public abstract class Drop extends StaticGameObject implements Collides, Drawable, Pickable, GravityDependent{
 
 	float lifeTime;
 	
@@ -26,11 +26,7 @@ public class Drop extends StaticGameObject implements Collides, Drawable, Pickab
 	}
 
 
-	@Override
-	public void tick() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 
 	@Override

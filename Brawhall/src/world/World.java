@@ -10,7 +10,7 @@ public class World {
 	
 	int width,height;
 	
-	LinkedList<GameObject> list;
+	LinkedList<GameObject> objects;
 	Player player;
 	
 	public void setPlayer(Player p) {
@@ -23,7 +23,7 @@ public class World {
 	}
 
 	public World(int w, int h,LinkedList<GameObject> l) {
-		list=l;
+		objects=l;
 		width=w;
 		height=h;
 	}
@@ -56,12 +56,17 @@ public class World {
 
 	public void Update() {
 		
-		for (int i=0;i<list.size();i++) {
-			list.get(i).tick();
+		for (int i=0;i<objects.size();i++) {
+			objects.get(i).tick(objects);
 		}
 	}
 
 	public void addObject(GameObject o) {
-		list.add(o);
+		objects.add(o);
+	}
+
+	public void PlayerJump() {
+		player.jump();
+		
 	}
 }

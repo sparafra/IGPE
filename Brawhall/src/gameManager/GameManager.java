@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import gameManager.EventHandler;
 import java.util.LinkedList;
 
+import object.Block;
 import object.GameObject;
 import object.ObjectRenderer;
 import object.Player;
@@ -33,21 +34,52 @@ public class GameManager extends Thread implements Runnable{
 	
 	boolean running=false;
 	boolean menu;
-	
+	public GameManager() {
+		renderers=new LinkedList<ObjectRenderer>();
+		objects=new LinkedList<GameObject>();
+		initGui();
+		menu=true;
+		w=new World(200,200,objects);
+		
+		loadLevel();
+			
+	}
 	public void initGui() {
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
 		MyPanel pn=new MyPanel(panelWidth, panelHeight);
 		p=pn;
 		f.setContentPane(p);
+		f.setVisible(true);
 	}
-	
+	public void loadLevel() {
+		GameObject o=new Player(10,10);
+		w.addObject(o);
+		w.setPlayer((Player)o);
+		
+		renderers.add(new ObjectRenderer(o,this));	
+		
+		for (int i=0;i<w.getWidth();i+=6) {
+			o=new Block(i, w.getHeight()-18);
+			w.addObject(o);
+			renderers.add(new ObjectRenderer(o,this));
+		}
+		for (int i=100;i<w.getWidth();i+=6) {
+			o=new Block(i, w.getHeight()-40);
+			w.addObject(o);
+			renderers.add(new ObjectRenderer(o,this));
+		}
+		for (int i=20;i<w.getWidth()-120;i+=6) {
+			o=new Block(i, w.getHeight()-60);
+			w.addObject(o);
+			renderers.add(new ObjectRenderer(o,this));
+		}
+	}
 	public void start() {
 		if(running )return;
 		ev=new EventHandler(this);
 		running =true;
 		super.start();
 	}
-	
 	public void run() {
 		
 		long lastTime = System.nanoTime();
@@ -75,37 +107,15 @@ public class GameManager extends Thread implements Runnable{
 				frames = 0;
 				updates = 0;
 			}
-		}
-		
+		}	
 	}
-	
 	public void tick() {
-		
-		w.Update();
-			p.render(renderers);
-		
 			
+				
+			w.Update();	
+			p.render(renderers);
 	}
 	
-	public GameManager() {
-		
-		
-		renderers=new LinkedList<ObjectRenderer>();
-		objects=new LinkedList<GameObject>();
-		initGui();
-		menu=true;
-		
-		w=new World(200,200,objects);
-		
-		GameObject p=new Player(10,10);
-		w.addObject(p);
-		w.setPlayer((Player)p);
-		ObjectRenderer r=new ObjectRenderer(p,this);
-		renderers.add(r);
-		
-		
-	}
-
 
 	public int ConvertX(float wx) {
 		return (int) ((wx*p.getWidth())/w.getWidth()) ;

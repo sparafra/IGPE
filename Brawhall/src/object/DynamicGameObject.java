@@ -1,6 +1,9 @@
 package object;
 
+import java.util.LinkedList;
+
 import interfaces.CanMove;
+import interfaces.Direction;
 import object.GameObject;
 import object.ObjectId;
 	
@@ -8,7 +11,11 @@ import object.ObjectId;
 
 	public abstract class DynamicGameObject extends GameObject implements CanMove  {
 		
-		float velX=0,velY=0;
+		float velX=0.0f,velY=0.0f;
+		float moveSpeed=0.2f;
+		float maxMoveSpeed=2.0f;
+		Direction dir=Direction.REST;
+		
 		public DynamicGameObject(float x,float y,ObjectId id) {
 			super(x,y,id);
 		}
@@ -17,11 +24,20 @@ import object.ObjectId;
 			super(x,y,id);
 			
 		}
-		public  void tick() {
+		public  void tick(LinkedList<GameObject> objs) {
 			move();
 		}
 	public void move() {
+		
 		posX+=velX;
 		posY+=velY;
+		
+		
+		
+	}
+	@Override
+	public void ChangeDirection(Direction d) {
+		dir=d;
+		
 	}
 }

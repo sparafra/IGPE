@@ -1,5 +1,7 @@
 package object;
 
+import java.util.LinkedList;
+
 import interfaces.CanFight;
 import interfaces.CanJump;
 import interfaces.CanMove;
@@ -13,12 +15,12 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 
 	float damage;
 	float baseAttack;
-	float moveSpeed=0.2f;
-	float maxMoveSpeed=2.0f;
+	
 	float atkSpeed;
 	float atkRange;
 	float weight=0.0f;
-	Direction dir=Direction.REST;
+	boolean falling=true;
+	boolean jumping=false;
 	
 	public Player(float x,float y) 
 	{
@@ -31,7 +33,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	
 	public Player(float x,float y, float Width,float Height) 
 	{
-		
 		super(x, y, Width, Height, ObjectId.PLAYER);
 		this.height = Height;
 		this.width = Width;
@@ -59,13 +60,23 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			velX=maxMoveSpeed;
 			}
 		}
-		else if(dir==Direction.REST) {
-			if(velX>0) {
-				velX-=moveSpeed;
+		if (dir==Direction.LEFT) {
+			velX-=moveSpeed;
+			if(velX<-maxMoveSpeed) {
+			velX=-maxMoveSpeed;
 			}
 		}
-		
-			
+			else if(dir==Direction.REST) {
+				if(velX>=moveSpeed) {
+					velX-=moveSpeed;
+				}
+				else  if(velX<=-moveSpeed) {
+					velX+=moveSpeed;
+				}
+				else {
+					velX=0;
+				}
+			}		
 	}
 	@Override
 	public void fall() {
@@ -77,31 +88,81 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		}
 	}
 	@Override
-	public void tick() {
-		super.tick();
-		move();
+	public void tick(LinkedList<GameObject> objects) {
+		updated=false;
+		super.tick(objects);
+		Collision(objects);
 		fall();
+		
+		updated=true;
+		
+		
+		
+		
+		
 	}
-
+    @Override
+	public void Collision(LinkedList<GameObject> list) {
+		for (int i=0;i<list.size();i++) {
+			
+			GameObject t=list.get(i);
+			if(t.id==ObjectId.BLOCK) {
+				if(this.getBounds(Side.Bottom).intersects( ((Block)t).getBounds(Side.Top)) ){
+					posY=t.posY-this.height;
+					velY=0;
+					falling=false;
+					jumping=false;
+				}
+				if(this.getBounds(Side.Right).intersects( ((Block)t).getBounds(Side.Left)) ){
+					velX=0;
+					
+					posX=t.posX-width;
+					
+				}
+				if(this.getBounds(Side.Left).intersects( ((Block)t).getBounds(Side.Left)) ){
+					velX=0;
+					
+					posX=t.posX+t.width;
+					
+				}
+				else {
+					falling=true;
+				}
+			}
+		}
+	}
 
 	@Override
 	public BoundingBox getBounds(Side s) {
 		BoundingBox b=null;
 		if (s==Side.Bottom) {
-			b=new BoundingBox((int)(posX + (width/2)-(width/4)) ,(int)(posY+height/2),(int) width/2, (int)height/2);
+			b=new BoundingBox((posX + (width/2)-(width/4)) ,(posY+height/2), width/2, height/2);
 		}
 		else if(s==Side.Top) {
-			b=new BoundingBox((int)(posX + (width/2)-(width/4)) ,(int)posY,(int) width/2, (int)height/2);
-		}
-		else if(s==Side.Left) {
-			b=new BoundingBox((int)(posX+width-(width/10) ) ,(int)(posY+(height/10)/2),(int) width/10, (int)(height-height/10));
+			b=new BoundingBox((posX + (width/2)-(width/4)) ,posY, width/2, height/2);
 		}
 		else if(s==Side.Right) {
-			b=new BoundingBox((int)(posX ) ,(int)(posY+(height/10)/2),(int) width/10, (int)(height-(height/10)));
+			b=new BoundingBox((posX+width )-1 ,(posY+(height/10)/2), 1, (height-height/10));
+		}
+		else if(s==Side.Left) {
+			b=new BoundingBox((posX ) ,(posY+(height/10)/2), width/10, (height-(height/10)));
 		}
 			
 		return b;
 	}
+
+
+	@Override
+	public void jump() {
+		if(!jumping) {
+		 velY-=jumpVel;
+		 falling=true;
+		 jumping=true;
+		}
+	}
+
+
+	
 
 
 	

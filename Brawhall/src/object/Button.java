@@ -1,5 +1,7 @@
 package object;
 
+import java.util.LinkedList;
+
 public class Button extends Control {
 
 	public Button(float x,float y ) 
@@ -15,9 +17,11 @@ public class Button extends Control {
 	}
 
 	@Override
-	public void tick() {
+	public void tick(LinkedList<GameObject> objects) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 
 }

@@ -20,6 +20,7 @@ public class MyPanel extends JPanel {
 		this.setSize(d);
 		this.setMaximumSize(d);
 		this.setMinimumSize(d);
+		this.setDoubleBuffered(true);
 		list=new LinkedList<ObjectRenderer>();
 		
 	}
@@ -29,7 +30,7 @@ public class MyPanel extends JPanel {
 		
 		for(int i=0;i<list.size();i++) {
 			list.get(i).DefaultRender(g);
-			list.get(i).BoundsRender(g);
+			
 			
 		}
 		

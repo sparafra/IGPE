@@ -11,7 +11,7 @@ public class ObjectRenderer {
 
 	GameObject obj;
 	GameManager gm;
-	
+	boolean drawbounds=true;
 	public ObjectRenderer(GameObject o,GameManager g) {
 		
 		obj=o;
@@ -19,18 +19,24 @@ public class ObjectRenderer {
 	}
 	
 	public void DefaultRender(Graphics g) {
+		if (obj.isUpdated()){
 		if (obj instanceof Block) {
 			g.setColor(Color.CYAN);
 			g.fillRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
+			g.setColor(Color.BLACK);
+			g.drawRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 		}
 		else {
 			g.setColor(Color.PINK);
 			g.fillRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
+			if(drawbounds)
+			boundsRender(g);
 		}
 		
+		}
 	}
 
-	public void BoundsRender(Graphics g) {
+	public void boundsRender(Graphics g) {
 		Graphics2D g2d= (Graphics2D)g;
 		BoundingBox b;
 		BoundingBox scaled;
