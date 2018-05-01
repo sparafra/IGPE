@@ -16,7 +16,7 @@ public class Character extends GameObject implements Collides, CanFight, CanJump
 	float atkRange;
 	float weight;
 	
-	int State; //0=Steady, 1=Forward
+	int State; //0=SteadyBack, 1=SteadyForward, 2=Forward, 3=Back 
 	
 	public Character() {}
 	public Character(int x, int y, int Height, int Width) 
@@ -44,11 +44,20 @@ public class Character extends GameObject implements Collides, CanFight, CanJump
 		if(Direction == "Forward")
 		{
 			this.x += 0.2;
-			State = 1;
+			State = 2;
 		}
-		else if (Direction == "Steady")
+		else if (Direction == "SteadyForward")
 		{
 			State = 0;
+		}
+		else if (Direction == "Back")
+		{
+			this.x -= 0.2;
+			State = 3;
+		}
+		else if (Direction == "SteadyBack")
+		{
+			State = 1;
 		}
 	}
 }

@@ -149,9 +149,11 @@ public class GameManager extends Thread implements Runnable {
 
 		CharacterImagesZombie.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\Zombie.png"));
 		
-		CharacterImagesIronMan.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\IronMan\\Steady.png"));
+		CharacterImagesIronMan.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\IronMan\\SteadyForward.png"));
+		CharacterImagesIronMan.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\IronMan\\SteadyBack.png"));
 		CharacterImagesIronMan.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\IronMan\\Forward.png"));
-		
+		CharacterImagesIronMan.add(tk.getImage("C:\\Users\\spara\\eclipse-workspace\\BrawhallLocal\\src\\Images\\Characters\\IronMan\\Back.png"));
+
 		Control.put("Start", ControlImagesStart);
 		Control.put("Setting", ControlImagesSetting);
 		
