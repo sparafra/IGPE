@@ -81,7 +81,7 @@ public class GameManager extends Thread implements Runnable{
 		super.start();
 	}
 	public void run() {
-		
+		//fancy stuff
 		long lastTime = System.nanoTime();
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
@@ -135,7 +135,6 @@ public class GameManager extends Thread implements Runnable{
 	}
 	
 	public static void main(String[] args) {
-		
 		GameManager gm= new GameManager();
 		gm.start();
 	}
