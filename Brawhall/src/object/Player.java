@@ -78,26 +78,31 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				}
 			}		
 	}
+//	@Override
+//	public void tick(LinkedList<GameObject> objects) {
+//		
+//		move();
+//		Collision(objects);
+//		fall();
+//	}
 	@Override
-	public void fall() {
-		if(falling) {
-			velY+=gravity;
+	public void tick(LinkedList<GameObject> objects, double delta) {
+		move(delta);
+		Collision(objects);
+		fall(delta);
+	}	
+    public void fall(double delta) {
+    	if(falling) {
+			velY+=gravity*delta;
 		}
 		if(velY>MAX_FALL_SPEED) {
 		velY=MAX_FALL_SPEED;
 		}
+		
 	}
+
+
 	@Override
-	public void tick(LinkedList<GameObject> objects) {
-		updated=false;
-		super.tick(objects);
-		Collision(objects);
-		fall();
-		
-		updated=true;
-		
-	}
-    @Override
 	public void Collision(LinkedList<GameObject> list) {
 		for (int i=0;i<list.size();i++) {
 			
@@ -155,7 +160,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		return b;
 	}
 
-
 	@Override
 	public void jump() {
 		if(!jumping) {
@@ -163,6 +167,40 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		 falling=true;
 		 jumping=true;
 		}
+	}
+	private void move(double delta) {
+		posX+=velX*delta;
+		posY+=velY*delta;
+		if (dir==Direction.RIGHT) {
+			velX+=moveSpeed*delta;
+			if(velX>maxMoveSpeed) {
+			velX=maxMoveSpeed;
+			}
+		}
+		if (dir==Direction.LEFT) {
+			velX-=moveSpeed*delta;
+			if(velX<-maxMoveSpeed) {
+			velX=-maxMoveSpeed;
+			}
+		}
+			else if(dir==Direction.REST) {
+				if(velX>=moveSpeed) {
+					velX-=moveSpeed*delta;
+				}
+				else  if(velX<=-moveSpeed) {
+					velX+=moveSpeed*delta;
+				}
+				else {
+					velX=0;
+				}
+			}	
+	}
+
+
+	@Override
+	public void fall() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

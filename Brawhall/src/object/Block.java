@@ -16,11 +16,11 @@ public class Block extends GameObject implements Collides, Drawable{
 		height=12;
 	}
 
-	@Override
-	public void tick(LinkedList<GameObject>objs) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void tick(LinkedList<GameObject>objs) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public BoundingBox getBounds(Side s) {
@@ -43,6 +43,12 @@ public class Block extends GameObject implements Collides, Drawable{
 
 	@Override
 	public void Collision(LinkedList<GameObject> g) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void tick(LinkedList<GameObject> objects, double delta) {
 		// TODO Auto-generated method stub
 		
 	}

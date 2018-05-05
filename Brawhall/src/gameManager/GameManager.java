@@ -58,7 +58,7 @@ public class GameManager extends Thread implements Runnable{
 		f.setVisible(true);
 	}
 	public void loadLevel() {
-		GameObject o=new Player(50,50);
+		GameObject o=new Player(50,0);
 		w.addObject(o);
 		w.setPlayer((Player)o);
 		
@@ -96,7 +96,7 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void run() {
 		//fancy stuff
-		long lastTime = System.nanoTime();
+		double lastTime = System.nanoTime();
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
@@ -104,11 +104,12 @@ public class GameManager extends Thread implements Runnable{
 		int updates = 0;
 		int frames = 0;
 		while(running){
-			long now = System.nanoTime();
+			double now = System.nanoTime();
 			delta += (now - lastTime) / ns;
+			tick((now - lastTime) / ns );
 			lastTime = now;
 			while(delta >= 1){
-				tick();
+				//tick();
 				updates++;
 				delta--;
 			}
@@ -123,13 +124,20 @@ public class GameManager extends Thread implements Runnable{
 			}
 		}	
 	}
-	public void tick() {
-			
-				
-			w.Update();
-			cam.tick();
-			p.render(renderers);
-	}
+//	public void tick() {
+//			
+//				
+//			w.Update();
+//			cam.tick();
+//			p.render(renderers);
+//	}
+	public void tick(double delta) {
+		
+		
+		w.Update(delta);
+		cam.tick();
+		p.render(renderers);
+}
 	
 
 	public int ConvertX(float wx) {

@@ -57,5 +57,6 @@ public abstract class GameObject {
 		this.posY = posY;
 	}
 
-	public abstract void tick(LinkedList<GameObject> objects);
+	//public abstract void tick(LinkedList<GameObject> objects);
+	public abstract void tick(LinkedList<GameObject> objects, double delta) ;
 }

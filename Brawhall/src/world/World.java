@@ -54,10 +54,17 @@ public class World {
 
 
 
-	public void Update() {
+	/*public void Update() {
 		
 		for (int i=0;i<objects.size();i++) {
 			objects.get(i).tick(objects);
+		}
+	}*/
+	
+public void Update(double delta) {
+		
+		for (int i=0;i<objects.size();i++) {
+			objects.get(i).tick(objects,delta);
 		}
 	}
 

@@ -16,8 +16,14 @@ public class Button extends Control {
 		
 	}
 
+//	@Override
+//	public void tick(LinkedList<GameObject> objects) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
 	@Override
-	public void tick(LinkedList<GameObject> objects) {
+	public void tick(LinkedList<GameObject> objects, double delta) {
 		// TODO Auto-generated method stub
 		
 	}

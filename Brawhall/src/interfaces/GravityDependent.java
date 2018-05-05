@@ -6,4 +6,5 @@ public interface GravityDependent {
 	float MAX_FALL_SPEED=10;
 
 	public abstract void fall();
+	public abstract void fall(double delta);
 }

@@ -24,9 +24,9 @@ import object.ObjectId;
 			super(x,y,id);
 			
 		}
-		public  void tick(LinkedList<GameObject> objs) {
-			move();
-		}
+		public abstract void tick(LinkedList<GameObject> objs,double delta); 
+			
+		
 	public void move() {
 		
 		posX+=velX;
