@@ -1,74 +1,66 @@
 package world;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
+import object.GameObject;
 
-import javax.swing.JPanel;
+public class Camera  {
 
-public class Camera extends JPanel {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
 
 	World world;
+	GameObject anchor;
 	
-	int posX,posY,viewH,viewW;
+	float posX,posY,viewH=400,viewW=460;
 	
-	public int getPosX() {
-		return posX;
-	}
 
-	public void setPosX(int posX) {
+
+	
+	
+	
+	public float getPosX() {
+		return posX-getWidth()/2;
+	}
+	public void setPosX(float posX) {
 		this.posX = posX;
 	}
-
-	public int getPosY() {
-		return posY;
+	public float getPosY() {
+		return posY-getHeight()/2;
 	}
-
-	public void setPosY(int posY) {
+	public void setPosY(float posY) {
 		this.posY = posY;
 	}
-
-	public int getViewH() {
+	public float getHeight() {
 		return viewH;
 	}
-
-	public void setViewH(int viewH) {
+	public void setViewH(float viewH) {
 		this.viewH = viewH;
 	}
-
-	public int getViewW() {
+	public float getWidth() {
 		return viewW;
 	}
-
-	public void setViewW(int viewW) {
+	public void setViewW(float viewW) {
 		this.viewW = viewW;
 	}
-
-	public Camera(World w) {
-		
-
-		
-			Dimension d= new Dimension(viewH,viewW);
-			this.setSize(d);
-			this.setMaximumSize(d);
-			this.setMinimumSize(d);
-			
-	
-		
-		
+	public Camera(World w,GameObject a) {		
 		world=w;
+		anchor=a;
 
 	}
-	public void paint(Graphics g) {
-		g.drawRect(-25, 200, 50, 50);
+	public void tick() {
+		posX=anchor.getPosX();
+		posY=anchor.getPosY();
+		if (this.posX-viewW/2<0) 
+			posX=viewW/2;
+		
+		if(this.posX+viewW/2>world.width )
+		 posX=world.width-viewW/2;
+		
+		if (this.posY-viewH/2<0) 
+			posY=viewH/2;
+		
+		if(this.posY+viewH/2>world.height )
+		 posY=world.height-viewH/2;
+		
 	}
 	
-	public void render() {
-		super.repaint();
-	}
 
 }

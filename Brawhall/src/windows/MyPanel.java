@@ -6,16 +6,19 @@ import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
+import gameManager.GameManager;
 import object.ObjectRenderer;
 
 public class MyPanel extends JPanel {
 
 	LinkedList<ObjectRenderer> list;
+	GameManager gm;
 	int h;
 	int w;
 	private static final long serialVersionUID = 1L;
 
-	public MyPanel(int height,int width)  {
+	public MyPanel(GameManager g,int height,int width)  {
+		gm=g;
 		Dimension d= new Dimension(height,width);
 		this.setSize(d);
 		this.setMaximumSize(d);
@@ -26,6 +29,7 @@ public class MyPanel extends JPanel {
 	}
 	
 	public void paint(Graphics g) {
+		
 		super.paint(g);
 		
 		for(int i=0;i<list.size();i++) {
@@ -33,8 +37,9 @@ public class MyPanel extends JPanel {
 			
 			
 		}
-		
+
 	}
+	
 	
 	public void render(LinkedList<ObjectRenderer> l) {
 		list=l;

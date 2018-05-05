@@ -96,10 +96,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		
 		updated=true;
 		
-		
-		
-		
-		
 	}
     @Override
 	public void Collision(LinkedList<GameObject> list) {
@@ -113,18 +109,26 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 					falling=false;
 					jumping=false;
 				}
-				if(this.getBounds(Side.Right).intersects( ((Block)t).getBounds(Side.Left)) ){
+				else if(this.getBounds(Side.Top).intersects( ((Block)t).getBounds(Side.Left)) ){
+					velY=0;
+					
+					posY=t.posY+t.height;
+					
+				}
+				
+				else if(this.getBounds(Side.Right).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velX=0;
 					
 					posX=t.posX-width;
 					
 				}
-				if(this.getBounds(Side.Left).intersects( ((Block)t).getBounds(Side.Left)) ){
+				else if(this.getBounds(Side.Left).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velX=0;
 					
 					posX=t.posX+t.width;
 					
 				}
+				
 				else {
 					falling=true;
 				}

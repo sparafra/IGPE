@@ -19,16 +19,17 @@ public class ObjectRenderer {
 	}
 	
 	public void DefaultRender(Graphics g) {
+		
 		if (obj.isUpdated()){
 		if (obj instanceof Block) {
 			g.setColor(Color.CYAN);
-			g.fillRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
+			g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 			g.setColor(Color.BLACK);
-			g.drawRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
+			g.drawRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 		}
 		else {
 			g.setColor(Color.PINK);
-			g.fillRect(gm.ConvertX(obj.posX), gm.ConvertY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
+			g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 			if(drawbounds)
 			boundsRender(g);
 		}
@@ -44,16 +45,16 @@ public class ObjectRenderer {
 		if (obj instanceof Player) {
 			
 			b=((Player) obj).getBounds(Side.Top);
-			scaled=new BoundingBox(gm.ConvertX((float)b.x),gm.ConvertY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
+			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
 			g2d.draw(scaled);
 			b=((Player) obj).getBounds(Side.Bottom);
-			scaled=new BoundingBox(gm.ConvertX((float)b.x),gm.ConvertY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
+			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
 			g2d.draw(scaled);
 			b=((Player) obj).getBounds(Side.Right);
-			scaled=new BoundingBox(gm.ConvertX((float)b.x),gm.ConvertY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
+			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
 			g2d.draw(scaled);
 			b=((Player) obj).getBounds(Side.Left);
-			scaled=new BoundingBox(gm.ConvertX((float)b.x),gm.ConvertY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
+			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
 			g2d.draw(scaled);
 		}
 	}

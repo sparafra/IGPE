@@ -11,11 +11,16 @@ import object.ObjectRenderer;
 import object.Player;
 import windows.MyFrame;
 import windows.MyPanel;
+import world.Camera;
 import world.World;
 
 public class GameManager extends Thread implements Runnable{
 	
 	static final int panelWidth=1440;
+	public Camera getCam() {
+		return cam;
+	}
+
 	static final int panelHeight=900;
 
 	
@@ -31,6 +36,7 @@ public class GameManager extends Thread implements Runnable{
 	EventHandler ev;
 	World w;
 	MyPanel p;
+	Camera cam;
 	
 	boolean running=false;
 	boolean menu;
@@ -39,37 +45,45 @@ public class GameManager extends Thread implements Runnable{
 		objects=new LinkedList<GameObject>();
 		initGui();
 		menu=true;
-		w=new World(200,200,objects);
+		w=new World(500,700,objects);
 		
 		loadLevel();
 			
 	}
 	public void initGui() {
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
-		MyPanel pn=new MyPanel(panelWidth, panelHeight);
+		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
 		p=pn;
 		f.setContentPane(p);
 		f.setVisible(true);
 	}
 	public void loadLevel() {
-		GameObject o=new Player(10,10);
+		GameObject o=new Player(50,50);
 		w.addObject(o);
 		w.setPlayer((Player)o);
 		
+		cam=new Camera(w,o);
+		
+		
 		renderers.add(new ObjectRenderer(o,this));	
 		
-		for (int i=0;i<w.getWidth();i+=6) {
-			o=new Block(i, w.getHeight()-18);
+		for (int i=50;i<w.getWidth()-50;i+=6) {
+			o=new Block(i, w.getHeight()/2-18);
 			w.addObject(o);
 			renderers.add(new ObjectRenderer(o,this));
 		}
-		for (int i=100;i<w.getWidth();i+=6) {
-			o=new Block(i, w.getHeight()-40);
+		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
+			o=new Block(i, w.getHeight()/2-40);
 			w.addObject(o);
 			renderers.add(new ObjectRenderer(o,this));
 		}
-		for (int i=20;i<w.getWidth()-120;i+=6) {
-			o=new Block(i, w.getHeight()-60);
+		for (int i=50;i<w.getWidth()/2-30;i+=6) {
+			o=new Block(i, w.getHeight()/2-60);
+			w.addObject(o);
+			renderers.add(new ObjectRenderer(o,this));
+		}
+		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
+			o=new Block(i, w.getHeight()/2-100);
 			w.addObject(o);
 			renderers.add(new ObjectRenderer(o,this));
 		}
@@ -112,17 +126,26 @@ public class GameManager extends Thread implements Runnable{
 	public void tick() {
 			
 				
-			w.Update();	
+			w.Update();
+			cam.tick();
 			p.render(renderers);
 	}
 	
 
 	public int ConvertX(float wx) {
-		return (int) ((wx*p.getWidth())/w.getWidth()) ;
+		return (int) ((wx*p.getWidth())/cam.getWidth()) ;
 		
 	}
 	public int ConvertY(float wy) {
-		return (int) ((wy*p.getHeight())/w.getHeight()) ;
+		return (int) ((wy*p.getHeight())/cam.getHeight()) ;
+		
+	}
+	public int ConvertPosX(float wx) {
+		return (int) (((wx-cam.getPosX())*p.getWidth())/cam.getWidth()) ;
+		
+	}
+	public int ConvertPosY(float wy) {
+		return (int) (((wy-cam.getPosY())*p.getHeight())/cam.getHeight()) ;
 		
 	}
 	public int ConvertPanelX(float px) {
