@@ -3,19 +3,18 @@ package gameManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-
-import interfaces.Direction;
 public class EventHandler {
 	
 	GameManager gm;
 	
+	boolean busy=false;
+	public boolean[] keys;
 	public EventHandler(GameManager g) 
 	{
-		gm=g;
 		
+		gm=g;
 		initEH();
+		keys=new boolean[KeyEvent.KEY_LAST];
 	}
 	
 	private void initEH()
@@ -23,36 +22,25 @@ public class EventHandler {
 		gm.p.setFocusable(true);
 		gm.p.requestFocusInWindow();
 		gm.p.addMouseListener(new MouseAdapter() {			
-			public void mousePressed(MouseEvent e) {			
-			     		gm.w.MovePlayer(Direction.RIGHT);    			     
-			    } 
-			public void mouseReleased(MouseEvent e) {			
-					gm.w.MovePlayer(Direction.REST);  
-			       
-			    } 
+			
 		});
 				
 		gm.p.addKeyListener( new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
-				if(key==KeyEvent.VK_D) {
-					gm.w.MovePlayer(Direction.RIGHT);  
-				}
-				if(key==KeyEvent.VK_A) {
-					gm.w.MovePlayer(Direction.LEFT);  
-				}
-				if(key==KeyEvent.VK_SPACE) {
-					gm.w.PlayerJump();  
-				}
+				keys[key]=true;
+				
 			}
-
 			@Override
 			public void keyReleased(KeyEvent e) {
-				 gm.w.MovePlayer(Direction.REST); 
+				 {
+						int key = e.getKeyCode();		
+						keys[key]=false;	 
+				}
 			}
 			
-		});
-		
+		});	
 	}
+	
 }

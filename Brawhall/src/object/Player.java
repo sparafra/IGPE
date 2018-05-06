@@ -2,6 +2,7 @@ package object;
 
 import java.util.LinkedList;
 
+import interfaces.CanCrouch;
 import interfaces.CanFight;
 import interfaces.CanJump;
 import interfaces.CanMove;
@@ -11,16 +12,19 @@ import interfaces.Drawable;
 import interfaces.GravityDependent;
 import object.BoundingBox.Side;
 
-public class Player extends DynamicGameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove{
+public class Player extends DynamicGameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove,CanCrouch{
 
 	float damage;
 	float baseAttack;
+	float standHeight;
+	
 	
 	float atkSpeed;
 	float atkRange;
 	float weight=0.0f;
 	boolean falling=true;
 	boolean jumping=false;
+	boolean crouching=false;
 	
 	public Player(float x,float y) 
 	{
@@ -28,6 +32,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		super(x, y, ObjectId.PLAYER);
 		this.height = 20;
 		this.width = 10;
+		standHeight=20;
 	}
 	
 	
@@ -78,16 +83,10 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				}
 			}		
 	}
-//	@Override
-//	public void tick(LinkedList<GameObject> objects) {
-//		
-//		move();
-//		Collision(objects);
-//		fall();
-//	}
-	@Override
 	public void tick(LinkedList<GameObject> objects, double delta) {
 		move(delta);
+		crouch(delta);
+		
 		Collision(objects);
 		fall(delta);
 	}	
@@ -100,8 +99,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		}
 		
 	}
-
-
 	@Override
 	public void Collision(LinkedList<GameObject> list) {
 		for (int i=0;i<list.size();i++) {
@@ -140,7 +137,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
-
 	@Override
 	public BoundingBox getBounds(Side s) {
 		BoundingBox b=null;
@@ -159,7 +155,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			
 		return b;
 	}
-
 	@Override
 	public void jump() {
 		if(!jumping) {
@@ -171,28 +166,26 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	private void move(double delta) {
 		posX+=velX*delta;
 		posY+=velY*delta;
-		if (dir==Direction.RIGHT) {
+		switch (dir){
+		case RIGHT:
 			velX+=moveSpeed*delta;
-			if(velX>maxMoveSpeed) {
-			velX=maxMoveSpeed;
-			}
-		}
-		if (dir==Direction.LEFT) {
+			if(velX>maxMoveSpeed) 
+				velX=maxMoveSpeed;
+			break;
+		case LEFT: 
 			velX-=moveSpeed*delta;
-			if(velX<-maxMoveSpeed) {
-			velX=-maxMoveSpeed;
-			}
-		}
-			else if(dir==Direction.REST) {
-				if(velX>=moveSpeed) {
+			if(velX<-maxMoveSpeed) 
+				velX=-maxMoveSpeed;
+			break;
+		case REST: 
+				if(velX>=moveSpeed) 
 					velX-=moveSpeed*delta;
-				}
-				else  if(velX<=-moveSpeed) {
+				else  if(velX<=-moveSpeed) 
 					velX+=moveSpeed*delta;
-				}
-				else {
+				else 
 					velX=0;
-				}
+		default:
+			break;				
 			}	
 	}
 
@@ -204,10 +197,36 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	}
 
 
-	
+	@Override
+	public void crouch(double delta) {
+		if (!crouching){
+			if(height<standHeight) {
+				height+=crouchSpeed*delta;
+				posY-=crouchSpeed*delta;
+			}
+			else {
+				height=standHeight;
+			}
+		}
+		else {
+			if(height>standHeight/2) {
+				height-=crouchSpeed*delta;
+				posY+=crouchSpeed*delta;
+			}
+			else {
+				height=standHeight/2;
+			}
+		}
+	}
 
 
-	
-	
-	
+
+	@Override
+	public void toggleCrouch(boolean b) {
+		crouching=b;
+		
+	}
+	public boolean isCrouching() {
+		return crouching;
+	}
 }

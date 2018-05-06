@@ -2,7 +2,6 @@ package world;
 
 import java.util.LinkedList;
 
-import interfaces.Direction;
 import object.GameObject;
 import object.Player;
 
@@ -13,14 +12,15 @@ public class World {
 	LinkedList<GameObject> objects;
 	Player player;
 	
+	public Player getPlayer() {
+		return player;
+	}
+
 	public void setPlayer(Player p) {
 		player=p;
 	}
 	
-	public void MovePlayer(Direction d) {
-		
-			player.ChangeDirection(d);
-	}
+	
 
 	public World(int w, int h,LinkedList<GameObject> l) {
 		objects=l;

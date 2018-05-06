@@ -9,7 +9,7 @@ public class Camera  {
 	World world;
 	GameObject anchor;
 	
-	float posX,posY,viewH=400,viewW=460;
+	float posX,posY,viewH=300,viewW=300;
 	
 
 
@@ -46,8 +46,8 @@ public class Camera  {
 
 	}
 	public void tick() {
-		posX=anchor.getPosX();
-		posY=anchor.getPosY();
+		posX=anchor.getPosX()+anchor.getWidth();
+		posY=anchor.getPosY()+anchor.getHeight();
 		if (this.posX-viewW/2<0) 
 			posX=viewW/2;
 		

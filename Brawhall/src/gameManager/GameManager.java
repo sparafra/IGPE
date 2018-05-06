@@ -2,7 +2,11 @@ package gameManager;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+
 import gameManager.EventHandler;
+import interfaces.Direction;
+
 import java.util.LinkedList;
 
 import object.Block;
@@ -37,9 +41,9 @@ public class GameManager extends Thread implements Runnable{
 	World w;
 	MyPanel p;
 	Camera cam;
-	
 	boolean running=false;
 	boolean menu;
+	
 	public GameManager() {
 		renderers=new LinkedList<ObjectRenderer>();
 		objects=new LinkedList<GameObject>();
@@ -61,11 +65,9 @@ public class GameManager extends Thread implements Runnable{
 		GameObject o=new Player(50,0);
 		w.addObject(o);
 		w.setPlayer((Player)o);
-		
 		cam=new Camera(w,o);
-		
-		
 		renderers.add(new ObjectRenderer(o,this));	
+		
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
@@ -100,46 +102,68 @@ public class GameManager extends Thread implements Runnable{
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
-		long timer = System.currentTimeMillis();
-		int updates = 0;
-		int frames = 0;
 		while(running){
 			double now = System.nanoTime();
-			delta += (now - lastTime) / ns;
-			tick((now - lastTime) / ns );
+			delta = (now - lastTime) / ns;
+			tick(delta );
 			lastTime = now;
-			while(delta >= 1){
-				//tick();
-				updates++;
-				delta--;
-			}
-			
-			frames++;
-					
-			if(System.currentTimeMillis() - timer > 1000){
-				timer += 1000;
-				System.out.println("FPS: " + frames + " TICKS: " + updates);
-				frames = 0;
-				updates = 0;
-			}
 		}	
 	}
-//	public void tick() {
-//			
-//				
-//			w.Update();
-//			cam.tick();
-//			p.render(renderers);
-//	}
-	public void tick(double delta) {
+	public void tick(double delta) {	
 		
-		
+		checkInput();
 		w.Update(delta);
 		cam.tick();
 		p.render(renderers);
-}
-	
-
+	}
+	public void checkInput() {
+		if(menu) {
+			if(ev.keys[Action.SELECT_MENU.key])
+				menu=false;
+		}
+		else {
+			if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				performAction(Action.PLAYER_MOVE_LEFT);
+			if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
+				performAction(Action.PLAYER_MOVE_RIGHT);
+			if(ev.keys[Action.PLAYER_JUMP.key])
+				performAction(Action.PLAYER_JUMP);
+			if(ev.keys[Action.PLAYER_CROUCH.key])
+				performAction(Action.PLAYER_CROUCH);
+			if(!ev.keys[Action.PLAYER_CROUCH.key])
+				performAction(Action.PLAYER_STAND);
+			if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				performAction(Action.PLAYER_MOVE_REST);
+		}
+			
+	}
+	public void performAction(Action a) {
+		switch (a) {
+			case PLAYER_JUMP:
+				w.PlayerJump();
+				break;
+			case PLAYER_MOVE_LEFT: 
+				w.getPlayer().ChangeDirection(Direction.LEFT);
+				break;
+			
+			case PLAYER_MOVE_RIGHT:
+				w.getPlayer().ChangeDirection(Direction.RIGHT);
+				break;
+			
+			case PLAYER_MOVE_REST:
+				w.getPlayer().ChangeDirection(Direction.REST);
+				break;
+			case PLAYER_CROUCH:
+				w.getPlayer().toggleCrouch(true);
+				break;
+			case PLAYER_STAND:
+				w.getPlayer().toggleCrouch(false);
+				break;
+			
+			default:
+				break;
+		}
+	}
 	public int ConvertX(float wx) {
 		return (int) ((wx*p.getWidth())/cam.getWidth()) ;
 		
