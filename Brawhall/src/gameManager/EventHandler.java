@@ -7,7 +7,7 @@ public class EventHandler {
 	
 	GameManager gm;
 	
-	boolean busy=false;
+	
 	public boolean[] keys;
 	public EventHandler(GameManager g) 
 	{

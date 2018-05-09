@@ -28,33 +28,23 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	
 	public Player(float x,float y) 
 	{
-		
 		super(x, y, ObjectId.PLAYER);
 		this.height = 20;
 		this.width = 10;
 		standHeight=20;
 	}
-	
-	
 	public Player(float x,float y, float Width,float Height) 
 	{
 		super(x, y, Width, Height, ObjectId.PLAYER);
 		this.height = Height;
 		this.width = Width;
 	}
-	public void getHit(float hitDmg) 
-	{ 
-		//Add hitDmg to damage
-	}
-	public float hit() 
-	{ 
-		return 0;
-		//return BaseAttack
-	}
-	@Override
-	public void ChangeDirection(Direction d) {
-		dir=d;
+	public void tick(LinkedList<GameObject> objects, double delta) {
+		move(delta);
+		crouch(delta);
 		
+		Collision(objects);
+		fall(delta);
 	}
 	@Override
 	public void move() {
@@ -83,13 +73,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				}
 			}		
 	}
-	public void tick(LinkedList<GameObject> objects, double delta) {
-		move(delta);
-		crouch(delta);
-		
-		Collision(objects);
-		fall(delta);
-	}	
     public void fall(double delta) {
     	if(falling) {
 			velY+=gravity*delta;
@@ -113,24 +96,16 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				}
 				else if(this.getBounds(Side.Top).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velY=0;
-					
 					posY=t.posY+t.height;
-					
 				}
-				
 				else if(this.getBounds(Side.Right).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velX=0;
-					
-					posX=t.posX-width;
-					
+					posX=t.posX-width;	
 				}
 				else if(this.getBounds(Side.Left).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velX=0;
-					
 					posX=t.posX+t.width;
-					
 				}
-				
 				else {
 					falling=true;
 				}
@@ -152,7 +127,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		else if(s==Side.Left) {
 			b=new BoundingBox((posX ) ,(posY+(height/10)/2), width/10, (height-(height/10)));
 		}
-			
 		return b;
 	}
 	@Override
@@ -188,15 +162,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			break;				
 			}	
 	}
-
-
 	@Override
 	public void fall() {
 		// TODO Auto-generated method stub
 		
 	}
-
-
 	@Override
 	public void crouch(double delta) {
 		if (!crouching){
@@ -218,9 +188,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
-
-
-
 	@Override
 	public void toggleCrouch(boolean b) {
 		crouching=b;

@@ -18,21 +18,19 @@ import windows.MyPanel;
 import world.Camera;
 import world.World;
 
+
+
 public class GameManager extends Thread implements Runnable{
-	
-	static final int panelWidth=1440;
-	public Camera getCam() {
-		return cam;
+	public static void main(String[] args) {
+		GameManager gm= new GameManager();
+		gm.start();
 	}
-
-	static final int panelHeight=900;
-
 	
+	static final int panelWidth=1440;	
+	static final int panelHeight=900;
 	
 	Toolkit tk = Toolkit.getDefaultToolkit();
 	Image BackgroundMenu;
-	
-	LinkedList<ObjectRenderer> m;
 	
 	LinkedList<ObjectRenderer>renderers;
 	LinkedList<GameObject> objects;
@@ -51,8 +49,7 @@ public class GameManager extends Thread implements Runnable{
 		menu=true;
 		w=new World(500,700,objects);
 		
-		loadLevel();
-			
+		loadLevel();	
 	}
 	public void initGui() {
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
@@ -67,7 +64,6 @@ public class GameManager extends Thread implements Runnable{
 		w.setPlayer((Player)o);
 		cam=new Camera(w,o);
 		renderers.add(new ObjectRenderer(o,this));	
-		
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
@@ -97,7 +93,6 @@ public class GameManager extends Thread implements Runnable{
 		super.start();
 	}
 	public void run() {
-		//fancy stuff
 		double lastTime = System.nanoTime();
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
@@ -110,7 +105,6 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
-		
 		checkInput();
 		w.Update(delta);
 		cam.tick();
@@ -134,8 +128,7 @@ public class GameManager extends Thread implements Runnable{
 				performAction(Action.PLAYER_STAND);
 			if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				performAction(Action.PLAYER_MOVE_REST);
-		}
-			
+		}	
 	}
 	public void performAction(Action a) {
 		switch (a) {
@@ -144,12 +137,10 @@ public class GameManager extends Thread implements Runnable{
 				break;
 			case PLAYER_MOVE_LEFT: 
 				w.getPlayer().ChangeDirection(Direction.LEFT);
-				break;
-			
+				break;	
 			case PLAYER_MOVE_RIGHT:
 				w.getPlayer().ChangeDirection(Direction.RIGHT);
 				break;
-			
 			case PLAYER_MOVE_REST:
 				w.getPlayer().ChangeDirection(Direction.REST);
 				break;
@@ -159,38 +150,26 @@ public class GameManager extends Thread implements Runnable{
 			case PLAYER_STAND:
 				w.getPlayer().toggleCrouch(false);
 				break;
-			
 			default:
 				break;
 		}
 	}
 	public int ConvertX(float wx) {
-		return (int) ((wx*p.getWidth())/cam.getWidth()) ;
-		
+		return (int) ((wx*p.getWidth())/cam.getWidth()) ;	
 	}
 	public int ConvertY(float wy) {
-		return (int) ((wy*p.getHeight())/cam.getHeight()) ;
-		
+		return (int) ((wy*p.getHeight())/cam.getHeight()) ;	
 	}
 	public int ConvertPosX(float wx) {
 		return (int) (((wx-cam.getPosX())*p.getWidth())/cam.getWidth()) ;
-		
 	}
 	public int ConvertPosY(float wy) {
 		return (int) (((wy-cam.getPosY())*p.getHeight())/cam.getHeight()) ;
-		
 	}
 	public int ConvertPanelX(float px) {
 		return (int) ((px*w.getWidth())/p.getWidth()) ;
-		
 	}
 	public int ConvertPanelY(float py) {
 		return (int) ((py*w.getHeight())/p.getHeight()) ;
-		
-	}
-	
-	public static void main(String[] args) {
-		GameManager gm= new GameManager();
-		gm.start();
 	}
 }
