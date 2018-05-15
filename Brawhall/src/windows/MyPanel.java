@@ -32,7 +32,7 @@ public class MyPanel extends JPanel {
 		
 		super.paint(g);
 		
-		for(int i=0;i<list.size();i++) {
+	for(int i=0;i<list.size();i++) {
 			list.get(i).DefaultRender(g);
 			
 			

@@ -109,6 +109,7 @@ public class GameManager extends Thread implements Runnable{
 		w.Update(delta);
 		cam.tick();
 		p.render(renderers);
+		
 	}
 	public void checkInput() {
 		if(menu) {
@@ -167,9 +168,9 @@ public class GameManager extends Thread implements Runnable{
 		return (int) (((wy-cam.getPosY())*p.getHeight())/cam.getHeight()) ;
 	}
 	public int ConvertPanelX(float px) {
-		return (int) ((px*w.getWidth())/p.getWidth()) ;
+		return (int) ((px*cam.getWidth())/p.getWidth()) ;
 	}
 	public int ConvertPanelY(float py) {
-		return (int) ((py*w.getHeight())/p.getHeight()) ;
+		return (int) ((py*cam.getHeight())/p.getHeight()) ;
 	}
 }
