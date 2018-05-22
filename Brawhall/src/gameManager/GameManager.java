@@ -171,27 +171,41 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void performAction(Action a) {
 		switch (a) {
-			case PLAYER_JUMP:
-				w.PlayerJump();
-				break;
-			case PLAYER_MOVE_LEFT: 
-				w.getPlayer().ChangeDirection(Direction.LEFT);
-				break;	
-			case PLAYER_MOVE_RIGHT:
-				w.getPlayer().ChangeDirection(Direction.RIGHT);
-				break;
-			case PLAYER_MOVE_REST:
-				w.getPlayer().ChangeDirection(Direction.REST);
-				break;
-			case PLAYER_CROUCH:
-				w.getPlayer().toggleCrouch(true);
-				break;
-			case PLAYER_STAND:
-				w.getPlayer().toggleCrouch(false);
-				break;
-			default:
-				break;
-		}
+		case PLAYER_JUMP:
+			w.PlayerJump();
+			break;
+		case PLAYER_MOVE_LEFT: 
+			w.getPlayer().ChangeDirection(Direction.LEFT);
+			break;	
+		case PLAYER_MOVE_RIGHT:
+			w.getPlayer().ChangeDirection(Direction.RIGHT);
+			break;
+		case PLAYER_MOVE_REST:
+			w.getPlayer().ChangeDirection(Direction.REST);
+			break;
+		case PLAYER_CROUCH:
+			w.getPlayer().toggleCrouch(true);
+			break;
+		case PLAYER_STAND:
+			w.getPlayer().toggleCrouch(false);
+			break;
+	case CLOSE_GAME:
+		break;
+	case OPEN_SETTING:
+		break;
+	case SELECT_MENU:
+		break;
+	case START_GAME:
+		menu=false;
+		break;
+	case START_MULTIPLAYER_GAME:
+		break;
+	case START_TRAINING:
+		break;
+	default:
+		break;
+		
+	}
 	}
 	public int ConvertX(float wx) {
 		return (int) ((wx*p.getWidth())/cam.getWidth()) ;	
