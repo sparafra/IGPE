@@ -1,6 +1,5 @@
 package gameManager;
 
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -33,10 +32,8 @@ public class GameManager extends Thread implements Runnable{
 	static final int panelWidth=1440;	
 	static final int panelHeight=900;
 	
-	
 	Toolkit tk;
-	Dimension FullScreen;
-	
+
 	Image BackgroundMenu;
 	Menu DefaultMenu;
 	
@@ -44,49 +41,44 @@ public class GameManager extends Thread implements Runnable{
 	LinkedList<GameObject> objects;
 	
 	Media m;
-	
 	EventHandler ev;
 	World w;
 	MyPanel p;
 	Camera cam;
+	
 	boolean running=false;
 	boolean menu;
 	
 	public GameManager() 
 	{
 		tk = Toolkit.getDefaultToolkit();
-		FullScreen = tk.getScreenSize();
 		m = new Media();
-		
-		renderers=new LinkedList<ObjectRenderer>();
-		objects=new LinkedList<GameObject>();
 		initGui();
 		menu=true;
-		w=new World(500,700,objects);
+		w=new World(300,300,null);
+		cam=new Camera(w,null);
 		DefaultMenu = new Menu(this);
-		loadLevel();	
+		p.setRenderers(DefaultMenu.getRenderers());		
 	}
 	public void initGui() 
 	{
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
 		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
-		
-		//FullScreen
-		//MyFrame f= new MyFrame(FullScreen.width, FullScreen.height);
-		//MyPanel pn=new MyPanel(this,FullScreen.width, FullScreen.height);
-		
 		p=pn;
 		f.setContentPane(p);
 		f.setVisible(true);
 	}
 	public void loadLevel() {
+		renderers=new LinkedList<ObjectRenderer>();
+		objects=new LinkedList<GameObject>();
+		w=new World(500,700,objects);
 		GameObject o=new Player(50,0);
 		GameObject bg = new Background(w.getWidth(), w.getHeight());
 		w.addObject(o);
 		w.setPlayer((Player)o);
 		cam=new Camera(w,o);
 		renderers.add(new ObjectRenderer(bg, this));
-		renderers.add(new PlayerRenderer(o,this));	
+		renderers.add(new PlayerRenderer((Player)o,this));	
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
@@ -108,6 +100,7 @@ public class GameManager extends Thread implements Runnable{
 			w.addObject(o);
 			renderers.add(new ObjectRenderer(o,this));
 		}
+		p.setRenderers(renderers);
 	}
 	public void start() {
 		if(running )return;
@@ -133,14 +126,12 @@ public class GameManager extends Thread implements Runnable{
 		{
 			w.Update(delta);
 			cam.tick();
-			p.render(renderers);
+			p.render();
 		}
 		else
 		{
-			p.render(DefaultMenu.getRenderers());
+			p.render();
 		}
-		
-		
 	}
 	public void checkInput() {
 		if(menu) 
@@ -189,24 +180,26 @@ public class GameManager extends Thread implements Runnable{
 		case PLAYER_STAND:
 			w.getPlayer().toggleCrouch(false);
 			break;
-	case CLOSE_GAME:
-		break;
-	case OPEN_SETTING:
-		break;
-	case SELECT_MENU:
-		break;
-	case START_GAME:
-		menu=false;
-		break;
-	case START_MULTIPLAYER_GAME:
-		break;
-	case START_TRAINING:
-		break;
-	default:
-		break;
+		case CLOSE_GAME:
+			break;
+		case OPEN_SETTING:
+			break;
+		case SELECT_MENU:
+			break;
+		case START_GAME:
+			menu=false;
+			loadLevel();
+			break;
+		case START_MULTIPLAYER_GAME:
+			break;
+		case START_TRAINING:
+			break;
+		default:
+			break;
 		
 	}
 	}
+	
 	public int ConvertX(float wx) {
 		return (int) ((wx*p.getWidth())/cam.getWidth()) ;	
 	}
@@ -219,17 +212,12 @@ public class GameManager extends Thread implements Runnable{
 	public int ConvertPosY(float wy) {
 		return (int) (((wy-cam.getPosY())*p.getHeight())/cam.getHeight()) ;
 	}
+	
 	public int ConvertPanelX(float px) {
 		return (int) ((px*w.getWidth())/p.getWidth()) ;
 	}
 	public int ConvertPanelY(float py) {
 		return (int) ((py*w.getHeight())/p.getHeight()) ;
-	}
-	public int ConvertWX(float px) {
-		return (int) ((px*p.getWidth())/w.getWidth()) ;
-	}
-	public int ConvertWY(float py) {
-		return (int) ((py*p.getHeight())/w.getHeight()) ;
 	}
 	
 	public World getWorld() {return w;}

@@ -43,6 +43,8 @@ public class Camera  {
 	public Camera(World w,GameObject a) {		
 		world=w;
 		anchor=a;
+		posX=viewW/2;
+		posY=viewH/2;
 
 	}
 	public void tick() {

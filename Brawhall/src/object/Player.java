@@ -26,6 +26,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	boolean jumping=false;
 	boolean crouching=false;
 	boolean resting = false;
+	
 	public Player(float x,float y) 
 	{
 		super(x, y, ObjectId.PLAYER);
@@ -96,7 +97,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 					velY=0;
 					
 					resting = true;
-					System.out.println("TerraFerma");
+					
 				}
 				else if(this.getBounds(Side.Top).intersects( ((Block)t).getBounds(Side.Left)) ){
 					velY=0;
@@ -113,7 +114,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				else 
 				{
 					falling=true;
-					System.out.println("Cade");
+					
 				}
 			}
 		}
@@ -169,11 +170,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			break;				
 			}	
 	}
-	@Override
-	public void fall() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	@Override
 	public void crouch(double delta) {
 		if (!crouching){

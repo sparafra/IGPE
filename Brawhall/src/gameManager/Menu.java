@@ -1,28 +1,11 @@
 package gameManager;
 import gameManager.Action;
-import interfaces.Clickable;
-import interfaces.Drawable;
-
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
-
 import object.Background;
 import object.Button;
 import object.Control;
-//import object.Button;
 import object.GameObject;
-import object.Media;
-import object.ObjectId;
 import object.ObjectRenderer;
-import object.Media.State;
 
 public class Menu {
 	float posx,posy;
@@ -31,6 +14,8 @@ public class Menu {
 	LinkedList<ObjectRenderer> renderers; 
 	GameObject background;
 	
+	float height;
+	float width;
 	
 	int selectedIndex=0;
 	float distanceBetweenButton = 3;
@@ -43,7 +28,8 @@ public class Menu {
 		
 		this.gm = gm;
 		
-		
+		height=gm.cam.getHeight();
+		width=gm.cam.getWidth();
 		
 		controls=new LinkedList<Control>();
 		renderers =  new LinkedList<ObjectRenderer>();
@@ -51,15 +37,15 @@ public class Menu {
 		background = new Background(gm.w.getWidth(), gm.w.getHeight());
 		ObjectRenderer RBG = new ObjectRenderer(background, gm);
 
-		Control Local = new Button(80,50,Action.START_GAME);
+		Control Local = new Button(40,25,Action.START_GAME);
 		ObjectRenderer RLocal = new ObjectRenderer(Local, gm);
-		Control Multiplayer = new Button(80,50,Action.START_MULTIPLAYER_GAME);
+		Control Multiplayer = new Button(40,25,Action.START_MULTIPLAYER_GAME);
 		ObjectRenderer RMultiplayer = new ObjectRenderer(Multiplayer, gm);
-		Control Training = new Button(80,50,Action.START_TRAINING);
+		Control Training = new Button(40,25,Action.START_TRAINING);
 		ObjectRenderer RTraining = new ObjectRenderer(Training, gm);
-		Control Setting = new Button(80,50,Action.OPEN_SETTING);
+		Control Setting = new Button(40,25,Action.OPEN_SETTING);
 		ObjectRenderer RSetting = new ObjectRenderer(Setting, gm);
-		Control Exit = new Button(80,50,Action.CLOSE_GAME);
+		Control Exit = new Button(40,25,Action.CLOSE_GAME);
 		ObjectRenderer RExit = new ObjectRenderer(Exit, gm);
 
 		
@@ -79,8 +65,8 @@ public class Menu {
 		renderers.add(RSetting);
 		renderers.add(RExit);
 
-		posx = (gm.w.getWidth()/2) - (controls.get(1).getWidth()/2);
-		posy = (gm.w.getWidth()/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+		posx = (width/2) - (controls.get(1).getWidth()/2);
+		posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
 		
 		float pad = 10;
 		

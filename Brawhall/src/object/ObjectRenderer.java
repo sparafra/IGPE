@@ -16,7 +16,7 @@ public class ObjectRenderer {
 	GameObject obj;
 	GameManager gm;
 	static boolean test=true;
-	boolean drawbounds=true;
+	static boolean drawbounds=true;
 	Toolkit tk;
 	public ObjectRenderer(GameObject o,GameManager g) {
 		
@@ -34,12 +34,12 @@ public class ObjectRenderer {
 				}
 				else if(obj instanceof Button) 
 				{
-					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Start", 0), gm.ConvertWX(obj.getPosX()), gm.ConvertWY(obj.getPosY()), gm.ConvertWX(obj.getWidth()), gm.ConvertWY(obj.getHeight()), null);
+					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Start", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				}
 				else if(obj instanceof Background)
 				{
 					Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.NULL, "Sky", 0);
-					g.drawImage(i, gm.ConvertWX(obj.getPosX()), gm.ConvertWY(obj.getPosY()), gm.ConvertWX(obj.getWidth()), gm.ConvertWY(obj.getHeight()), null);
+					g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				}
 				else
 				{
@@ -47,23 +47,24 @@ public class ObjectRenderer {
 					g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 					
 				}
-				if(drawbounds)
-						boundsRender(g);
+				
 			}
 			else {
 				if (obj instanceof Block) 
 				{
-					g.setColor(Color.CYAN);
+					g.setColor(Color.YELLOW);
 					g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 					boundsRender(g);
 				}
 				else if(obj instanceof Button) 
 				{
 					g.setColor(Color.PINK);
-					g.fillRect(gm.ConvertWX(obj.posX), gm.ConvertWY(obj.posY), gm.ConvertWX(obj.width), gm.ConvertWY(obj.height));
+					g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 				}
 				else if(obj instanceof Background)
 				{
+					g.setColor(Color.cyan);
+					g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 					
 				}
 				else
@@ -72,9 +73,10 @@ public class ObjectRenderer {
 					g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
 					
 				}
-				if(drawbounds)
-						boundsRender(g);
+				
 			}
+			if(drawbounds)
+						boundsRender(g);
 		
 	}
 
@@ -84,12 +86,12 @@ public class ObjectRenderer {
 		BoundingBox b;
 		
 		g2d.setColor(Color.BLACK);
-		if (obj instanceof Player) {
+		
 			
 			b=(obj).getBounds(Side.Top);
 			g2d.draw(scale(b));
 			
-		}
+		
 	}
 		
 	}

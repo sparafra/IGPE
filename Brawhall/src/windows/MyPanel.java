@@ -12,7 +12,10 @@ import object.ObjectRenderer;
 
 public class MyPanel extends JPanel {
 
-	LinkedList<ObjectRenderer> list;
+	LinkedList<ObjectRenderer> renderers;
+	public void setRenderers(LinkedList<ObjectRenderer> renderers) {
+		this.renderers = renderers;
+	}
 	GameManager gm;
 	int h;
 	int w;
@@ -27,26 +30,24 @@ public class MyPanel extends JPanel {
 		this.setMaximumSize(d);
 		this.setMinimumSize(d);
 		this.setDoubleBuffered(true);
-		list=new LinkedList<ObjectRenderer>();
+		
+		renderers=new LinkedList<ObjectRenderer>();
 		
 	}
-	
 	public void paint(Graphics g) {
-		
 		super.paint(g);
-		
-		for(int i=0;i<list.size();i++) {
-			list.get(i).DefaultRender(g);
+		for(int i=0;i<renderers.size();i++) {
+			renderers.get(i).DefaultRender(g);
 			
 		}
 
 	}
-	
-	
-	public void render(LinkedList<ObjectRenderer> l) {
+	/*public void render(LinkedList<ObjectRenderer> l) {
 		list=l;
-		super.repaint();
+		repaint();
+	}*/
+	public void render() {
+		
+		repaint();
 	}
-	
-	
 }
