@@ -14,17 +14,22 @@ import object.BoundingBox.Side;
 
 public class Player extends DynamicGameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove,CanCrouch{
 
-	float damage;
-	float baseAttack;
+	float damage=0.0f;
+	float baseAttack=1.0f;
 	float standHeight;
 	
 	
-	float atkSpeed;
-	float atkRange;
+	float atkSpeed=2.0f;
+	float atkRange=5.0f;
 	float weight=0.0f;
+	
 	boolean falling=true;
 	boolean jumping=false;
 	boolean crouching=false;
+	boolean attacking=false;
+	double attackTimer=0;
+	HitBox h=null;
+	Direction facing=Direction.RIGHT;
 	
 	public Player(float x,float y) 
 	{
@@ -42,7 +47,9 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public void tick(LinkedList<GameObject> objects, double delta) {
 		move(delta);
 		crouch(delta);
-		
+		if (attacking) {
+			attack(objects,delta);
+		}
 		Collision(objects);
 		fall(delta);
 	}
@@ -112,20 +119,23 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
+	public boolean Intersect(BoundingBox b) {
+		return (b.intersects(this.getBounds(Side.Bottom))||b.intersects(this.getBounds(Side.Top))||b.intersects(this.getBounds(Side.Right))||b.intersects(this.getBounds(Side.Left)));
+	}
 	@Override
 	public BoundingBox getBounds(Side s) {
 		BoundingBox b=null;
 		if (s==Side.Bottom) {
-			b=new BoundingBox((posX + (width/2)-(width/4)) ,(posY+height/2), width/2, height/2);
+			b=new BoundingBox(this,(posX + (width/2)-(width/4)) ,(posY+height/2), width/2, height/2);
 		}
 		else if(s==Side.Top) {
-			b=new BoundingBox((posX + (width/2)-(width/4)) ,posY, width/2, height/2);
+			b=new BoundingBox(this,(posX + (width/2)-(width/4)) ,posY, width/2, height/2);
 		}
 		else if(s==Side.Right) {
-			b=new BoundingBox((posX+width )-1 ,(posY+(height/10)/2), 1, (height-height/10));
+			b=new BoundingBox(this,(posX+width )-1 ,(posY+(height/10)/2), 1, (height-height/10));
 		}
 		else if(s==Side.Left) {
-			b=new BoundingBox((posX ) ,(posY+(height/10)/2), width/10, (height-(height/10)));
+			b=new BoundingBox(this,(posX ) ,(posY+(height/10)/2), width/10, (height-(height/10)));
 		}
 		return b;
 	}
@@ -142,11 +152,13 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		posY+=velY*delta;
 		switch (dir){
 		case RIGHT:
+			facing=Direction.RIGHT;
 			velX+=moveSpeed*delta;
 			if(velX>maxMoveSpeed) 
 				velX=maxMoveSpeed;
 			break;
 		case LEFT: 
+			facing=Direction.LEFT;
 			velX-=moveSpeed*delta;
 			if(velX<-maxMoveSpeed) 
 				velX=-maxMoveSpeed;
@@ -162,11 +174,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			break;				
 			}	
 	}
-	@Override
-	public void fall() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	@Override
 	public void crouch(double delta) {
 		if (!crouching){
@@ -188,6 +196,15 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
+	public boolean isFalling() {
+		return falling&& velY<0;
+	}
+	public boolean isJumping() {
+		return jumping;
+	}
+	public boolean isAttacking() {
+		return attacking;
+	}
 	@Override
 	public void toggleCrouch(boolean b) {
 		crouching=b;
@@ -196,4 +213,55 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public boolean isCrouching() {
 		return crouching;
 	}
+	@Override
+	public void attack(LinkedList<GameObject> list,double delta) {
+		attackTimer-=delta;
+		if(attackTimer>0) {
+			for (int i=0;i<list.size();i++) {
+				GameObject t=list.get(i);
+				if (t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) {
+					Player p= (Player)t;
+					p.getDamage(baseAttack);
+				}
+			}
+		}
+		else
+			attacking=false;
+			
+	}
+	@Override
+	public void toggleAttack(boolean b) {
+		if (b&& !attacking) {
+			attacking=b;
+				switch (facing) {
+				case DOWN:
+					break;
+				case LEFT:
+					h=new HitBox(this, (posX-atkRange), (posY) ,  atkRange,  height/3);
+					break;
+				case REST:
+					break;
+				case RIGHT:
+						h=new HitBox(this, (posX+width), (posY) ,  atkRange,  height/3);
+					break;
+				case STOP:
+					break;
+				case UP:
+					break;
+				default:
+					break;
+				}
+			
+				attackTimer=atkSpeed;
+		}
+	}
+	public HitBox getHitBox() {
+		return h;
+	}
+	@Override
+	public void getDamage(float dmg) {
+		// gestisci staggering
+		damage+=dmg;
+	}
+
 }

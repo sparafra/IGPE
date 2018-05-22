@@ -24,21 +24,8 @@ public class Block extends GameObject implements Collides, Drawable{
 
 	@Override
 	public BoundingBox getBounds(Side s) {
-		BoundingBox b=null;
-		/*if (s==Side.Bottom) {
-			b=new BoundingBox((int)(posX + (width/2)-(width/4)) ,(int)(posY+height/2),(int) width/2, (int)height/2);
-		}
-		else if(s==Side.Top) {
-			b=new BoundingBox((int)(posX + (width/2)-(width/4)) ,(int)posY,(int) width/2, (int)height/2);
-		}
-		else if(s==Side.Left) {
-			b=new BoundingBox((int)(posX+width-(width/10) ) ,(int)(posY+(height/10)/2),(int) width/10, (int)(height-height/10));
-		}
-		else if(s==Side.Right) {
-			b=new BoundingBox((int)(posX ) ,(int)(posY+(height/10)/2),(int) width/10, (int)(height-(height/10)));
-		}*/
-		b=new BoundingBox((int)posX,(int)posY,(int)width,(int)height);	
-		return b;
+		BoundingBox b;
+		return b=new BoundingBox(this,posX,posY,width,height);
 	}
 
 	@Override

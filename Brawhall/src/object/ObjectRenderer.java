@@ -3,6 +3,8 @@ package object;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Float;
 
 import gameManager.GameManager;
 import object.BoundingBox.Side;
@@ -40,22 +42,30 @@ public class ObjectRenderer {
 	public void boundsRender(Graphics g) {
 		Graphics2D g2d= (Graphics2D)g;
 		BoundingBox b;
-		BoundingBox scaled;
+		
 		g2d.setColor(Color.BLACK);
 		if (obj instanceof Player) {
+			Player p= (Player)obj;
+			b=p.getBounds(Side.Top);
 			
-			b=((Player) obj).getBounds(Side.Top);
-			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
-			g2d.draw(scaled);
-			b=((Player) obj).getBounds(Side.Bottom);
-			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
-			g2d.draw(scaled);
-			b=((Player) obj).getBounds(Side.Right);
-			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
-			g2d.draw(scaled);
-			b=((Player) obj).getBounds(Side.Left);
-			scaled=new BoundingBox(gm.ConvertPosX((float)b.x),gm.ConvertPosY((float)b.y),gm.ConvertX((float)b.width),gm.ConvertY((float)b.height));
-			g2d.draw(scaled);
+			g2d.draw(scaled(b));
+			b=p.getBounds(Side.Bottom);
+			g2d.draw(scaled(b));
+			b=p.getBounds(Side.Right);
+			g2d.draw(scaled(b));
+			b=p.getBounds(Side.Left);
+			g2d.draw(scaled(b));
+			
+			if(p.attacking) {
+				g2d.setColor(Color.RED);
+				b=p.getHitBox();
+				g2d.draw(scaled(b));
+			}
 		}
+	
+	}
+	Rectangle2D.Float scaled(Rectangle2D.Float b){
+		Float scaled = new Rectangle2D.Float(gm.ConvertPosX(b.x),gm.ConvertPosY(b.y),gm.ConvertX(b.width),gm.ConvertY(b.height));
+		return scaled;
 	}
 }

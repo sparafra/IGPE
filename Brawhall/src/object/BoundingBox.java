@@ -11,10 +11,17 @@ public class BoundingBox extends Rectangle2D.Float{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	GameObject holder;
 
-	public BoundingBox(float x, float y, float height, float width) {
+	public BoundingBox(GameObject o,float x, float y, float height, float width) {
 		super(x, y, height, width);
+		holder=o;
 		// TODO Auto-generated constructor stub
+	}
+
+	public GameObject getHolder() {
+		return holder;
 	}
 
 }

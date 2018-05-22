@@ -117,6 +117,8 @@ public class GameManager extends Thread implements Runnable{
 				menu=false;
 		}
 		else {
+			if(ev.keys[Action.PLAYER_ATTACK.key])
+				performAction(Action.PLAYER_ATTACK);
 			if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				performAction(Action.PLAYER_MOVE_LEFT);
 			if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
@@ -133,6 +135,9 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void performAction(Action a) {
 		switch (a) {
+			case PLAYER_ATTACK:
+					w.getPlayer().toggleAttack(true);
+				break;
 			case PLAYER_JUMP:
 				w.PlayerJump();
 				break;

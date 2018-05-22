@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 public enum Action {
 	
 	PLAYER_JUMP(KeyEvent.VK_SPACE),
+	PLAYER_ATTACK(KeyEvent.VK_F),
 	PLAYER_MOVE_RIGHT(KeyEvent.VK_D),
 	PLAYER_MOVE_LEFT(KeyEvent.VK_A),
 	PLAYER_CROUCH(KeyEvent.VK_S),
