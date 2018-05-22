@@ -5,7 +5,7 @@ import interfaces.Drawable;
 import interfaces.GravityDependent;
 import interfaces.Pickable;
 
-public class Drop extends StaticGameObject implements Collides, Drawable, Pickable, GravityDependent{
+public abstract class Drop extends StaticGameObject implements Collides, Drawable, Pickable, GravityDependent{
 
 	float lifeTime;
 	

@@ -16,6 +16,7 @@ import object.GameObject;
 import object.Media;
 import object.ObjectRenderer;
 import object.Player;
+import object.PlayerRenderer;
 import windows.MyFrame;
 import windows.MyPanel;
 import world.Camera;
@@ -85,7 +86,7 @@ public class GameManager extends Thread implements Runnable{
 		w.setPlayer((Player)o);
 		cam=new Camera(w,o);
 		renderers.add(new ObjectRenderer(bg, this));
-		renderers.add(new ObjectRenderer(o,this));	
+		renderers.add(new PlayerRenderer(o,this));	
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);

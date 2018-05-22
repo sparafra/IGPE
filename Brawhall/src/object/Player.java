@@ -90,10 +90,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			if(t.id==ObjectId.BLOCK) 
 			{
 				if(this.getBounds(Side.Bottom).intersects(((Block)t).getBounds(Side.Top)) ){
-					posY=t.posY-this.height;
-					velY=0;
 					falling=false;
 					jumping=false;
+					posY=t.posY-this.height;
+					velY=0;
+					
 					resting = true;
 					System.out.println("TerraFerma");
 				}
@@ -203,7 +204,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		return crouching;
 	}
 	public boolean isFalling() {
-		return falling;
+		return falling && velY<0;
 	}
 	public boolean isMovingLeft() {
 		if(dir==Direction.LEFT)

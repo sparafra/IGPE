@@ -4,20 +4,14 @@ import java.util.LinkedList;
 
 
 import object.ObjectId;
+import object.BoundingBox.Side;
 
 public abstract class GameObject {
 
 	float posX,posY;
 	float height=1,width=1;
 	ObjectId id;
-	boolean updated=true;
 	
-	public boolean isUpdated() {
-		return updated;
-	}
-	public void setUpdated(boolean updated) {
-		this.updated = updated;
-	}
 	public GameObject(float x,float y,ObjectId id) {
 		posX=x;
 		posY=y;
@@ -62,7 +56,12 @@ public abstract class GameObject {
 	public void setPosY(float posY) {
 		this.posY = posY;
 	}
-
-	//public abstract void tick(LinkedList<GameObject> objects);
+	public BoundingBox getBounds(Side s) {
+		BoundingBox b=null;
+		
+		b=new BoundingBox((int)posX,(int)posY,(int)width,(int)height);	
+		return b;
+	}
+	
 	public abstract void tick(LinkedList<GameObject> objects, double delta) ;
 }
