@@ -1,31 +1,45 @@
 package object;
 
-import java.awt.Image;
 import java.util.LinkedList;
 
+import gameManager.Action;
 import interfaces.Clickable;
 import interfaces.Drawable;
 
-public  class Control extends StaticGameObject implements Clickable, Drawable {
+public class Control extends GameObject implements Clickable, Drawable {
 	
-	Image x;
+	Action act; 
+	boolean selected = false;
 	
-	public Control(float x,float y ,ObjectId id) 
-	{
-		super(x, y, id);
-		
+	public boolean isSelected() {
+		return selected;
+	}
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 	
-	public Control(float x,float y ,int Height, int Width,ObjectId id) 
+	public Control(int width, int height,Action a) 
 	{
-		super(x, y,Width,Height, id);
-		
+		super(width, height, ObjectId.BUTTON);
+		this.width = width;
+		this.height = height; 
+		this.act =a;
 	}
-
-	@Override
+	public Control(int x, int y, int Width, int Height , Action a) 
+	{
+		super(x, y, Width, Height, ObjectId.BUTTON);
+		this.posX = x;
+		this.posY = y;
+		this.height = Height;
+		this.width = Width; 
+		this.act = a;
+	}
+	
 	public void tick(LinkedList<GameObject> objects, double delta) {
-		// TODO Auto-generated method stub
 		
-	}
+	} 
+	public Action getAction() {return this.act;} 
+	 
+	public void setAction(Action a){this.act=a;}
 	
-}
+}   

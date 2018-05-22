@@ -1,4 +1,8 @@
 package gameManager;
+import gameManager.Action;
+import interfaces.Clickable;
+import interfaces.Drawable;
+
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -12,6 +16,7 @@ import java.util.LinkedList;
 
 import object.Background;
 import object.Button;
+import object.Control;
 //import object.Button;
 import object.GameObject;
 import object.Media;
@@ -22,11 +27,12 @@ import object.Media.State;
 public class Menu {
 	float posx,posy;
 
-	LinkedList<GameObject> controls;
-	LinkedList<ObjectRenderer> renderers;
+	LinkedList<Control> controls;
+	LinkedList<ObjectRenderer> renderers; 
+	GameObject background;
 	
-	int selected=0;
 	
+	int selectedIndex=0;
 	float distanceBetweenButton = 3;
 	
 	GameManager gm;
@@ -39,31 +45,33 @@ public class Menu {
 		
 		
 		
-		controls=new LinkedList<GameObject>();
+		controls=new LinkedList<Control>();
 		renderers =  new LinkedList<ObjectRenderer>();
 		
-		GameObject BG = new Background(gm.w.getWidth(), gm.w.getHeight());
-		ObjectRenderer RBG = new ObjectRenderer(BG, gm);
+		background = new Background(gm.w.getWidth(), gm.w.getHeight());
+		ObjectRenderer RBG = new ObjectRenderer(background, gm);
 
-		GameObject Local = new Button(80,50);
+		Control Local = new Button(80,50,Action.START_GAME);
 		ObjectRenderer RLocal = new ObjectRenderer(Local, gm);
-		GameObject Multiplayer = new Button(80,50);
+		Control Multiplayer = new Button(80,50,Action.START_MULTIPLAYER_GAME);
 		ObjectRenderer RMultiplayer = new ObjectRenderer(Multiplayer, gm);
-		GameObject Training = new Button(80,50);
+		Control Training = new Button(80,50,Action.START_TRAINING);
 		ObjectRenderer RTraining = new ObjectRenderer(Training, gm);
-		GameObject Setting = new Button(80,50);
+		Control Setting = new Button(80,50,Action.OPEN_SETTING);
 		ObjectRenderer RSetting = new ObjectRenderer(Setting, gm);
-		GameObject Exit = new Button(80,50);
+		Control Exit = new Button(80,50,Action.CLOSE_GAME);
 		ObjectRenderer RExit = new ObjectRenderer(Exit, gm);
 
 		
-		controls.add(BG);
+		
 		controls.add(Local);
 		controls.add(Multiplayer);
 		controls.add(Training);
 		controls.add(Setting);
 		controls.add(Exit);
 
+		controls.get(selectedIndex).setSelected(true);
+		
 		renderers.add(RBG);
 		renderers.add(RLocal);
 		renderers.add(RMultiplayer);
@@ -89,14 +97,25 @@ public class Menu {
 	public LinkedList<ObjectRenderer> getRenderers(){return renderers;}
 	
 	
-	public void selectNext() {
-		selected+=1;
-		if(selected>controls.size()-1)
-			selected=0;
+	public void selectNext() { 
+		controls.get(selectedIndex).setSelected(false);
+		selectedIndex+=1;
+		if(selectedIndex>controls.size()-1)
+			selectedIndex=0;
+		controls.get(selectedIndex).setSelected(true);
 	}
-	public void selectPrev() {
-		selected-=1;
-		if(selected<0)
-			selected=controls.size()-1;
+	public void selectPrev() { 
+		controls.get(selectedIndex).setSelected(false);
+		selectedIndex-=1;
+		if(selectedIndex<0)
+			selectedIndex=controls.size()-1;
+		controls.get(selectedIndex).setSelected(true);
 	}
+	
+	public Action selectedAction() {
+		Button b=(Button)controls.get(selectedIndex);
+		return b.getAction();
+				
+	} 
+		
 }
