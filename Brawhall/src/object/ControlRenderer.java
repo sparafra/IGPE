@@ -36,9 +36,10 @@ public class ControlRenderer extends ObjectRenderer
 				if(b.isSelected())
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Selected", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY((obj.getPosY()+obj.getHeight())), gm.ConvertX(obj.getWidth()), gm.ConvertY((obj.getHeight()/6)), null);
 			}
-			else if(obj instanceof ImageViewer)
+			else if(obj instanceof PlayerPreview)
 			{
-				//g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.NULL, "Setting", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+				PlayerPreview pp = (PlayerPreview)obj;
+				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.PREVIEW, pp.getSelectedPlayer(), 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 
 			}
 		}

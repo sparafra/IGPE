@@ -7,6 +7,7 @@ import object.Control;
 import object.ControlRenderer;
 import object.GameObject;
 import object.ObjectRenderer;
+import object.PlayerPreview;
 
 public class Menu {
 	float posx,posy;
@@ -27,8 +28,14 @@ public class Menu {
 	
 	boolean Rendered = false;
 	
+	String MenuState;
+	
+	PlayerPreview Player1Preview;
+	PlayerPreview Player2Preview;
+	
 	public Menu(GameManager gm)  {
 		
+		MenuState = "";
 		this.gm = gm;
 		
 		height=gm.cam.getHeight();
@@ -85,6 +92,15 @@ public class Menu {
 	
 	public Menu(GameManager gm, String status)  
 	{
+		MenuState = status;
+		this.gm = gm;
+		
+		height=gm.cam.getHeight();
+		width=gm.cam.getWidth();
+		
+		controls=new LinkedList<Control>();
+		renderers =  new LinkedList<ObjectRenderer>();
+		
 		background = new Background(gm.w.getWidth(), gm.w.getHeight());
 		ObjectRenderer RBG = new ObjectRenderer(background, gm);
 		
@@ -93,8 +109,21 @@ public class Menu {
 		if(status == "LocalGame")
 		{
 			//LOCAL SELECTION MENU'
+			Player1Preview = new PlayerPreview(30,150, gm.getMedia().getCharactersName());
+			Player2Preview = new PlayerPreview(30,150, gm.getMedia().getCharactersName());
+			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
+			ObjectRenderer rPlayer2Preview = new ControlRenderer(Player2Preview, gm);
+
 			
+			Player1Preview.setPosX(50);
+			Player1Preview.setPosY(50);
+			Player2Preview.setPosX(200);
+			Player2Preview.setPosY(50);
 			
+			controls.add(Player1Preview);
+			controls.add(Player2Preview);
+			renderers.add(rPlayer1Preview);
+			renderers.add(rPlayer2Preview);
 		} 
 		else if(status =="Multiplayer")
 		{
@@ -144,5 +173,22 @@ public class Menu {
 		return b.getAction();
 				
 	} 
-		
+	
+	public void nextPlayer() 
+	{
+		if(ready)
+		{
+			Player1Preview.Next();
+			ready = false;
+		}
+	}
+	public void prevPlayer() 
+	{
+		if(ready)
+		{
+			Player1Preview.Prev();
+			ready = false;
+		}		
+	}
+
 }

@@ -57,7 +57,7 @@ public class GameManager extends Thread implements Runnable{
 		menu=true;
 		w=new World(300,300,null);
 		cam=new Camera(w,null);
-		DefaultMenu = new Menu(this);
+		DefaultMenu = new Menu(this, "LocalGame");
 		p.setRenderers(DefaultMenu.getRenderers());		
 	}
 	public void initGui() 
@@ -145,6 +145,16 @@ public class GameManager extends Thread implements Runnable{
 				DefaultMenu.selectPrev();
 			if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP])
 				DefaultMenu.ready = true;
+			
+			if(DefaultMenu.MenuState.equals("LocalGame"))
+			{
+				if(ev.keys[KeyEvent.VK_RIGHT])
+					DefaultMenu.nextPlayer();; 
+				if(ev.keys[KeyEvent.VK_LEFT]) 
+					DefaultMenu.prevPlayer();
+				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT])
+					DefaultMenu.ready = true;
+			}
 		}
 		else 
 		{

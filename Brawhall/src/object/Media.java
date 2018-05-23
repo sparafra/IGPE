@@ -27,12 +27,15 @@ public class Media
 	
 	int CurrentFrame =0;
 	State LastState = State.FALLING;
-
+	
+	LinkedList<String> charactersName;
 	
 	
 	public Media()
 	{
 		tk = Toolkit.getDefaultToolkit();
+		
+		charactersName = new LinkedList<String>();
 		
 		Media = new HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>>();
 
@@ -106,6 +109,11 @@ public class Media
 					{
 						objectName.put(State.CROUCHING, Frames);
 					}
+					else if (Folders2.get(j).getName().equals("Icon"))
+					{
+						objectName.put(State.PREVIEW, Frames);
+						System.out.println("Icon");
+					}
 					else if(Folders2.get(j).getName().equals("Null"))
 					{
 						objectName.put(State.NULL, Frames);
@@ -114,6 +122,7 @@ public class Media
 				if(Folders.get(k).getName().equals("Characters"))
 				{
 					Characters.put(Folders1.get(i).getName(), objectName);
+					charactersName.add(Folders1.get(i).getName());
 					System.out.println(Folders1.get(i).getName() + "  Aggiunto");
 				}
 				else if(Folders.get(k).getName().equals("Blocks"))
@@ -142,6 +151,11 @@ public class Media
 	public Image getImage(ObjectId Type, State S, String Name, int Frames)
 	{
 		return Media.get(Type).get(Name).get(S).get(Frames);
+	}
+	public int getCharacters() {return Media.get(ObjectId.CHARACTER).size();} 
+	public LinkedList<String> getCharactersName() 
+	{
+		return charactersName;
 	}
 	public int nextCharacterFrames(State S, String Name)
 	{
