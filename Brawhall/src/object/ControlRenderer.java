@@ -4,7 +4,7 @@ import java.awt.Graphics;
 
 import gameManager.Action;
 import gameManager.GameManager;
-import object.Media.State;
+import object.State;
 
 public class ControlRenderer extends ObjectRenderer 
 {
