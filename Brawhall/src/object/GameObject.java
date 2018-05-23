@@ -11,16 +11,17 @@ public abstract class GameObject {
 	float posX,posY;
 	float height=1,width=1;
 	ObjectId id;
+	boolean updated=true;
 	
+	public boolean isUpdated() {
+		return updated;
+	}
+	public void setUpdated(boolean updated) {
+		this.updated = updated;
+	}
 	public GameObject(float x,float y,ObjectId id) {
 		posX=x;
 		posY=y;
-		this.id=id;
-		
-	}
-	public GameObject(int width,int height,ObjectId id) {
-		this.width=width;
-		this.height = height;
 		this.id=id;
 		
 	}
@@ -59,9 +60,9 @@ public abstract class GameObject {
 	public BoundingBox getBounds(Side s) {
 		BoundingBox b=null;
 		
-		b=new BoundingBox((int)posX,(int)posY,(int)width,(int)height);	
+		b=new BoundingBox(this,posX,posY,width,height);	
 		return b;
 	}
-	
+	//public abstract void tick(LinkedList<GameObject> objects);
 	public abstract void tick(LinkedList<GameObject> objects, double delta) ;
 }

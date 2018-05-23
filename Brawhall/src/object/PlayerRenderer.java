@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 
 import gameManager.GameManager;
 import object.BoundingBox.Side;
-import object.Media.State;
 
 public class PlayerRenderer extends ObjectRenderer{
 
@@ -19,18 +18,9 @@ public class PlayerRenderer extends ObjectRenderer{
 	public void DefaultRender(Graphics g) {
 		
 		if(!test) {
-			if(p.isMovingRight())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.FORWARD, "Zombie", gm.getMedia().nextCharacterFrames(State.FORWARD, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
-			else if (p.isMovingLeft())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.BACK, "Zombie", gm.getMedia().nextCharacterFrames(State.BACK, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
-			else if (p.isFalling())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.FALLING, "Zombie", gm.getMedia().nextCharacterFrames(State.FALLING, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
-			else if (p.isCrouching())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.CROUCHING, "Zombie", gm.getMedia().nextCharacterFrames(State.CROUCHING, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
-			else if (p.isJumping())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.JUMPING, "Zombie", gm.getMedia().nextCharacterFrames(State.JUMPING, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null); 
-			else if(p.isResting())
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.STEADYFORWARD, "Zombie", gm.getMedia().nextCharacterFrames(State.STEADYFORWARD, "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null); 
+			
+				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, p.getState(), "Zombie", gm.getMedia().nextCharacterFrames(p.getState(), "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
+			 
 		}
 		else {
 			g.setColor(Color.PINK);
@@ -56,6 +46,12 @@ public class PlayerRenderer extends ObjectRenderer{
 			g2d.draw(scale(b));
 			b=p.getBounds(Side.Left);
 			g2d.draw(scale(b));
+		
+			if(p.attacking) {
+				g2d.setColor(Color.RED);
+				b=p.getHitBox();
+				g2d.draw(scale(b));
+			}
 		}
 	}
 }

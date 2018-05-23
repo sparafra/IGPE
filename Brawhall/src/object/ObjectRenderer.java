@@ -9,14 +9,14 @@ import java.awt.geom.Rectangle2D;
 
 import gameManager.GameManager;
 import object.BoundingBox.Side;
-import object.Media.State;
+import object.State;
 
 public class ObjectRenderer {
 
 	GameObject obj;
 	GameManager gm;
 	static boolean test=false;
-	static boolean drawbounds=false;
+	static boolean drawbounds=true;
 	Toolkit tk;
 	public ObjectRenderer(GameObject o,GameManager g) {
 		
