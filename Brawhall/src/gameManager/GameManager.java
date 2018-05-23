@@ -139,10 +139,12 @@ public class GameManager extends Thread implements Runnable{
 			if(ev.keys[Action.SELECT_MENU.key])
 				performAction(DefaultMenu.selectedAction()); 
 			
-			if(ev.keys[KeyEvent.VK_DOWN]) 
+			if(ev.keys[KeyEvent.VK_DOWN])
 				DefaultMenu.selectNext(); 
 			if(ev.keys[KeyEvent.VK_UP]) 
-				DefaultMenu.selectPrev(); 
+				DefaultMenu.selectPrev();
+			if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP])
+				DefaultMenu.ready = true;
 		}
 		else 
 		{
