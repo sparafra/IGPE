@@ -15,8 +15,8 @@ public class ObjectRenderer {
 
 	GameObject obj;
 	GameManager gm;
-	static boolean test=true;
-	static boolean drawbounds=true;
+	static boolean test=false;
+	static boolean drawbounds=false;
 	Toolkit tk;
 	public ObjectRenderer(GameObject o,GameManager g) {
 		
