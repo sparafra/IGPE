@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import object.Media.State;
+import object.State;
 
 public class Media 
 {
@@ -28,11 +28,7 @@ public class Media
 	int CurrentFrame =0;
 	State LastState = State.FALLING;
 
-	public enum State {
-		FORWARD,BACK,STEADYFORWARD,STEADYBACK,
-		JUMPING, FALLING, CROUCHING, NULL
-		
-	}
+	
 	
 	public Media()
 	{

@@ -148,6 +148,8 @@ public class GameManager extends Thread implements Runnable{
 		}
 		else 
 		{
+			if(ev.keys[Action.PLAYER_ATTACK.key])
+				performAction(Action.PLAYER_ATTACK);
 			if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				performAction(Action.PLAYER_MOVE_LEFT);
 			if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
@@ -167,6 +169,9 @@ public class GameManager extends Thread implements Runnable{
 		case PLAYER_JUMP:
 			w.PlayerJump();
 			break;
+		case PLAYER_ATTACK:
+			w.getPlayer().toggleAttack(true);
+		break;
 		case PLAYER_MOVE_LEFT: 
 			w.getPlayer().ChangeDirection(Direction.LEFT);
 			break;	
