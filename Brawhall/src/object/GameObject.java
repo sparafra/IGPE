@@ -63,6 +63,6 @@ public abstract class GameObject {
 		b=new BoundingBox(this,posX,posY,width,height);	
 		return b;
 	}
-	//public abstract void tick(LinkedList<GameObject> objects);
+	
 	public abstract void tick(LinkedList<GameObject> objects, double delta) ;
 }
