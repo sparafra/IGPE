@@ -182,7 +182,8 @@ public class GameManager extends Thread implements Runnable{
 		case PLAYER_STAND:
 			w.getPlayer().toggleCrouch(false);
 			break;
-		case CLOSE_GAME:
+		case CLOSE_GAME: 
+			System.exit(0);
 			break;
 		case OPEN_SETTING:
 			break;

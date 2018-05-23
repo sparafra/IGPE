@@ -83,6 +83,34 @@ public class Menu {
 		
 	}
 	
+	public Menu(GameManager gm, String status)  
+	{
+		background = new Background(gm.w.getWidth(), gm.w.getHeight());
+		ObjectRenderer RBG = new ObjectRenderer(background, gm);
+		
+		renderers.add(RBG);
+
+		if(status == "LocalGame")
+		{
+			//LOCAL SELECTION MENU'
+			
+			
+		} 
+		else if(status =="Multiplayer")
+		{
+			// MULTIPLAYER SELECTION MENU'
+		} 
+		else if(status == "Training")
+		{
+			// TRAINING SELECTION MENU'
+		} 
+		else if(status == "Setting")
+		{
+			// TRAINING SELECTION MENU'
+		}
+		
+	}
+	
 	public LinkedList<ObjectRenderer> getRenderers(){return renderers;}
 	
 	
