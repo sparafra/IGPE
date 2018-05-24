@@ -85,6 +85,7 @@ public class GameManager extends Thread implements Runnable{
 		GameObject bg = new Background(w.getWidth(), w.getHeight());
 		w.addObject(o);
 		w.setPlayer((Player)o);
+		w.getPlayer().setName(DefaultMenu.Player1Preview.getSelectedPlayer());
 		cam=new Camera(w,o);
 		renderers.add(new ObjectRenderer(bg, this));
 		renderers.add(new PlayerRenderer((Player)o,this));	
@@ -164,8 +165,10 @@ public class GameManager extends Thread implements Runnable{
 				{
 					if(DefaultMenu.getPlayerSelectionTurn() == 1 || DefaultMenu.getPlayerSelectionTurn() == 2)
 						DefaultMenu.nextPlayerSelectionTurn();
-					else 
+					else
+					{
 						performAction(Action.START_GAME);
+					}
 				}
 				
 				if(ev.keys[KeyEvent.VK_RIGHT])

@@ -14,6 +14,8 @@ import object.BoundingBox.Side;
 
 public class Player extends DynamicGameObject implements Collides, CanFight, CanJump, Drawable, GravityDependent, CanMove,CanCrouch{
 
+	String Name;
+	
 	float damage=0.0f;
 	float baseAttack=1.0f;
 	float standHeight;
@@ -37,12 +39,14 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		this.height = 20;
 		this.width = 10;
 		standHeight=20;
+		Name = "";
 	}
 	public Player(float x,float y, float Width,float Height) 
 	{
 		super(x, y, Width, Height, ObjectId.PLAYER);
 		this.height = Height;
 		this.width = Width;
+		String Name = "";
 	}
 	public void tick(LinkedList<GameObject> objects, double delta) {
 		move(delta);
@@ -329,4 +333,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public boolean isCrouching() {
 		return crouching;
 	}
+	
+	public void setName(String Name) {this.Name = Name;}
+	public String getName() {return this.Name;}
 }
