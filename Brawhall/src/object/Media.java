@@ -26,7 +26,7 @@ public class Media
 	HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>> Media;
 	
 	int CurrentFrame =0;
-	State LastState = State.FALLING;
+	State LastState = State.FALLINGFORWARD;
 	
 	LinkedList<String> charactersName;
 	
@@ -97,22 +97,41 @@ public class Media
 					{
 						objectName.put(State.STEADYBACK, Frames);
 					}
-					else if (Folders2.get(j).getName().equals("Jumping"))
+					else if (Folders2.get(j).getName().equals("JumpingForward"))
 					{
-						objectName.put(State.JUMPING, Frames);
+						objectName.put(State.JUMPINGFORWARD, Frames);
 					}
-					else if (Folders2.get(j).getName().equals("Falling"))
+					else if (Folders2.get(j).getName().equals("JumpingBack"))
 					{
-						objectName.put(State.FALLING, Frames);
+						objectName.put(State.JUMPINGBACK, Frames);
 					}
-					else if (Folders2.get(j).getName().equals("Crouching"))
+					else if (Folders2.get(j).getName().equals("FallingForward"))
 					{
-						objectName.put(State.CROUCHING, Frames);
+						objectName.put(State.FALLINGFORWARD, Frames);
+					}
+					else if (Folders2.get(j).getName().equals("FallingBack"))
+					{
+						objectName.put(State.FALLINGBACK, Frames);
+					}
+					else if (Folders2.get(j).getName().equals("CrouchingForward"))
+					{
+						objectName.put(State.CROUCHINGFORWARD, Frames);
+					}
+					else if (Folders2.get(j).getName().equals("CrouchingBack"))
+					{
+						objectName.put(State.CROUCHINGBACK, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("Icon"))
 					{
 						objectName.put(State.PREVIEW, Frames);
-						System.out.println("Icon");
+					}
+					else if (Folders2.get(j).getName().equals("AttackForward"))
+					{
+						objectName.put(State.ATTACKINGFORWARD, Frames);
+					}
+					else if (Folders2.get(j).getName().equals("AttackBack"))
+					{
+						objectName.put(State.ATTACKINGBACK, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("Null"))
 					{
@@ -162,14 +181,14 @@ public class Media
 		if(LastState != S)
 			CurrentFrame =0;
 		LastState = S;
-		if(S == State.JUMPING || S == State.FALLING || S == State.CROUCHING)
+		if(S == State.JUMPINGFORWARD || S == State.JUMPINGBACK || S == State.FALLINGFORWARD || S == State.FALLINGBACK || S == State.CROUCHINGFORWARD || S == State.CROUCHINGBACK)
 		{
 			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{
 				CurrentFrame++;
 			}
 		}
-		else if (S == State.FORWARD || S == State.BACK)
+		else if (S == State.FORWARD || S == State.BACK || S == State.ATTACKINGFORWARD || S == State.ATTACKINGBACK)
 		{
 			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{

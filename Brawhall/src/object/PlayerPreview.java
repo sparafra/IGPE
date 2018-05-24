@@ -22,6 +22,7 @@ public class PlayerPreview extends Control {
 		{
 			selectedIndex++;	
 		}
+		System.out.println(selectedIndex);
 	}
 	public void Prev()
 	{
@@ -29,6 +30,8 @@ public class PlayerPreview extends Control {
 		{
 			selectedIndex--;	
 		}
+		System.out.println(selectedIndex);
+
 	}
 	
 	public String getSelectedPlayer() {return list.get(selectedIndex);}

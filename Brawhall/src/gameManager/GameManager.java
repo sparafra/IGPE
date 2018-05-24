@@ -1,5 +1,6 @@
 package gameManager;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -31,7 +32,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	static final int panelWidth=1440;	
 	static final int panelHeight=900;
-	
+
 	Toolkit tk;
 
 	Image BackgroundMenu;
@@ -57,13 +58,21 @@ public class GameManager extends Thread implements Runnable{
 		menu=true;
 		w=new World(300,300,null);
 		cam=new Camera(w,null);
-		DefaultMenu = new Menu(this, "LocalGame");
+		DefaultMenu = new Menu(this);
 		p.setRenderers(DefaultMenu.getRenderers());		
 	}
 	public void initGui() 
 	{
+		//FullScreen
+		/*
+		Dimension FullScreen = tk.getScreenSize();
+		MyFrame f= new MyFrame(FullScreen.width,FullScreen.height);
+		MyPanel pn=new MyPanel(this,FullScreen.width, FullScreen.height);
+		*/
+		
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
 		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
+		
 		p=pn;
 		f.setContentPane(p);
 		f.setVisible(true);
@@ -136,23 +145,34 @@ public class GameManager extends Thread implements Runnable{
 	public void checkInput() {
 		if(menu) 
 		{
-			if(ev.keys[Action.SELECT_MENU.key])
-				performAction(DefaultMenu.selectedAction()); 
-			
-			if(ev.keys[KeyEvent.VK_DOWN])
-				DefaultMenu.selectNext(); 
-			if(ev.keys[KeyEvent.VK_UP]) 
-				DefaultMenu.selectPrev();
-			if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP])
-				DefaultMenu.ready = true;
-			
-			if(DefaultMenu.MenuState.equals("LocalGame"))
+			if(DefaultMenu.MenuState.equals("StartMenu"))
 			{
+				if(ev.keys[Action.SELECT_MENU.key])
+					performAction(DefaultMenu.selectedAction()); 
+				
+				if(ev.keys[KeyEvent.VK_DOWN])
+					DefaultMenu.selectNext(); 
+				if(ev.keys[KeyEvent.VK_UP]) 
+					DefaultMenu.selectPrev();
+				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
+					DefaultMenu.ready = true;
+					
+			}
+			else if(DefaultMenu.MenuState.equals("LocalGame"))
+			{
+				if(ev.keys[Action.SELECT_MENU.key])
+				{
+					if(DefaultMenu.getPlayerSelectionTurn() == 1 || DefaultMenu.getPlayerSelectionTurn() == 2)
+						DefaultMenu.nextPlayerSelectionTurn();
+					else 
+						performAction(Action.START_GAME);
+				}
+				
 				if(ev.keys[KeyEvent.VK_RIGHT])
 					DefaultMenu.nextPlayer();; 
 				if(ev.keys[KeyEvent.VK_LEFT]) 
 					DefaultMenu.prevPlayer();
-				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT])
+				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT] && !ev.keys[Action.SELECT_MENU.key])
 					DefaultMenu.ready = true;
 			}
 		}
@@ -205,8 +225,16 @@ public class GameManager extends Thread implements Runnable{
 		case SELECT_MENU:
 			break;
 		case START_GAME:
-			menu=false;
-			loadLevel();
+			if(DefaultMenu.getStatus() == "StartMenu")
+			{
+				DefaultMenu.ChangeStatus("LocalGame");
+				p.setRenderers(DefaultMenu.getRenderers());	
+			}
+			else
+			{
+				menu=false;
+				loadLevel();
+			}
 			break;
 		case START_MULTIPLAYER_GAME:
 			break;

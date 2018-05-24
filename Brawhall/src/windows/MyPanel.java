@@ -25,8 +25,8 @@ public class MyPanel extends JPanel {
 		gm=g;
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension d= new Dimension(height,width);
-		Dimension FullScreen = tk.getScreenSize();
-		this.setSize(FullScreen);
+		//Dimension FullScreen = tk.getScreenSize();
+		this.setSize(d);
 		this.setMaximumSize(d);
 		this.setMinimumSize(d);
 		this.setDoubleBuffered(true);

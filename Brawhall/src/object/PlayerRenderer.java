@@ -17,9 +17,10 @@ public class PlayerRenderer extends ObjectRenderer{
 	@Override
 	public void DefaultRender(Graphics g) {
 		
-		if(!test) {
-			
-				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, p.getState(), "Zombie", gm.getMedia().nextCharacterFrames(p.getState(), "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
+		if(!test) 
+		{
+			System.out.println(p.getState());
+			g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, p.getState(), "Zombie", gm.getMedia().nextCharacterFrames(p.getState(), "Zombie")),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
 			 
 		}
 		else {

@@ -200,10 +200,13 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	@Override
 	public void attack(LinkedList<GameObject> list,double delta) {
 		attackTimer-=delta;
-		if(attackTimer>0) {
-			for (int i=0;i<list.size();i++) {
+		if(attackTimer>0) 
+		{
+			for (int i=0;i<list.size();i++) 
+			{
 				GameObject t=list.get(i);
-				if (t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) {
+				if (t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) 
+				{
 					Player p= (Player)t;
 					p.getDamage(baseAttack);
 				}
@@ -247,22 +250,51 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		// gestisci staggering
 		damage+=dmg;
 	}
-	State getState()
+	public State getState()
+	{
+		if(isAttacking())
 		{
-		if(isMovingRight())
+			System.out.println("Attacking");
+			if(facing == Direction.LEFT)
+				return State.ATTACKINGBACK;
+			else if(facing == Direction.RIGHT)
+				return State.ATTACKINGFORWARD;
+		}
+		else if(isMovingRight())
 			return State.FORWARD;
 		else if (isMovingLeft())
 			return State.BACK;
 		else if (isFalling())
-			return State.FALLING;
-		else if (isCrouching())
-			return State.CROUCHING;
-		else if (isJumping())
-			return State.JUMPING; 
-		else if(isResting())
-			return State.STEADYFORWARD;
-		return State.NULL;
+		{
+			if(facing == Direction.LEFT)
+				return State.FALLINGBACK;
+			else if(facing == Direction.RIGHT)
+				return State.FALLINGFORWARD;
 		}
+		else if (isCrouching())
+		{
+			if(facing == Direction.LEFT)
+				return State.CROUCHINGBACK;
+			else if(facing == Direction.RIGHT)
+				return State.CROUCHINGFORWARD;
+		}
+		else if (isJumping())
+		{
+			if(facing == Direction.LEFT)
+				return State.JUMPINGBACK;
+			else if(facing == Direction.RIGHT)
+				return State.JUMPINGFORWARD;
+		}
+		else if(isResting())
+		{
+			if(facing == Direction.LEFT)
+				return State.STEADYBACK;
+			else if(facing == Direction.RIGHT)
+				return State.STEADYFORWARD;
+		}
+		
+		return State.NULL;
+	}
 
 	private boolean isResting() {
 		if(dir==Direction.REST)
