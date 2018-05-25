@@ -9,11 +9,12 @@ public class PlayerPreview extends Control {
 
 	LinkedList<String> list;
 	int selectedIndex;
-	
-	public PlayerPreview(int width, int height, LinkedList<String> PlayersName) {
+	boolean active;
+	public PlayerPreview(int width, int height, LinkedList<String> PlayersName, boolean active) {
 		super(width, height, null);
 		list = PlayersName;
 		selectedIndex = 0;
+		this.active = active;
 		// TODO Auto-generated constructor stub
 	}
 	public void Next()
@@ -35,4 +36,7 @@ public class PlayerPreview extends Control {
 	}
 	
 	public String getSelectedPlayer() {return list.get(selectedIndex);}
+	
+	public void setActive(boolean active) {this.active = active;}
+	public boolean getActive() {return active;}
 }

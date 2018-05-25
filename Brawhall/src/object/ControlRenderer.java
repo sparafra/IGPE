@@ -40,6 +40,8 @@ public class ControlRenderer extends ObjectRenderer
 			{
 				PlayerPreview pp = (PlayerPreview)obj;
 				g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.PREVIEW, pp.getSelectedPlayer(), 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+				if(!pp.getActive())
+					g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, State.PREVIEW, pp.getSelectedPlayer(), 1), gm.ConvertPosX(obj.getPosX()-20), gm.ConvertPosY(obj.getPosY()-10), gm.ConvertX(obj.getWidth()+40), gm.ConvertY(obj.getHeight()+20), null);
 
 			}
 		}

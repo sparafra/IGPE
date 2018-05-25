@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import gameManager.EventHandler;
 import interfaces.Direction;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import object.Background;
@@ -17,6 +18,7 @@ import object.Media;
 import object.ObjectRenderer;
 import object.Player;
 import object.PlayerRenderer;
+import object.SoundClip;
 import windows.MyFrame;
 import windows.MyPanel;
 import world.Camera;
@@ -41,6 +43,8 @@ public class GameManager extends Thread implements Runnable{
 	LinkedList<ObjectRenderer>renderers;
 	LinkedList<GameObject> objects;
 	
+	HashMap<String, SoundClip> SoundClips;
+	
 	Media m;
 	EventHandler ev;
 	World w;
@@ -55,11 +59,20 @@ public class GameManager extends Thread implements Runnable{
 		tk = Toolkit.getDefaultToolkit();
 		m = new Media();
 		initGui();
+		initSound();
 		menu=true;
 		w=new World(300,300,null);
 		cam=new Camera(w,null);
 		DefaultMenu = new Menu(this);
 		p.setRenderers(DefaultMenu.getRenderers());		
+	}
+	public void initSound()
+	{
+		SoundClips = new HashMap<String, SoundClip>();
+		
+		SoundClip menuSound = new SoundClip("Menu.aif");
+		
+		SoundClips.put("Menu", menuSound);
 	}
 	public void initGui() 
 	{
@@ -140,6 +153,7 @@ public class GameManager extends Thread implements Runnable{
 		}
 		else
 		{
+			SoundClips.get("Menu").Play();
 			p.render();
 		}
 	}
@@ -235,6 +249,7 @@ public class GameManager extends Thread implements Runnable{
 			}
 			else
 			{
+				SoundClips.get("Menu").Stop();
 				menu=false;
 				loadLevel();
 			}
