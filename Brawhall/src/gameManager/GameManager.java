@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 import gameManager.EventHandler;
 import interfaces.Direction;
@@ -19,6 +21,7 @@ import object.ObjectRenderer;
 import object.Player;
 import object.PlayerRenderer;
 import object.SoundClip;
+import object.State;
 import windows.MyFrame;
 import windows.MyPanel;
 import world.Camera;
@@ -74,6 +77,17 @@ public class GameManager extends Thread implements Runnable{
 		
 		SoundClips.put("Menu", menuSound);
 	}
+	private void loadPlayerSpecs(Player obj)
+	{
+		
+		obj.setBaseAttack(m.getPlayerSpecs(obj.getName()).get("baseAttack"));
+		obj.setStandHeight(m.getPlayerSpecs(obj.getName()).get("standHeight"));
+		obj.setAtkSpeed(m.getPlayerSpecs(obj.getName()).get("atkSpeed"));
+		obj.setAtkRange(m.getPlayerSpecs(obj.getName()).get("atkRange"));
+		obj.setWeight(m.getPlayerSpecs(obj.getName()).get("weight"));
+		
+		System.out.println(m.getPlayerSpecs(obj.getName()).get("atkRange"));
+	}
 	public void initGui() 
 	{
 		//FullScreen
@@ -93,15 +107,26 @@ public class GameManager extends Thread implements Runnable{
 	public void loadLevel() {
 		renderers=new LinkedList<ObjectRenderer>();
 		objects=new LinkedList<GameObject>();
-		w=new World(500,700,objects);
+		w=new World(300,500,objects);
 		GameObject o=new Player(50,0);
+		GameObject o2 =new Player(250,0);
 		GameObject bg = new Background(w.getWidth(), w.getHeight());
 		w.addObject(o);
+		w.addObject(o2);
 		w.setPlayer((Player)o);
+		w.setPlayer2((Player)o2);
 		w.getPlayer().setName(DefaultMenu.Player1Preview.getSelectedPlayer());
+		w.getPlayer2().setName(DefaultMenu.Player2Preview.getSelectedPlayer());
+		loadPlayerSpecs(w.getPlayer());
+		loadPlayerSpecs(w.getPlayer2());
+		
 		cam=new Camera(w,o);
+		cam.setViewH(500);
+		cam.setViewW(300);
+		
 		renderers.add(new ObjectRenderer(bg, this));
 		renderers.add(new PlayerRenderer((Player)o,this));	
+		renderers.add(new PlayerRenderer((Player)o2,this));	
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
@@ -209,6 +234,21 @@ public class GameManager extends Thread implements Runnable{
 				performAction(Action.PLAYER_STAND);
 			if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				performAction(Action.PLAYER_MOVE_REST);
+			
+			if(ev.keys[Action.PLAYER2_ATTACK.key])
+				performAction(Action.PLAYER2_ATTACK);
+			if(ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+				performAction(Action.PLAYER2_MOVE_LEFT);
+			if(ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
+				performAction(Action.PLAYER2_MOVE_RIGHT);
+			if(ev.keys[Action.PLAYER2_JUMP.key])
+				performAction(Action.PLAYER2_JUMP);
+			if(ev.keys[Action.PLAYER2_CROUCH.key])
+				performAction(Action.PLAYER2_CROUCH);
+			if(!ev.keys[Action.PLAYER2_CROUCH.key])
+				performAction(Action.PLAYER2_STAND);
+			if(!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+				performAction(Action.PLAYER2_MOVE_REST);
 		}	
 	}
 	public void performAction(Action a) {
@@ -233,6 +273,27 @@ public class GameManager extends Thread implements Runnable{
 			break;
 		case PLAYER_STAND:
 			w.getPlayer().toggleCrouch(false);
+			break;
+		case PLAYER2_JUMP:
+			w.Player2Jump();
+			break;
+		case PLAYER2_ATTACK:
+			w.getPlayer2().toggleAttack(true);
+			break;
+		case PLAYER2_MOVE_LEFT: 
+			w.getPlayer2().ChangeDirection(Direction.LEFT);
+			break;	
+		case PLAYER2_MOVE_RIGHT:
+			w.getPlayer2().ChangeDirection(Direction.RIGHT);
+			break;
+		case PLAYER2_MOVE_REST:
+			w.getPlayer2().ChangeDirection(Direction.REST);
+			break;
+		case PLAYER2_CROUCH:
+			w.getPlayer2().toggleCrouch(true);
+			break;
+		case PLAYER2_STAND:
+			w.getPlayer2().toggleCrouch(false);
 			break;
 		case CLOSE_GAME: 
 			System.exit(0);

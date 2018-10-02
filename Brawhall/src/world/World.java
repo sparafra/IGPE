@@ -11,6 +11,7 @@ public class World {
 	
 	LinkedList<GameObject> objects;
 	Player player;
+	Player player2;
 	
 	public Player getPlayer() {
 		return player;
@@ -18,6 +19,13 @@ public class World {
 
 	public void setPlayer(Player p) {
 		player=p;
+	}
+	public Player getPlayer2() {
+		return player2;
+	}
+
+	public void setPlayer2(Player p) {
+		player2=p;
 	}
 	
 	
@@ -76,4 +84,9 @@ public void Update(double delta) {
 		player.jump();
 		
 	}
+	public void Player2Jump() {
+		player2.jump();
+		
+	}
+	
 }

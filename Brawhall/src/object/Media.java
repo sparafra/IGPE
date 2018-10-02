@@ -2,7 +2,10 @@ package object;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,6 +28,8 @@ public class Media
 	//All Media
 	HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>> Media;
 	
+	HashMap<String, HashMap<String, Float>> PlayerSpecs;
+	
 	int CurrentFrame =0;
 	State LastState = State.FALLINGFORWARD;
 	
@@ -36,6 +41,8 @@ public class Media
 		tk = Toolkit.getDefaultToolkit();
 		
 		charactersName = new LinkedList<String>();
+		
+		PlayerSpecs = new HashMap<String, HashMap<String, Float>>();
 		
 		Media = new HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>>();
 
@@ -59,7 +66,7 @@ public class Media
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(Path);
+		//System.out.println(Path);
 		
 		LinkedList<File> Folders = getFolders(Path); //Search Folders (ex Background, Buttons, Blocks, Character)
 		for(int k=0; k<Folders.size(); k++)
@@ -77,9 +84,17 @@ public class Media
 
 					for(int t=0; t<Files.size(); t++)
 					{
-						String PathFiles = Path+Folders.get(k).getName()+"\\"+Folders1.get(i).getName()+"\\"+Folders2.get(j).getName()+"\\" + Files.get(t).getName();
-						Frames.add(tk.getImage(PathFiles));
-	                	System.out.println(PathFiles);
+						if(Folders2.get(j).getName().equals("Specs"))
+						{
+							PlayerSpecs.put(Folders1.get(i).getName(), loadSpecs(Files.get(t)));
+							
+						}
+						else
+						{
+							String PathFiles = Path+Folders.get(k).getName()+"\\"+Folders1.get(i).getName()+"\\"+Folders2.get(j).getName()+"\\" + Files.get(t).getName();
+							Frames.add(tk.getImage(PathFiles));
+	                		//System.out.println(PathFiles);
+						}
 					}
 					if(Folders2.get(j).getName().equals("Right"))
 					{
@@ -232,4 +247,29 @@ public class Media
         }
         return Files;
 	}
+	
+	private HashMap<String, Float> loadSpecs(File f) 
+	{
+		try
+		{
+			System.out.println(f.getPath());
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			HashMap<String, Float> specs = new HashMap<String, Float>();
+			String st;
+			while ((st = br.readLine()) != null)
+			{
+				System.out.println(st);
+				
+				String attribute = st.substring(0, st.indexOf('='));
+				Float value = Float.parseFloat(st.substring(st.indexOf('=')+1));
+				//System.out.println(attribute + value); 
+				specs.put(attribute, value);
+			}
+			br.close();
+			return specs;
+		}catch(IOException e) {return null;}
+	}
+		
+	//public HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}
+	public HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}
 }

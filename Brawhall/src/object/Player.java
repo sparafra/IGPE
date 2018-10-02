@@ -17,11 +17,13 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	String Name;
 	
 	float damage=0.0f;
+	float life=100.0f;
 	float baseAttack=1.0f;
+	
 	float standHeight;
 	
 	
-	float atkSpeed=2.0f;
+	float atkSpeed=10.0f;
 	float atkRange=5.0f;
 	float weight=0.0f;
 	
@@ -29,6 +31,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	boolean jumping=false;
 	boolean crouching=false;
 	boolean attacking=false;
+	double cooldown=0;
 	double attackTimer=0;
 	HitBox h=null;
 	Direction facing=Direction.RIGHT;
@@ -46,14 +49,15 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		super(x, y, Width, Height, ObjectId.PLAYER);
 		this.height = Height;
 		this.width = Width;
-		String Name = "";
+		Name = "";
 	}
 	public void tick(LinkedList<GameObject> objects, double delta) {
 		move(delta);
 		crouch(delta);
-		if (attacking) {
+		if (attacking||cooldown>0) {
 			attack(objects,delta);
 		}
+		
 		Collision(objects);
 		fall(delta);
 	}
@@ -63,8 +67,9 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		if (dir==Direction.RIGHT) {
 			velX+=moveSpeed;
 			if(velX>maxMoveSpeed) {
-			velX=maxMoveSpeed;
+				velX=maxMoveSpeed;
 			}
+			
 		}
 		if (dir==Direction.LEFT) {
 			velX-=moveSpeed;
@@ -98,7 +103,9 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		for (int i=0;i<list.size();i++) {
 			
 			GameObject t=list.get(i);
-			if(t.id==ObjectId.BLOCK) {
+			
+			if(t.id==ObjectId.BLOCK ) {
+				
 				if(this.getBounds(Side.Bottom).intersects( ((Block)t).getBounds(Side.Top)) ){
 					posY=t.posY-this.height;
 					velY=0;
@@ -120,6 +127,35 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				else {
 					falling=true;
 				}
+			}
+			
+			if(t.id==ObjectId.PLAYER ) {
+				Player p=(Player)t;
+				if(this != p)
+				{
+					if(this.getBounds(Side.Bottom).intersects( ((Player)t).getBounds(Side.Top)) ){
+						posY=t.posY-this.height;
+						velY=0;
+						falling=false;
+						jumping=false;
+					}
+					else if(this.getBounds(Side.Top).intersects( ((Player)t).getBounds(Side.Left)) ){
+						velY=0;
+						posY=t.posY+t.height;
+					}
+					else if(this.getBounds(Side.Right).intersects( ((Player)t).getBounds(Side.Left)) ){
+						velX=0;
+						posX=t.posX-width;	
+					}
+					else if(this.getBounds(Side.Left).intersects( ((Player)t).getBounds(Side.Right)) ){
+						velX=0;
+						posX=t.posX+t.width;
+					}
+					else {
+						falling=true;
+					}
+				}
+				
 			}
 		}
 	}
@@ -178,7 +214,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			break;				
 			}	
 	}
-	
 	@Override
 	public void crouch(double delta) {
 		if (!crouching){
@@ -213,20 +248,25 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				{
 					Player p= (Player)t;
 					p.getDamage(baseAttack);
+					
 				}
 			}
+			cooldown=atkSpeed;
 		}
-		else
+		else {
 			attacking=false;
+			cooldown-=delta;
+			
+		}
+			
 			
 	}
 	@Override
 	public void toggleAttack(boolean b) {
-		if (b&& !attacking) {
+		if (b&& !attacking&&cooldown<=0) {
 			attacking=b;
 				switch (facing) {
-				case DOWN:
-					break;
+				
 				case LEFT:
 					h=new HitBox(this, (posX-atkRange), (posY) ,  atkRange,  height/3);
 					break;
@@ -235,8 +275,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 				case RIGHT:
 						h=new HitBox(this, (posX+width), (posY) ,  atkRange,  height/3);
 					break;
-				case STOP:
-					break;
+				
 				case UP:
 					break;
 				default:
@@ -252,13 +291,15 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	@Override
 	public void getDamage(float dmg) {
 		// gestisci staggering
-		damage+=dmg;
+		//damage+=dmg;
+		life-=dmg;
+		System.out.println(life);
 	}
 	public State getState()
 	{
-		if(isAttacking())
+		if(attacking)
 		{
-			System.out.println("Attacking");
+			//System.out.println("Attacking");
 			if(facing == Direction.LEFT)
 				return State.ATTACKINGBACK;
 			else if(facing == Direction.RIGHT)
@@ -268,28 +309,28 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			return State.FORWARD;
 		else if (isMovingLeft())
 			return State.BACK;
-		else if (isFalling())
+		else if (falling&& velY<0)
 		{
 			if(facing == Direction.LEFT)
 				return State.FALLINGBACK;
 			else if(facing == Direction.RIGHT)
 				return State.FALLINGFORWARD;
 		}
-		else if (isCrouching())
+		else if (crouching)
 		{
 			if(facing == Direction.LEFT)
 				return State.CROUCHINGBACK;
 			else if(facing == Direction.RIGHT)
 				return State.CROUCHINGFORWARD;
 		}
-		else if (isJumping())
+		else if (jumping)
 		{
 			if(facing == Direction.LEFT)
 				return State.JUMPINGBACK;
 			else if(facing == Direction.RIGHT)
 				return State.JUMPINGFORWARD;
 		}
-		else if(isResting())
+		else if(dir==Direction.REST)
 		{
 			if(facing == Direction.LEFT)
 				return State.STEADYBACK;
@@ -298,12 +339,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		}
 		
 		return State.NULL;
-	}
-
-	private boolean isResting() {
-		if(dir==Direction.REST)
-			return true;
-		return false;
 	}
 	public boolean isMovingLeft() {
 		if(dir==Direction.LEFT)
@@ -316,15 +351,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		return false;	
 	
 	}
-	public boolean isFalling() {
-		return falling&& velY<0;
-	}
-	public boolean isJumping() {
-		return jumping;
-	}
-	public boolean isAttacking() {
-		return attacking;
-	}
+	
 	@Override
 	public void toggleCrouch(boolean b) {
 		crouching=b;
@@ -336,4 +363,35 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	
 	public void setName(String Name) {this.Name = Name;}
 	public String getName() {return this.Name;}
+	
+	public float getBaseAttack() {
+		return baseAttack;
+	}
+	public void setBaseAttack(float baseAttack) {
+		this.baseAttack = baseAttack;
+	}
+	public float getStandHeight() {
+		return standHeight;
+	}
+	public void setStandHeight(float standHeight) {
+		this.standHeight = standHeight;
+	}
+	public float getAtkSpeed() {
+		return atkSpeed;
+	}
+	public void setAtkSpeed(float atkSpeed) {
+		this.atkSpeed = atkSpeed;
+	}
+	public float getAtkRange() {
+		return atkRange;
+	}
+	public void setAtkRange(float atkRange) {
+		this.atkRange = atkRange;
+	}
+	public float getWeight() {
+		return weight;
+	}
+	public void setWeight(float weight) {
+		this.weight = weight;
+	}
 }

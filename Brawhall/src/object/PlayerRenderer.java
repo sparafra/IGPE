@@ -19,7 +19,6 @@ public class PlayerRenderer extends ObjectRenderer{
 		
 		if(!test) 
 		{
-			System.out.println(p.getName());
 			g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, p.getState(), p.getName(), gm.getMedia().nextCharacterFrames(p.getState(), p.getName())),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
 			 
 		}

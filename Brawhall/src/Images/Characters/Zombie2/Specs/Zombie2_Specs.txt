@@ -1,0 +1,5 @@
+baseAttack=1.0
+standHeight=20
+atkSpeed=10.0
+atkRange=20.0
+weight=0.0
