@@ -25,7 +25,9 @@ public enum Action {
 	OPEN_SETTING(-1), 
 	START_TRAINING(-1),
 	CLOSE_GAME(-1),
-	START_GAME(-1);
+	START_GAME(-1),
+	PAUSE(KeyEvent.VK_ESCAPE),
+	RESUME(-1);
 	
 	int key;
 	

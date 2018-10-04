@@ -75,15 +75,15 @@ public class Menu {
 		
 		if(MenuState == "StartMenu")
 		{
-			Control Local = new Button(40,25,Action.START_GAME);
+			Control Local = new Button(50,25,Action.START_GAME);
 			ObjectRenderer RLocal = new ControlRenderer(Local, gm);
-			Control Multiplayer = new Button(40,25,Action.START_MULTIPLAYER_GAME);
+			Control Multiplayer = new Button(50,25,Action.START_MULTIPLAYER_GAME);
 			ObjectRenderer RMultiplayer = new ControlRenderer(Multiplayer, gm);
-			Control Training = new Button(40,25,Action.START_TRAINING);
+			Control Training = new Button(50,25,Action.START_TRAINING);
 			ObjectRenderer RTraining = new ControlRenderer(Training, gm);
-			Control Setting = new Button(40,25,Action.OPEN_SETTING);
+			Control Setting = new Button(50,25,Action.OPEN_SETTING);
 			ObjectRenderer RSetting = new ControlRenderer(Setting, gm);
-			Control Exit = new Button(40,25,Action.CLOSE_GAME);
+			Control Exit = new Button(50,25,Action.CLOSE_GAME);
 			ObjectRenderer RExit = new ControlRenderer(Exit, gm);
 
 			
@@ -146,6 +146,34 @@ public class Menu {
 		else if(MenuState == "Setting")
 		{
 			// TRAINING SELECTION MENU'
+		}
+		else if(MenuState == "Pause")
+		{
+			// PAUSE SELECTION MENU'
+			Control Continue = new Button(50,25,Action.RESUME);
+			ObjectRenderer RContinue = new ControlRenderer(Continue, gm);
+			Control Exit = new Button(50,25,Action.CLOSE_GAME);
+			ObjectRenderer RExit = new ControlRenderer(Exit, gm);
+			
+			controls.add(Continue);
+			controls.add(Exit);
+			
+			controls.get(selectedIndex).setSelected(true);
+			
+			renderers.add(RContinue);
+			renderers.add(RExit);
+			
+			posx = (width) - (width-controls.get(1).getWidth());
+			posy = (height) - (height-((controls.size())/2)*controls.get(1).getHeight());
+			
+			float pad = 10;
+			
+			for(int k=0; k<controls.size(); k++)
+			{
+				controls.get(k).setPosX(posx);
+				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
+
+			}
 		}
 	}
 	public void selectNext() {  

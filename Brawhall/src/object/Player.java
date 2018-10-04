@@ -17,7 +17,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	String Name;
 	
 	float damage=0.0f;
-	float life=100.0f;
+	float life=250000.0f;
 	float baseAttack=1.0f;
 	
 	float standHeight;

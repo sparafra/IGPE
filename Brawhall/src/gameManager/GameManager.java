@@ -46,6 +46,9 @@ public class GameManager extends Thread implements Runnable{
 	LinkedList<ObjectRenderer>renderers;
 	LinkedList<GameObject> objects;
 	
+	LinkedList<ObjectRenderer>SavedRenderers;
+	LinkedList<GameObject> SavedObjects;
+	
 	HashMap<String, SoundClip> SoundClips;
 	
 	Media m;
@@ -182,7 +185,8 @@ public class GameManager extends Thread implements Runnable{
 			p.render();
 		}
 	}
-	public void checkInput() {
+	public void checkInput() 
+	{
 		if(menu) 
 		{
 			if(DefaultMenu.MenuState.equals("StartMenu"))
@@ -217,9 +221,23 @@ public class GameManager extends Thread implements Runnable{
 				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT] && !ev.keys[Action.SELECT_MENU.key])
 					DefaultMenu.ready = true;
 			}
+			else if(DefaultMenu.MenuState.equals("Pause"))
+			{
+				if(ev.keys[Action.SELECT_MENU.key])
+					performAction(DefaultMenu.selectedAction()); 
+				
+				if(ev.keys[KeyEvent.VK_DOWN])
+					DefaultMenu.selectNext(); 
+				if(ev.keys[KeyEvent.VK_UP]) 
+					DefaultMenu.selectPrev();
+				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
+					DefaultMenu.ready = true;
+			}
 		}
 		else 
 		{
+			if(ev.keys[Action.PAUSE.key])
+				performAction(Action.PAUSE);
 			if(ev.keys[Action.PLAYER_ATTACK.key])
 				performAction(Action.PLAYER_ATTACK);
 			if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
@@ -319,10 +337,21 @@ public class GameManager extends Thread implements Runnable{
 			break;
 		case START_TRAINING:
 			break;
+		case PAUSE:
+			menu = true;
+			SavedRenderers=p.getRenderers();
+			DefaultMenu.ChangeStatus("Pause");
+			p.setRenderers(DefaultMenu.getRenderers());	
+			break;
+		case RESUME:
+			menu=false;
+			SoundClips.get("Menu").Stop();
+			p.setRenderers(SavedRenderers);
+			break;
 		default:
 			break;
 		
-	}
+		}
 	}
 	
 	public int ConvertX(float wx) {

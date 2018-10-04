@@ -16,6 +16,9 @@ public class MyPanel extends JPanel {
 	public void setRenderers(LinkedList<ObjectRenderer> renderers) {
 		this.renderers = renderers;
 	}
+	public LinkedList<ObjectRenderer> getRenderers() {
+		return renderers ;
+	}
 	GameManager gm;
 	int h;
 	int w;
