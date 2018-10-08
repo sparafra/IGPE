@@ -233,6 +233,18 @@ public class GameManager extends Thread implements Runnable{
 				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
 					DefaultMenu.ready = true;
 			}
+			else if(DefaultMenu.MenuState.equals("Multiplayer"))
+			{
+				if(ev.keys[Action.SELECT_MENU.key])
+					performAction(DefaultMenu.selectedAction()); 
+				
+				if(ev.keys[KeyEvent.VK_DOWN])
+					DefaultMenu.selectNext(); 
+				if(ev.keys[KeyEvent.VK_UP]) 
+					DefaultMenu.selectPrev();
+				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
+					DefaultMenu.ready = true;
+			}
 		}
 		else 
 		{
@@ -334,6 +346,8 @@ public class GameManager extends Thread implements Runnable{
 			}
 			break;
 		case START_MULTIPLAYER_GAME:
+			DefaultMenu.ChangeStatus("Multiplayer");
+			p.setRenderers(DefaultMenu.getRenderers());	
 			break;
 		case START_TRAINING:
 			break;

@@ -34,6 +34,12 @@ public class ControlRenderer extends ObjectRenderer
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Exit", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				else if (b.act == Action.RESUME)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Resume", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+				else if (b.act == Action.CREAPARTITA)
+					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "CreaPartita", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+				else if (b.act == Action.PARTECIPA)
+					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Partecipa", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+				else if (b.act == Action.BACKTOMENU)
+					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Back", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				
 				if(b.isSelected())
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, State.NULL, "Selected", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY((obj.getPosY()+obj.getHeight())), gm.ConvertX(obj.getWidth()), gm.ConvertY((obj.getHeight()/6)), null);

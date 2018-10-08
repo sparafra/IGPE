@@ -111,7 +111,6 @@ public class Menu {
 			{
 				controls.get(k).setPosX(posx);
 				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
-
 			}
 			
 		}
@@ -138,6 +137,37 @@ public class Menu {
 		else if(MenuState =="Multiplayer")
 		{
 			// MULTIPLAYER SELECTION MENU'
+			Control CreaPartita = new Button(50,25,Action.CREAPARTITA);
+			ObjectRenderer RCreaPartita = new ControlRenderer(CreaPartita, gm);
+			Control Partecipa = new Button(50,25,Action.PARTECIPA);
+			ObjectRenderer RPartecipa = new ControlRenderer(Partecipa, gm);
+			Control Back = new Button(50,25,Action.BACKTOMENU);
+			ObjectRenderer RBack = new ControlRenderer(Back, gm);
+			
+			controls.add(CreaPartita);
+			controls.add(Partecipa);
+			controls.add(Back);
+			
+			controls.get(0).setSelected(true);
+			
+			renderers.add(RCreaPartita);
+			renderers.add(RPartecipa);
+			renderers.add(RBack);
+			
+			posx = (width/2) - (controls.get(1).getWidth()/2);
+			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			/*
+			posx = (width) - (width-controls.get(1).getWidth());
+			posy = (height) - (height-((controls.size())/2)*controls.get(1).getHeight());
+			*/
+			float pad = 10;
+			
+			for(int k=0; k<controls.size(); k++)
+			{
+				controls.get(k).setPosX(posx);
+				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
+			}
+			
 		} 
 		else if(MenuState == "Training")
 		{
@@ -163,16 +193,18 @@ public class Menu {
 			renderers.add(RContinue);
 			renderers.add(RExit);
 			
+			posx = (width/2) - (controls.get(1).getWidth()/2);
+			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			/*
 			posx = (width) - (width-controls.get(1).getWidth());
 			posy = (height) - (height-((controls.size())/2)*controls.get(1).getHeight());
-			
+			*/
 			float pad = 10;
 			
 			for(int k=0; k<controls.size(); k++)
 			{
 				controls.get(k).setPosX(posx);
 				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
-
 			}
 		}
 	}
