@@ -76,6 +76,7 @@ public class Menu {
 		
 		if(MenuState == "StartMenu")
 		{
+			selectedIndex = 0;
 			Control Local = new Button(50,25,Action.START_GAME);
 			ObjectRenderer RLocal = new ControlRenderer(Local, gm);
 			Control Multiplayer = new Button(50,25,Action.START_MULTIPLAYER_GAME);
@@ -213,8 +214,26 @@ public class Menu {
 		else if(MenuState =="WaitingConnection")
 		{
 			((Background) background).setState("Waiting");
-			
+		}
+		else if(MenuState =="ChooseMultiplayerPlayer")
+		{
+			//LOCAL SELECTION MENU'
+			PlayerSelectionTurn = 1;
+			Player1Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), true);
+			Player2Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), false);
+			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
+			ObjectRenderer rPlayer2Preview = new ControlRenderer(Player2Preview, gm);
 
+			
+			Player1Preview.setPosX(50);
+			Player1Preview.setPosY(80);
+			Player2Preview.setPosX(200);
+			Player2Preview.setPosY(80);
+			
+			controls.add(Player1Preview);
+			controls.add(Player2Preview);
+			renderers.add(rPlayer1Preview);
+			renderers.add(rPlayer2Preview);
 		}
 	}
 	public void selectNext() {  

@@ -11,6 +11,7 @@ public class Client extends Thread
 	PrintStream out = null;
 	Socket socket = null;
 	String message;
+	String StateClient;
 	public static void main(String argv[])
 	{
 		
@@ -28,10 +29,15 @@ public class Client extends Thread
 			out = new PrintStream(socket.getOutputStream(), true);
 			// Legge dal server
 			message = in.readLine();
-			System.out.print("Messaggio Ricevuto : " + message);
+			System.out.print("Messaggio Ricevuto dal Server: " + message);
+			StateClient = "Connected";
 			this.start();
 		}
-		catch(Exception e) { System.out.println(e.getMessage());}
+		catch(Exception e) 
+		{ 
+			StateClient = "Waiting";
+			System.out.println(e.getMessage());
+		}
 	}
 	public void run()
 	{
@@ -63,5 +69,6 @@ public class Client extends Thread
 		catch(Exception e){};
 	}
 	
+	public String getStateClient() {return StateClient;};
 }
 

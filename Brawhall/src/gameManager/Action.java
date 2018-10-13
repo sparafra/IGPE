@@ -28,10 +28,12 @@ public enum Action {
 	START_GAME(-1),
 	PAUSE(KeyEvent.VK_ESCAPE),
 	RESUME(-1),
+	CHOOSE_PLAYER_MULTIPLAYER(-1),
 	
 	CREAPARTITA(-1),
 	PARTECIPA(-1),
-	BACKTOMENU(-1);
+	BACKTOMENU(-1),
+	MUTE(KeyEvent.VK_0);
 	
 	int key;
 	

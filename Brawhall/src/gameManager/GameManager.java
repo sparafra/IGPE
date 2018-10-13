@@ -59,9 +59,14 @@ public class GameManager extends Thread implements Runnable{
 	MyPanel p;
 	Camera cam;
 	
+	Server S = null;
+	Client C = null;
+	
 	boolean running=false;
 	boolean menu;
-	
+	boolean MuteSound = true;
+	boolean WaitingConnection = false;
+	boolean WaitingChoosePlayer = false;
 	public GameManager() 
 	{
 		tk = Toolkit.getDefaultToolkit();
@@ -183,14 +188,39 @@ public class GameManager extends Thread implements Runnable{
 		}
 		else
 		{
-			SoundClips.get("Menu").Play();
+			if(!MuteSound)
+				SoundClips.get("Menu").Play();
 			p.render();
+			if(WaitingConnection)
+			{
+				if(C == null)
+				{
+					if(S.getStateServer() == "Connected")
+					{
+						performAction(Action.CHOOSE_PLAYER_MULTIPLAYER);
+						WaitingConnection = false;
+					}
+				}
+				else if(S == null)
+				{
+					if(C.getStateClient() == "Connected")
+					{
+						performAction(Action.CHOOSE_PLAYER_MULTIPLAYER);
+						WaitingConnection = false;
+					}
+				}
+			}
 		}
 	}
 	public void checkInput() 
 	{
 		if(menu) 
 		{
+			if(ev.keys[Action.MUTE.key])
+			{
+				SoundClips.get("Menu").Stop();
+				MuteSound = true;
+			}
 			if(DefaultMenu.MenuState.equals("StartMenu"))
 			{
 				if(ev.keys[Action.SELECT_MENU.key])
@@ -254,6 +284,27 @@ public class GameManager extends Thread implements Runnable{
 				if(ev.keys[KeyEvent.VK_UP]) 
 					DefaultMenu.selectPrev();
 				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
+					DefaultMenu.ready = true;
+			}
+			else if(DefaultMenu.MenuState.equals("ChooseMultiplayerPlayer"))
+			{
+				if(ev.keys[Action.SELECT_MENU.key])
+				{
+					
+					if(DefaultMenu.getPlayerSelectionTurn() == 1 )
+						DefaultMenu.nextPlayerSelectionTurn();
+					else 
+					{
+						performAction(Action.START_GAME);
+					}
+					ev.keys[Action.SELECT_MENU.key] = false;
+				}
+				
+				if(ev.keys[KeyEvent.VK_RIGHT] && DefaultMenu.getPlayerSelectionTurn() == 1)
+					DefaultMenu.nextPlayer();; 
+				if(ev.keys[KeyEvent.VK_LEFT] && DefaultMenu.getPlayerSelectionTurn() == 1) 
+					DefaultMenu.prevPlayer();
+				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT] && !ev.keys[Action.SELECT_MENU.key])
 					DefaultMenu.ready = true;
 			}
 		}
@@ -357,10 +408,8 @@ public class GameManager extends Thread implements Runnable{
 			}
 			break;
 		case START_MULTIPLAYER_GAME:
-			
 			DefaultMenu.ChangeStatus("Multiplayer");
 			p.setRenderers(DefaultMenu.getRenderers());	
-			
 			break;
 		case START_TRAINING:
 			break;
@@ -376,20 +425,24 @@ public class GameManager extends Thread implements Runnable{
 			p.setRenderers(SavedRenderers);
 			break;
 		case CREAPARTITA:
-			try {
+			try 
+			{
 				DefaultMenu.ChangeStatus("WaitingConnection");
 				p.setRenderers(DefaultMenu.getRenderers());	
-				Server S = new Server();
+				S = new Server();
+				WaitingConnection = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
 		case PARTECIPA:
-			try {
+			try 
+			{
+				WaitingConnection = true;
 				DefaultMenu.ChangeStatus("WaitingConnection");
 				p.setRenderers(DefaultMenu.getRenderers());	
-				Client C = new Client("localhost");
+				C = new Client("localhost");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -397,6 +450,10 @@ public class GameManager extends Thread implements Runnable{
 			break;
 		case BACKTOMENU:
 			DefaultMenu.ChangeStatus("StartMenu");
+			p.setRenderers(DefaultMenu.getRenderers());
+			break;
+		case CHOOSE_PLAYER_MULTIPLAYER:
+			DefaultMenu.ChangeStatus("ChooseMultiplayerPlayer");
 			p.setRenderers(DefaultMenu.getRenderers());
 			break;
 		default:

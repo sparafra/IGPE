@@ -43,10 +43,12 @@ public class ObjectRenderer {
 						Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.NULL, "Sky", 0);
 						g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 					}
-					else if(((Background) obj).getState() == "Waiting")
+					if(((Background) obj).getState() == "Waiting")
 					{
 						Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.WAITING, "Sky", 0);
-						g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+						Image i1=gm.getMedia().getImage(ObjectId.BACKGROUND, State.NULL, "Sky", 0);
+						g.drawImage(i1, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+						g.drawImage(i, gm.ConvertPosX((obj.getWidth()/2)-(i.getWidth(null)/7)), gm.ConvertPosY((obj.getHeight()/2)-(i.getHeight(null)/7)), gm.ConvertX(i.getWidth(null)/4), gm.ConvertY(i.getHeight(null)/4), null);
 					}
 					
 				}

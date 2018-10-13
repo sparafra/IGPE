@@ -43,7 +43,7 @@ public class Connect extends Thread
 				if(in.ready())
 				{
 					message = in.readLine();
-					System.out.print("Messaggio Ricevuto: " + message);
+					System.out.print("Messaggio Ricevuto Dal Client: " + message);
 				}
 			}
 			

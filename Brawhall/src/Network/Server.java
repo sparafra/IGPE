@@ -7,7 +7,7 @@ public class Server extends Thread
 {
 	
 	private ServerSocket Server;
-	
+	String StateServer;
 	public Server() throws Exception
 	{
 		//new Server();
@@ -23,11 +23,15 @@ public class Server extends Thread
 			{
 				System.out.println("In attesa di Connessione.");
 				Socket client = Server.accept();
+				StateServer = "Waiting";
 				System.out.println("Connessione accettata da: "+ client.getInetAddress());
 				Connect c = new Connect(client);
+				StateServer = "Connected";
 			}
 			catch(Exception e) {}
 		}
 	}
+	public String getStateServer() {return StateServer;};
+	
 	
 }
