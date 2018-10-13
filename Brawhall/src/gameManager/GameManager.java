@@ -13,6 +13,8 @@ import interfaces.Direction;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import Network.Client;
+import Network.Server;
 import object.Background;
 import object.Block;
 import object.GameObject;
@@ -192,7 +194,10 @@ public class GameManager extends Thread implements Runnable{
 			if(DefaultMenu.MenuState.equals("StartMenu"))
 			{
 				if(ev.keys[Action.SELECT_MENU.key])
+				{
 					performAction(DefaultMenu.selectedAction()); 
+					ev.keys[Action.SELECT_MENU.key] = false;
+				}
 				
 				if(ev.keys[KeyEvent.VK_DOWN])
 					DefaultMenu.selectNext(); 
@@ -212,6 +217,7 @@ public class GameManager extends Thread implements Runnable{
 					{
 						performAction(Action.START_GAME);
 					}
+					ev.keys[Action.SELECT_MENU.key] = false;
 				}
 				
 				if(ev.keys[KeyEvent.VK_RIGHT])
@@ -224,7 +230,10 @@ public class GameManager extends Thread implements Runnable{
 			else if(DefaultMenu.MenuState.equals("Pause"))
 			{
 				if(ev.keys[Action.SELECT_MENU.key])
+				{
 					performAction(DefaultMenu.selectedAction()); 
+					ev.keys[Action.SELECT_MENU.key] = false;
+				}
 				
 				if(ev.keys[KeyEvent.VK_DOWN])
 					DefaultMenu.selectNext(); 
@@ -236,8 +245,10 @@ public class GameManager extends Thread implements Runnable{
 			else if(DefaultMenu.MenuState.equals("Multiplayer"))
 			{
 				if(ev.keys[Action.SELECT_MENU.key])
+				{
 					performAction(DefaultMenu.selectedAction()); 
-				
+					ev.keys[Action.SELECT_MENU.key] = false;
+				}
 				if(ev.keys[KeyEvent.VK_DOWN])
 					DefaultMenu.selectNext(); 
 				if(ev.keys[KeyEvent.VK_UP]) 
@@ -346,8 +357,10 @@ public class GameManager extends Thread implements Runnable{
 			}
 			break;
 		case START_MULTIPLAYER_GAME:
+			
 			DefaultMenu.ChangeStatus("Multiplayer");
 			p.setRenderers(DefaultMenu.getRenderers());	
+			
 			break;
 		case START_TRAINING:
 			break;
@@ -361,6 +374,30 @@ public class GameManager extends Thread implements Runnable{
 			menu=false;
 			SoundClips.get("Menu").Stop();
 			p.setRenderers(SavedRenderers);
+			break;
+		case CREAPARTITA:
+			try {
+				DefaultMenu.ChangeStatus("WaitingConnection");
+				p.setRenderers(DefaultMenu.getRenderers());	
+				Server S = new Server();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case PARTECIPA:
+			try {
+				DefaultMenu.ChangeStatus("WaitingConnection");
+				p.setRenderers(DefaultMenu.getRenderers());	
+				Client C = new Client("localhost");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case BACKTOMENU:
+			DefaultMenu.ChangeStatus("StartMenu");
+			p.setRenderers(DefaultMenu.getRenderers());
 			break;
 		default:
 			break;

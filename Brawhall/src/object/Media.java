@@ -152,6 +152,10 @@ public class Media
 					{
 						objectName.put(State.NULL, Frames);
 					}
+					else if(Folders2.get(j).getName().equals("Waiting"))
+					{
+						objectName.put(State.WAITING, Frames);
+					}
 				}
 				if(Folders.get(k).getName().equals("Characters"))
 				{

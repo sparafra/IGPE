@@ -1,6 +1,7 @@
 package gameManager;
 import gameManager.Action;
 import java.util.LinkedList;
+
 import object.Background;
 import object.Button;
 import object.Control;
@@ -113,6 +114,7 @@ public class Menu {
 				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
 			}
 			
+			
 		}
 		else if(MenuState == "LocalGame")
 		{
@@ -137,6 +139,7 @@ public class Menu {
 		else if(MenuState =="Multiplayer")
 		{
 			// MULTIPLAYER SELECTION MENU'
+			selectedIndex = 0;
 			Control CreaPartita = new Button(50,25,Action.CREAPARTITA);
 			ObjectRenderer RCreaPartita = new ControlRenderer(CreaPartita, gm);
 			Control Partecipa = new Button(50,25,Action.PARTECIPA);
@@ -148,7 +151,7 @@ public class Menu {
 			controls.add(Partecipa);
 			controls.add(Back);
 			
-			controls.get(0).setSelected(true);
+			controls.get(selectedIndex).setSelected(true);
 			
 			renderers.add(RCreaPartita);
 			renderers.add(RPartecipa);
@@ -206,6 +209,12 @@ public class Menu {
 				controls.get(k).setPosX(posx);
 				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
 			}
+		}
+		else if(MenuState =="WaitingConnection")
+		{
+			((Background) background).setState("Waiting");
+			
+
 		}
 	}
 	public void selectNext() {  

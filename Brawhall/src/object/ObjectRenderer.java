@@ -38,8 +38,17 @@ public class ObjectRenderer {
 				}
 				else if(obj instanceof Background)
 				{
-					Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.NULL, "Sky", 0);
-					g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+					if(((Background) obj).getState() == "Null")
+					{
+						Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.NULL, "Sky", 0);
+						g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+					}
+					else if(((Background) obj).getState() == "Waiting")
+					{
+						Image i=gm.getMedia().getImage(ObjectId.BACKGROUND, State.WAITING, "Sky", 0);
+						g.drawImage(i, gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
+					}
+					
 				}
 				else
 				{
