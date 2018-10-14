@@ -36,6 +36,8 @@ public class Menu {
 	
 	PlayerPreview Player1Preview;
 	PlayerPreview Player2Preview;
+	boolean Player1Choosed = false;
+	boolean Player2Choosed = false;
 	
 	public Menu(GameManager gm)  {
 		
@@ -272,17 +274,33 @@ public class Menu {
 	{
 		if(ready)
 		{
-			if(PlayerSelectionTurn == 1)
+				if(PlayerSelectionTurn == 1)
+				{
+					Player1Preview.Next();					
+				}
+				else if (PlayerSelectionTurn == 2)
+				{
+					Player2Preview.Next();
+				}	
+				ready = false;
+		}
+	}
+	public void nextPlayer(int PlayerId) 
+	{
+		if(ready)
+		{
+			if(PlayerId == 1)
 			{
 				Player1Preview.Next();
-				ready = false;
 			}
-			else if (PlayerSelectionTurn == 2)
+			else if (PlayerId == 2)
 			{
 				Player2Preview.Next();
-				ready = false;
+				
 			}
+			ready = false;
 		}
+		
 	}
 	public void prevPlayer() 
 	{
@@ -300,28 +318,61 @@ public class Menu {
 
 		}		
 	}
-	
+	public void prevPlayer(int PlayerId) 
+	{
+		if(ready)
+		{
+			if(PlayerId == 1)
+			{
+				Player1Preview.Prev();
+			}
+			else if(PlayerId == 2)
+			{
+				Player2Preview.Prev();
+			}
+			ready = false;
+
+		}		
+	}
 	public void nextPlayerSelectionTurn() 
 	{
 		if(ready)
 		{
-			if(PlayerSelectionTurn == 1)
-			{
-				Player1Preview.setActive(false);
-				Player2Preview.setActive(true);
-				PlayerSelectionTurn++;
-			}
-			else if (PlayerSelectionTurn == 2)
-			{
-				PlayerSelectionTurn = -1;
-				Player2Preview.setActive(false);
-			}
-				
+				if(PlayerSelectionTurn == 1)
+				{
+					Player1Preview.setActive(false);
+					Player2Preview.setActive(true);
+					PlayerSelectionTurn++;
+				}
+				else if (PlayerSelectionTurn == 2)
+				{
+					PlayerSelectionTurn = -1;
+					Player2Preview.setActive(false);
+				}
 			ready = false;
 		}
 	}
 	public int getPlayerSelectionTurn() {return PlayerSelectionTurn;} 
-	
+	public void setPlayer1Choosed(boolean C) 
+	{
+		if(C == true)
+		{
+			Player1Choosed = C;
+			Player1Preview.setActive(false);
+		}
+		ready = false;
+	}
+	public void setPlayer2Choosed(boolean C) 
+	{
+		if(C == true)
+		{
+			Player2Choosed = C;
+			Player2Preview.setActive(false);
+		}
+		ready = false;
+	}
+	public boolean getPlayer1Choosed(){return Player1Choosed;} 
+	public boolean getPlayer2Choosed(){return Player2Choosed;} 
 	public void ChangeStatus(String Status) 
 	{
 		MenuState = Status; 

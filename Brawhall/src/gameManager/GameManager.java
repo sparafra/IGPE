@@ -65,6 +65,7 @@ public class GameManager extends Thread implements Runnable{
 	boolean running=false;
 	boolean menu;
 	boolean MuteSound = true;
+	boolean MultiplayerGame = false;
 	boolean WaitingConnection = false;
 	boolean WaitingChoosePlayer = false;
 	public GameManager() 
@@ -182,6 +183,92 @@ public class GameManager extends Thread implements Runnable{
 		checkInput();
 		if(!menu)
 		{
+			if(MultiplayerGame)
+			{
+				if(C == null)
+				{
+					if(S.getStateServer() == "Connected")
+					{
+						if(S.getMessage(0).equals("PLAYER_ATTACK") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_ATTACK);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_MOVE_LEFT") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_MOVE_LEFT);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_MOVE_RIGHT") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_MOVE_RIGHT);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_JUMP") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_JUMP);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_CROUCH") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_CROUCH);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_STAND") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_STAND);
+							S.setMessageReaded(0, true);
+						}
+						else if (S.getMessage(0).equals("PLAYER_MOVE_REST") && !S.getMessageReaded(0))
+						{
+							performAction(Action.PLAYER2_MOVE_REST);
+							S.setMessageReaded(0, true);
+						}
+					}
+				}
+				else if(S == null)
+				{
+					if(C.getStateClient() == "Connected")
+					{
+						if(C.getMessage().equals("PLAYER_ATTACK") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_ATTACK);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_MOVE_LEFT") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_MOVE_LEFT);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_MOVE_RIGHT") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_MOVE_RIGHT);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_JUMP") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_JUMP);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_CROUCH") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_CROUCH);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_STAND") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_STAND);
+							C.setMessageReaded(true);
+						}
+						else if (C.getMessage().equals("PLAYER_MOVE_REST") && !C.getMessageReaded())
+						{
+							performAction(Action.PLAYER_MOVE_REST);
+							C.setMessageReaded(true);
+						}
+					}
+				}
+			
+			}
 			w.Update(delta);
 			cam.tick();
 			p.render();
@@ -207,6 +294,59 @@ public class GameManager extends Thread implements Runnable{
 					{
 						performAction(Action.CHOOSE_PLAYER_MULTIPLAYER);
 						WaitingConnection = false;
+					}
+				}
+			}
+			else if(DefaultMenu.getStatus() == "ChooseMultiplayerPlayer" )
+			{
+				if(DefaultMenu.getPlayer1Choosed() && DefaultMenu.getPlayer2Choosed())
+				{
+					MultiplayerGame = true;
+					performAction(Action.START_GAME);
+				}
+				else
+				{
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							if(S.getMessage(0).equals("PlayerChoosed") && !S.getMessageReaded(0))
+							{
+								DefaultMenu.setPlayer2Choosed(true);
+								S.setMessageReaded(0, true);
+							}
+							else if (S.getMessage(0).equals("NextPlayer") && !S.getMessageReaded(0))
+							{
+								DefaultMenu.nextPlayer(2);
+								S.setMessageReaded(0, true);
+							}
+							else if (S.getMessage(0).equals("PrevPlayer") && !S.getMessageReaded(0))
+							{
+								DefaultMenu.prevPlayer(2);
+								S.setMessageReaded(0, true);
+							}
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							if(C.getMessage().equals("PlayerChoosed") && !C.getMessageReaded())
+							{
+								DefaultMenu.setPlayer1Choosed(true);
+								C.setMessageReaded(true);
+							}
+							else if (C.getMessage().equals("NextPlayer") && !C.getMessageReaded())
+							{
+								DefaultMenu.nextPlayer(1);
+								C.setMessageReaded(true);
+							}
+							else if (C.getMessage().equals("PrevPlayer") && !C.getMessageReaded())
+							{
+								DefaultMenu.prevPlayer(1);
+								C.setMessageReaded(true);
+							}
+						}
 					}
 				}
 			}
@@ -245,6 +385,7 @@ public class GameManager extends Thread implements Runnable{
 						DefaultMenu.nextPlayerSelectionTurn();
 					else
 					{
+						System.out.println("GAMEE");
 						performAction(Action.START_GAME);
 					}
 					ev.keys[Action.SELECT_MENU.key] = false;
@@ -290,58 +431,264 @@ public class GameManager extends Thread implements Runnable{
 			{
 				if(ev.keys[Action.SELECT_MENU.key])
 				{
-					
 					if(DefaultMenu.getPlayerSelectionTurn() == 1 )
-						DefaultMenu.nextPlayerSelectionTurn();
+					{
+						
+						if(C == null)
+						{
+							if(S.getStateServer() == "Connected")
+							{
+								DefaultMenu.setPlayer1Choosed(true);
+								S.sendMessage(0, "PlayerChoosed");
+							}
+						}
+						else if(S == null)
+						{
+							if(C.getStateClient() == "Connected")
+							{
+								DefaultMenu.setPlayer2Choosed(true);
+								C.sendMessage("PlayerChoosed");
+							}
+						}
+					}
 					else 
 					{
 						performAction(Action.START_GAME);
 					}
 					ev.keys[Action.SELECT_MENU.key] = false;
 				}
-				
-				if(ev.keys[KeyEvent.VK_RIGHT] && DefaultMenu.getPlayerSelectionTurn() == 1)
-					DefaultMenu.nextPlayer();; 
-				if(ev.keys[KeyEvent.VK_LEFT] && DefaultMenu.getPlayerSelectionTurn() == 1) 
-					DefaultMenu.prevPlayer();
+				if(ev.keys[KeyEvent.VK_RIGHT] )
+				{
+					
+					if(C == null && !DefaultMenu.getPlayer1Choosed())
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							DefaultMenu.nextPlayer(1);
+							S.sendMessage(0, "NextPlayer");
+						}
+					}
+					else if(S == null && !DefaultMenu.getPlayer1Choosed())
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							DefaultMenu.nextPlayer(2);
+							C.sendMessage("NextPlayer");
+						}
+					}
+					ev.keys[KeyEvent.VK_RIGHT] = false;
+				}
+				if(ev.keys[KeyEvent.VK_LEFT]  ) 
+				{
+					
+					if(C == null && !DefaultMenu.getPlayer1Choosed())
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							DefaultMenu.prevPlayer(1);
+							S.sendMessage(0, "PrevPlayer");
+						}
+					}
+					else if(S == null && !DefaultMenu.getPlayer2Choosed())
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							DefaultMenu.prevPlayer(2);
+							C.sendMessage("PrevPlayer");
+						}
+					}
+					ev.keys[KeyEvent.VK_LEFT] = false;
+				}
 				if(!ev.keys[KeyEvent.VK_RIGHT] && !ev.keys[KeyEvent.VK_LEFT] && !ev.keys[Action.SELECT_MENU.key])
 					DefaultMenu.ready = true;
 			}
 		}
-		else 
-		{
-			if(ev.keys[Action.PAUSE.key])
-				performAction(Action.PAUSE);
-			if(ev.keys[Action.PLAYER_ATTACK.key])
-				performAction(Action.PLAYER_ATTACK);
-			if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
-				performAction(Action.PLAYER_MOVE_LEFT);
-			if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
-				performAction(Action.PLAYER_MOVE_RIGHT);
-			if(ev.keys[Action.PLAYER_JUMP.key])
-				performAction(Action.PLAYER_JUMP);
-			if(ev.keys[Action.PLAYER_CROUCH.key])
-				performAction(Action.PLAYER_CROUCH);
-			if(!ev.keys[Action.PLAYER_CROUCH.key])
-				performAction(Action.PLAYER_STAND);
-			if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
-				performAction(Action.PLAYER_MOVE_REST);
-			
-			if(ev.keys[Action.PLAYER2_ATTACK.key])
-				performAction(Action.PLAYER2_ATTACK);
-			if(ev.keys[Action.PLAYER2_MOVE_LEFT.key])
-				performAction(Action.PLAYER2_MOVE_LEFT);
-			if(ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
-				performAction(Action.PLAYER2_MOVE_RIGHT);
-			if(ev.keys[Action.PLAYER2_JUMP.key])
-				performAction(Action.PLAYER2_JUMP);
-			if(ev.keys[Action.PLAYER2_CROUCH.key])
-				performAction(Action.PLAYER2_CROUCH);
-			if(!ev.keys[Action.PLAYER2_CROUCH.key])
-				performAction(Action.PLAYER2_STAND);
-			if(!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
-				performAction(Action.PLAYER2_MOVE_REST);
+		else if(!MultiplayerGame)
+		{	
+				if(ev.keys[Action.PAUSE.key])
+					performAction(Action.PAUSE);
+				if(ev.keys[Action.PLAYER_ATTACK.key])
+					performAction(Action.PLAYER_ATTACK);
+				if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
+					performAction(Action.PLAYER_MOVE_LEFT);
+				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
+					performAction(Action.PLAYER_MOVE_RIGHT);
+				if(ev.keys[Action.PLAYER_JUMP.key])
+					performAction(Action.PLAYER_JUMP);
+				if(ev.keys[Action.PLAYER_CROUCH.key])
+					performAction(Action.PLAYER_CROUCH);
+				if(!ev.keys[Action.PLAYER_CROUCH.key])
+					performAction(Action.PLAYER_STAND);
+				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
+					performAction(Action.PLAYER_MOVE_REST);
+				
+				if(ev.keys[Action.PLAYER2_ATTACK.key])
+					performAction(Action.PLAYER2_ATTACK);
+				if(ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+					performAction(Action.PLAYER2_MOVE_LEFT);
+				if(ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
+					performAction(Action.PLAYER2_MOVE_RIGHT);
+				if(ev.keys[Action.PLAYER2_JUMP.key])
+					performAction(Action.PLAYER2_JUMP);
+				if(ev.keys[Action.PLAYER2_CROUCH.key])
+					performAction(Action.PLAYER2_CROUCH);
+				if(!ev.keys[Action.PLAYER2_CROUCH.key])
+					performAction(Action.PLAYER2_STAND);
+				if(!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+					performAction(Action.PLAYER2_MOVE_REST);
 		}	
+		else if(MultiplayerGame)
+		{
+				if(ev.keys[Action.PAUSE.key])
+				{
+					performAction(Action.PAUSE);
+				}
+				if(ev.keys[Action.PLAYER_ATTACK.key])
+				{
+					//performAction(Action.PLAYER_ATTACK);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_ATTACK);
+							S.sendMessage(0, "PLAYER_ATTACK");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_ATTACK);
+							C.sendMessage("PLAYER_ATTACK");
+						}
+					}
+				}
+				if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				{
+					System.out.println("ASDADS");
+					//performAction(Action.PLAYER_MOVE_LEFT);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_MOVE_LEFT);
+							S.sendMessage(0, "PLAYER_MOVE_LEFT");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_MOVE_LEFT);
+							C.sendMessage("PLAYER_MOVE_LEFT");
+						}
+					}
+					
+				}
+				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
+				{
+					//performAction(Action.PLAYER_MOVE_RIGHT);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_MOVE_RIGHT);
+							S.sendMessage(0, "PLAYER_MOVE_RIGHT");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_MOVE_RIGHT);
+							C.sendMessage("PLAYER_MOVE_RIGHT");
+						}
+					}
+					//ev.keys[Action.PLAYER_MOVE_RIGHT.key] = false;
+				}
+				if(ev.keys[Action.PLAYER_JUMP.key])
+				{
+					//performAction(Action.PLAYER_JUMP);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_JUMP);
+							S.sendMessage(0, "PLAYER_JUMP");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_JUMP);
+							C.sendMessage("PLAYER_JUMP");
+						}
+					}
+					//ev.keys[Action.PLAYER_JUMP.key] = false;
+				}
+				if(ev.keys[Action.PLAYER_CROUCH.key])
+				{
+					//performAction(Action.PLAYER_CROUCH);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_CROUCH);
+							S.sendMessage(0, "PLAYER_CROUCH");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_CROUCH);
+							C.sendMessage("PLAYER_CROUCH");
+						}
+					}
+					//ev.keys[Action.PLAYER_CROUCH.key] = false;
+				}
+				if(!ev.keys[Action.PLAYER_CROUCH.key])
+				{
+					//performAction(Action.PLAYER_STAND);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_STAND);
+							S.sendMessage(0, "PLAYER_STAND");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_STAND);
+							C.sendMessage("PLAYER_STAND");
+						}
+					}
+				}
+				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				{
+					//performAction(Action.PLAYER_MOVE_REST);
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							performAction(Action.PLAYER_MOVE_REST);
+							S.sendMessage(0, "PLAYER_MOVE_REST");
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							performAction(Action.PLAYER2_MOVE_REST);
+							C.sendMessage("PLAYER_MOVE_REST");
+						}
+					}
+				}
+			}		
 	}
 	public void performAction(Action a) {
 		switch (a) {
@@ -404,6 +751,23 @@ public class GameManager extends Thread implements Runnable{
 			{
 				SoundClips.get("Menu").Stop();
 				menu=false;
+				if(MultiplayerGame)
+				{
+					if(C == null)
+					{
+						if(S.getStateServer() == "Connected")
+						{
+							S.setInGame(0, true);
+						}
+					}
+					else if(S == null)
+					{
+						if(C.getStateClient() == "Connected")
+						{
+							C.setInGame(true);
+						}
+					}
+				}
 				loadLevel();
 			}
 			break;
