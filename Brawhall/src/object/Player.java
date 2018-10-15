@@ -31,7 +31,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	boolean jumping=false;
 	boolean crouching=false;
 	boolean attacking=false;
-	double cooldown=0;
+	
 	double attackTimer=0;
 	HitBox h=null;
 	Direction facing=Direction.RIGHT;
@@ -54,7 +54,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public void tick(LinkedList<GameObject> objects, double delta) {
 		move(delta);
 		crouch(delta);
-		if (attacking||cooldown>0) {
+		if (attacking) {
 			attack(objects,delta);
 		}
 		
@@ -239,51 +239,45 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	@Override
 	public void attack(LinkedList<GameObject> list,double delta) {
 		attackTimer-=delta;
-		if(attackTimer>0) 
+		if(attackTimer<0) 
 		{
 			for (int i=0;i<list.size();i++) 
 			{
 				GameObject t=list.get(i);
-				if (t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) 
+				switch (facing) {
+				
+					case LEFT:
+						h=new HitBox(this, (posX-atkRange), (posY) ,  atkRange,  height/3);
+						break;
+					case REST:
+						break;
+					case RIGHT:
+							h=new HitBox(this, (posX+width), (posY) ,  atkRange,  height/3);
+						break;
+					
+					case UP:
+						break;
+					default:
+						break;
+				}
+				if (t!=this && t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) 
 				{
 					Player p= (Player)t;
 					p.getDamage(baseAttack);
 					
 				}
 			}
-			cooldown=atkSpeed;
-		}
-		else {
 			attacking=false;
-			cooldown-=delta;
-			
 		}
-			
 			
 	}
 	@Override
 	public void toggleAttack(boolean b) {
-		if (b&& !attacking&&cooldown<=0) {
-			attacking=b;
-				switch (facing) {
-				
-				case LEFT:
-					h=new HitBox(this, (posX-atkRange), (posY) ,  atkRange,  height/3);
-					break;
-				case REST:
-					break;
-				case RIGHT:
-						h=new HitBox(this, (posX+width), (posY) ,  atkRange,  height/3);
-					break;
-				
-				case UP:
-					break;
-				default:
-					break;
-				}
-			
-				attackTimer=atkSpeed;
+		if(attacking==false&&b) {
+			attacking=true;
+			attackTimer=atkSpeed;
 		}
+			
 	}
 	public HitBox getHitBox() {
 		return h;
