@@ -14,7 +14,7 @@ public class Server extends Thread
 	
 	public Server() throws Exception
 	{
-		//new Server();
+		
 		listConnect = new ArrayList<Connect>();
 		Server = new ServerSocket(4000);
 		System.out.println("Il Server è in attesa sulla porta 4000.");
@@ -43,7 +43,5 @@ public class Server extends Thread
 	public boolean getMessageReaded(int idConnection) {return listConnect.get(idConnection).getMessageReaded();}
 	public void setMessageReaded(int idConnection, boolean R) {listConnect.get(idConnection).setMessageReaded(R);}
 	public void setInGame(int idConnection, boolean G) { listConnect.get(idConnection).setInGame(G);}
-	//public Player getPlayerObject(int idConnection) {return listConnect.get(idConnection).getPlayerObject();}
-	//public void sendPlayerObject(int idConnection, Player Pl) {listConnect.get(idConnection).sendPlayerObject(Pl);}
 	
 }

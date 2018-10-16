@@ -16,17 +16,15 @@ public class Client extends Thread
 {
 	BufferedReader in = null;
 	PrintStream out = null;
-	InputStream is = null;
-	ObjectInputStream ois = null;
-	OutputStream os = null;
-	ObjectOutputStream oos = null;
+	
+	
 	
 	Socket socket = null;
 	String message="";
 	boolean messageReaded = false;
 	String StateClient;
 	boolean InGame = false;
-	//Player P;
+	
 	
 	
 	public Client(String Ip)throws Exception
@@ -38,12 +36,6 @@ public class Client extends Thread
 			// Apre i canali I/O
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintStream(socket.getOutputStream(), true);
-			
-			//is = socket.getInputStream();
-			//ois = new ObjectInputStream(is);
-			
-			//os = socket.getOutputStream();
-			//oos = new ObjectOutputStream(os);
 			
 			// Legge dal server
 			//message = (String)ois.readObject();
@@ -64,25 +56,12 @@ public class Client extends Thread
 		{
 			try
 			{
-				//if(!InGame)
-				//{
-					/*
-					message = (String)ois.readObject();
-					System.out.print("Messaggio Ricevuto Dal Client: " + message);
-					messageReaded = false;
-					*/
 					if(in.ready())
 					{
 						message = in.readLine();
 						//System.out.print("Messaggio Ricevuto : " + message);
 						messageReaded = false;
 					}
-				//}
-				//else
-				//{
-					//P = (Player)ois.readObject();
-					//messageReaded = false;
-				//}
 			}
 			catch(Exception e) {}
 		}
@@ -90,14 +69,6 @@ public class Client extends Thread
 	public String getMessage() {return message;}
 	public void sendMessage(String Data)
 	{
-		/*
-		try {
-			oos.writeObject(Data);
-			oos.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		out.println(Data);
 		out.flush();
 	}
@@ -114,17 +85,5 @@ public class Client extends Thread
 	}
 	public void setInGame(boolean G) {InGame=G;}
 	public String getStateClient() {return StateClient;};
-	/*
-	public void sendPlayerObject(Player Pl)
-	{
-		try {
-			oos.writeObject(Pl);
-			oos.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public Player getPlayerObject() {return P;}*/
 }
 
