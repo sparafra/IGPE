@@ -2,7 +2,7 @@ package windows;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Toolkit;
+//import java.awt.Toolkit;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
@@ -13,6 +13,7 @@ import object.ObjectRenderer;
 public class MyPanel extends JPanel {
 
 	LinkedList<ObjectRenderer> renderers;
+	
 	public void setRenderers(LinkedList<ObjectRenderer> renderers) {
 		this.renderers = renderers;
 	}
@@ -26,7 +27,7 @@ public class MyPanel extends JPanel {
 
 	public MyPanel(GameManager g,int height,int width)  {
 		gm=g;
-		Toolkit tk = Toolkit.getDefaultToolkit();
+		//Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension d= new Dimension(height,width);
 		//Dimension FullScreen = tk.getScreenSize();
 		this.setSize(d);

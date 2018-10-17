@@ -16,8 +16,8 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 
 	String Name;
 	
-	float damage=0.0f;
-	float life=250000.0f;
+	
+	float life=250.0f;
 	float baseAttack=1.0f;
 	
 	float standHeight;
@@ -31,8 +31,10 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	boolean jumping=false;
 	boolean crouching=false;
 	boolean attacking=false;
+	boolean staggering=false;
 	
 	double attackTimer=0;
+	double staggerTimer=0;
 	HitBox h=null;
 	Direction facing=Direction.RIGHT;
 	
@@ -52,14 +54,21 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		Name = "";
 	}
 	public void tick(LinkedList<GameObject> objects, double delta) {
-		move(delta);
-		crouch(delta);
-		if (attacking) {
-			attack(objects,delta);
-		}
 		
-		Collision(objects);
-		fall(delta);
+		if(staggering) {
+			stagger(delta);
+		}
+		else {
+			move(delta);
+			crouch(delta);
+		
+			if (attacking) {
+				attack(objects,delta);
+			}
+			
+			Collision(objects);
+			fall(delta);
+		}
 	}
 	@Override
 	public void move() {
@@ -235,7 +244,21 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
-	
+	public void stagger(double delta) {
+		staggerTimer-=delta;
+		if(staggerTimer<0) {
+			staggering=false;
+		}
+		
+	}
+	public void hit(Player p) {
+		p.getDamage(baseAttack);
+		p.velY-=1.2f;
+		if(facing==Direction.RIGHT)
+			p.velX+=1.8f;
+		else
+			p.velX-=1.8f;
+	}
 	@Override
 	public void attack(LinkedList<GameObject> list,double delta) {
 		attackTimer-=delta;
@@ -245,25 +268,19 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			{
 				GameObject t=list.get(i);
 				switch (facing) {
-				
 					case LEFT:
 						h=new HitBox(this, (posX-atkRange), (posY) ,  atkRange,  height/3);
-						break;
-					case REST:
 						break;
 					case RIGHT:
 							h=new HitBox(this, (posX+width), (posY) ,  atkRange,  height/3);
 						break;
-					
-					case UP:
-						break;
 					default:
-						break;
+						break;				
 				}
 				if (t!=this && t.id==ObjectId.PLAYER && ((Player)t).Intersect(h)) 
 				{
 					Player p= (Player)t;
-					p.getDamage(baseAttack);
+					hit(p);
 					
 				}
 			}
@@ -276,18 +293,16 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		if(attacking==false&&b) {
 			attacking=true;
 			attackTimer=atkSpeed;
-		}
-			
+		}	
 	}
 	public HitBox getHitBox() {
 		return h;
 	}
 	@Override
 	public void getDamage(float dmg) {
-		// gestisci staggering
-		//damage+=dmg;
+	
 		life-=dmg;
-		System.out.println(life);
+		staggering=true;
 	}
 	public State getState()
 	{

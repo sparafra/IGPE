@@ -1,6 +1,5 @@
 package gameManager;
 
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -27,6 +26,7 @@ import object.State;
 import windows.MyFrame;
 import windows.MyPanel;
 import world.Camera;
+import world.Painter;
 import world.World;
 
 
@@ -45,7 +45,7 @@ public class GameManager extends Thread implements Runnable{
 	Image BackgroundMenu;
 	Menu DefaultMenu;
 	
-	LinkedList<ObjectRenderer>renderers;
+	
 	LinkedList<GameObject> objects;
 	
 	LinkedList<ObjectRenderer>SavedRenderers;
@@ -56,8 +56,9 @@ public class GameManager extends Thread implements Runnable{
 	Media m;
 	EventHandler ev;
 	World w;
-	MyPanel p;
+	
 	Camera cam;
+	Painter painter;
 	
 	Server S = null;
 	Client C = null;
@@ -70,15 +71,19 @@ public class GameManager extends Thread implements Runnable{
 	boolean WaitingChoosePlayer = false;
 	public GameManager() 
 	{
+		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
 		m = new Media();
-		initGui();
-		initSound();
-		menu=true;
 		w=new World(300,300,null);
 		cam=new Camera(w,null);
 		DefaultMenu = new Menu(this);
-		p.setRenderers(DefaultMenu.getRenderers());		
+		
+		initGui();
+		initSound();
+		
+		menu=true;
+		painter.setRenderers(DefaultMenu.getRenderers());
+		painter.start();	
 	}
 	public void initSound()
 	{
@@ -111,12 +116,12 @@ public class GameManager extends Thread implements Runnable{
 		MyFrame f= new MyFrame(panelWidth,panelHeight);
 		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
 		
-		p=pn;
-		f.setContentPane(p);
+		painter.setPanel(pn);
+		f.setContentPane(pn);
 		f.setVisible(true);
 	}
 	public void loadLevel() {
-		renderers=new LinkedList<ObjectRenderer>();
+		painter.clear();
 		objects=new LinkedList<GameObject>();
 		w=new World(300,500,objects);
 		GameObject o=new Player(50,0);
@@ -135,31 +140,31 @@ public class GameManager extends Thread implements Runnable{
 		cam.setViewH(500);
 		cam.setViewW(300);
 		
-		renderers.add(new ObjectRenderer(bg, this));
-		renderers.add(new PlayerRenderer((Player)o,this));	
-		renderers.add(new PlayerRenderer((Player)o2,this));	
+		painter.addRenderer(new ObjectRenderer(bg, this));
+		painter.addRenderer(new PlayerRenderer((Player)o,this));	
+		painter.addRenderer(new PlayerRenderer((Player)o2,this));	
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
 			w.addObject(o);
-			renderers.add(new ObjectRenderer(o,this));
+			painter.addRenderer(new ObjectRenderer(o,this));
 		}
 		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
 			o=new Block(i, w.getHeight()/2-40);
 			w.addObject(o);
-			renderers.add(new ObjectRenderer(o,this));
+			painter.addRenderer(new ObjectRenderer(o,this));
 		}
 		for (int i=50;i<w.getWidth()/2-30;i+=6) {
 			o=new Block(i, w.getHeight()/2-60);
 			w.addObject(o);
-			renderers.add(new ObjectRenderer(o,this));
+			painter.addRenderer(new ObjectRenderer(o,this));
 		}
 		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
 			o=new Block(i, w.getHeight()/2-100);
 			w.addObject(o);
-			renderers.add(new ObjectRenderer(o,this));
+			painter.addRenderer(new ObjectRenderer(o,this));
 		}
-		p.setRenderers(renderers);
+		//painter.setRenderers(renderers);
 	}
 	public void start() {
 		if(running )return;
@@ -172,11 +177,17 @@ public class GameManager extends Thread implements Runnable{
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
+		double draw=0;
 		while(running){
 			double now = System.nanoTime();
 			delta = (now - lastTime) / ns;
 			tick(delta );
+			draw+=delta;
 			lastTime = now;
+			if(draw>1) {
+				draw=0;
+				painter.render();
+			}
 		}	
 	}
 	public void tick(double delta) {	
@@ -271,13 +282,13 @@ public class GameManager extends Thread implements Runnable{
 			}
 			w.Update(delta);
 			cam.tick();
-			p.render();
+			//p.render();
 		}
 		else
 		{
 			if(!MuteSound)
 				SoundClips.get("Menu").Play();
-			p.render();
+			painter.render();
 			if(WaitingConnection)
 			{
 				if(C == null)
@@ -745,7 +756,7 @@ public class GameManager extends Thread implements Runnable{
 			if(DefaultMenu.getStatus() == "StartMenu")
 			{
 				DefaultMenu.ChangeStatus("LocalGame");
-				p.setRenderers(DefaultMenu.getRenderers());	
+				painter.setRenderers(DefaultMenu.getRenderers());	
 			}
 			else
 			{
@@ -773,26 +784,26 @@ public class GameManager extends Thread implements Runnable{
 			break;
 		case START_MULTIPLAYER_GAME:
 			DefaultMenu.ChangeStatus("Multiplayer");
-			p.setRenderers(DefaultMenu.getRenderers());	
+			painter.setRenderers(DefaultMenu.getRenderers());	
 			break;
 		case START_TRAINING:
 			break;
 		case PAUSE:
 			menu = true;
-			SavedRenderers=p.getRenderers();
+			SavedRenderers=painter.getRenderers();
 			DefaultMenu.ChangeStatus("Pause");
-			p.setRenderers(DefaultMenu.getRenderers());	
+			painter.setRenderers(DefaultMenu.getRenderers());	
 			break;
 		case RESUME:
 			menu=false;
 			SoundClips.get("Menu").Stop();
-			p.setRenderers(SavedRenderers);
+			painter.setRenderers(SavedRenderers);
 			break;
 		case CREAPARTITA:
 			try 
 			{
 				DefaultMenu.ChangeStatus("WaitingConnection");
-				p.setRenderers(DefaultMenu.getRenderers());	
+				painter.setRenderers(DefaultMenu.getRenderers());	
 				S = new Server();
 				WaitingConnection = true;
 			} catch (Exception e) {
@@ -805,7 +816,7 @@ public class GameManager extends Thread implements Runnable{
 			{
 				WaitingConnection = true;
 				DefaultMenu.ChangeStatus("WaitingConnection");
-				p.setRenderers(DefaultMenu.getRenderers());	
+				painter.setRenderers(DefaultMenu.getRenderers());	
 				C = new Client("localhost");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -814,11 +825,11 @@ public class GameManager extends Thread implements Runnable{
 			break;
 		case BACKTOMENU:
 			DefaultMenu.ChangeStatus("StartMenu");
-			p.setRenderers(DefaultMenu.getRenderers());
+			painter.setRenderers(DefaultMenu.getRenderers());
 			break;
 		case CHOOSE_PLAYER_MULTIPLAYER:
 			DefaultMenu.ChangeStatus("ChooseMultiplayerPlayer");
-			p.setRenderers(DefaultMenu.getRenderers());
+			painter.setRenderers(DefaultMenu.getRenderers());
 			break;
 		default:
 			break;
@@ -827,23 +838,23 @@ public class GameManager extends Thread implements Runnable{
 	}
 	
 	public int ConvertX(float wx) {
-		return (int) ((wx*p.getWidth())/cam.getWidth()) ;	
+		return (int) ((wx*painter.getPanel().getWidth())/cam.getWidth()) ;	
 	}
 	public int ConvertY(float wy) {
-		return (int) ((wy*p.getHeight())/cam.getHeight()) ;	
+		return (int) ((wy*painter.getPanel().getHeight())/cam.getHeight()) ;	
 	}
 	public int ConvertPosX(float wx) {
-		return (int) (((wx-cam.getPosX())*p.getWidth())/cam.getWidth()) ;
+		return (int) (((wx-cam.getPosX())*painter.getPanel().getWidth())/cam.getWidth()) ;
 	}
 	public int ConvertPosY(float wy) {
-		return (int) (((wy-cam.getPosY())*p.getHeight())/cam.getHeight()) ;
+		return (int) (((wy-cam.getPosY())*painter.getPanel().getHeight())/cam.getHeight()) ;
 	}
 	
 	public int ConvertPanelX(float px) {
-		return (int) ((px*w.getWidth())/p.getWidth()) ;
+		return (int) ((px*w.getWidth())/painter.getPanel().getWidth()) ;
 	}
 	public int ConvertPanelY(float py) {
-		return (int) ((py*w.getHeight())/p.getHeight()) ;
+		return (int) ((py*w.getHeight())/painter.getPanel().getHeight()) ;
 	}
 	
 	public World getWorld() {return w;}

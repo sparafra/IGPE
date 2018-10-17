@@ -22,36 +22,5 @@ public class PlayerRenderer extends ObjectRenderer{
 			g.drawImage(gm.getMedia().getImage(ObjectId.CHARACTER, p.getState(), p.getName(), gm.getMedia().nextCharacterFrames(p.getState(), p.getName())),gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
 			 
 		}
-		else {
-			g.setColor(Color.PINK);
-			g.fillRect(gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height));
-		}
-		if(drawbounds)
-			boundsRender(g);
-	}
-	@Override
-	public void boundsRender(Graphics g) {
-		if(drawbounds) {
-			Graphics2D g2d= (Graphics2D)g;
-			BoundingBox b;
-			
-			g2d.setColor(Color.BLACK);
-			Player p= (Player)obj;
-			b=p.getBounds(Side.Top);
-			
-			g2d.draw(scale(b));
-			b=p.getBounds(Side.Bottom);
-			g2d.draw(scale(b));
-			b=p.getBounds(Side.Right);
-			g2d.draw(scale(b));
-			b=p.getBounds(Side.Left);
-			g2d.draw(scale(b));
-		
-			if(p.attacking) {
-				g2d.setColor(Color.RED);
-				b=p.getHitBox();
-				g2d.draw(scale(b));
-			}
-		}
 	}
 }

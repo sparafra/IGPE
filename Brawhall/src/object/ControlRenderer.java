@@ -55,10 +55,6 @@ public class ControlRenderer extends ObjectRenderer
 		}
 	}
 
-	@Override
-	public void boundsRender(Graphics g) {
-		// TODO Auto-generated method stub
-		super.boundsRender(g);
-	}
+	
 
 }

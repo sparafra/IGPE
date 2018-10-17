@@ -19,13 +19,13 @@ public class EventHandler {
 	
 	private void initEH()
 	{
-		gm.p.setFocusable(true);
-		gm.p.requestFocusInWindow();
-		gm.p.addMouseListener(new MouseAdapter() {			
+		gm.painter.getPanel().setFocusable(true);
+		gm.painter.getPanel().requestFocusInWindow();
+		gm.painter.getPanel().addMouseListener(new MouseAdapter() {			
 			
 		});
 				
-		gm.p.addKeyListener( new KeyAdapter() {
+		gm.painter.getPanel().addKeyListener( new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
