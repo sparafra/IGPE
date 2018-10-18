@@ -2,8 +2,8 @@ package interfaces;
 
 import java.util.LinkedList;
 
-import object.BoundingBox;
-import object.GameObject;
+import Objects.BoundingBox;
+import Objects.GameObject;
 
 public interface Collides {
 

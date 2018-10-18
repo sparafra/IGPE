@@ -2,14 +2,14 @@ package gameManager;
 import gameManager.Action;
 import java.util.LinkedList;
 
-import object.Background;
-import object.Button;
-import object.Control;
-import object.ControlRenderer;
-import object.GameObject;
-import object.ObjectRenderer;
-import object.PlayerPreview;
-import object.SoundClip;
+import Objects.Background;
+import Objects.Button;
+import Objects.Control;
+import Objects.ControlRenderer;
+import Objects.GameObject;
+import Objects.ObjectRenderer;
+import Objects.PlayerPreview;
+import Objects.SoundClip;
 
 public class Menu {
 	float posx,posy;
@@ -44,8 +44,8 @@ public class Menu {
 		MenuState = "StartMenu";
 		this.gm = gm;
 		
-		height=gm.cam.getHeight();
-		width=gm.cam.getWidth();
+		height=gm.w.getHeight();
+		width=gm.w.getWidth();
 		
 		initGUI();
 		
@@ -57,8 +57,8 @@ public class Menu {
 		MenuState = status;
 		this.gm = gm;
 		
-		height=gm.cam.getHeight();
-		width=gm.cam.getWidth();
+		height=gm.w.getHeight();
+		width=gm.w.getWidth();
 		
 		initGUI();
 		

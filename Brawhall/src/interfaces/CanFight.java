@@ -2,7 +2,7 @@ package interfaces;
 
 import java.util.LinkedList;
 
-import object.GameObject;
+import Objects.GameObject;
 
 public interface CanFight {
 

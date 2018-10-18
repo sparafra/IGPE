@@ -8,26 +8,25 @@ import java.io.IOException;
 
 import gameManager.EventHandler;
 import interfaces.Direction;
+import World.MyFrame;
+import World.MyPanel;
+import World.Painter;
+import World.World;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import Network.Client;
 import Network.Server;
-import object.Background;
-import object.Block;
-import object.GameObject;
-import object.Media;
-import object.ObjectRenderer;
-import object.Player;
-import object.PlayerRenderer;
-import object.SoundClip;
-import object.State;
-import windows.MyFrame;
-import windows.MyPanel;
-import world.Camera;
-import world.Painter;
-import world.World;
+import Objects.Background;
+import Objects.Block;
+import Objects.GameObject;
+import Objects.Media;
+import Objects.ObjectRenderer;
+import Objects.Player;
+import Objects.PlayerRenderer;
+import Objects.SoundClip;
+import Objects.State;
 
 
 
@@ -57,7 +56,7 @@ public class GameManager extends Thread implements Runnable{
 	EventHandler ev;
 	World w;
 	
-	Camera cam;
+	
 	Painter painter;
 	
 	Server S = null;
@@ -75,7 +74,7 @@ public class GameManager extends Thread implements Runnable{
 		tk = Toolkit.getDefaultToolkit();
 		m = new Media();
 		w=new World(300,300,null);
-		cam=new Camera(w,null);
+		//cam=new Camera(w,null);
 		DefaultMenu = new Menu(this);
 		
 		initGui();
@@ -136,9 +135,9 @@ public class GameManager extends Thread implements Runnable{
 		loadPlayerSpecs(w.getPlayer());
 		loadPlayerSpecs(w.getPlayer2());
 		
-		cam=new Camera(w,o);
-		cam.setViewH(500);
-		cam.setViewW(300);
+		//cam=new Camera(w,o);
+		//cam.setViewH(500);
+		//cam.setViewW(300);
 		
 		painter.addRenderer(new ObjectRenderer(bg, this));
 		painter.addRenderer(new PlayerRenderer((Player)o,this));	
@@ -281,7 +280,7 @@ public class GameManager extends Thread implements Runnable{
 			
 			}
 			w.Update(delta);
-			cam.tick();
+			//cam.tick();
 			//p.render();
 		}
 		else
@@ -838,16 +837,16 @@ public class GameManager extends Thread implements Runnable{
 	}
 	
 	public int ConvertX(float wx) {
-		return (int) ((wx*painter.getPanel().getWidth())/cam.getWidth()) ;	
+		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;	
 	}
 	public int ConvertY(float wy) {
-		return (int) ((wy*painter.getPanel().getHeight())/cam.getHeight()) ;	
+		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;	
 	}
 	public int ConvertPosX(float wx) {
-		return (int) (((wx-cam.getPosX())*painter.getPanel().getWidth())/cam.getWidth()) ;
+		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;
 	}
 	public int ConvertPosY(float wy) {
-		return (int) (((wy-cam.getPosY())*painter.getPanel().getHeight())/cam.getHeight()) ;
+		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;
 	}
 	
 	public int ConvertPanelX(float px) {
