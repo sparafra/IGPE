@@ -13,20 +13,20 @@ public class World {
 	Player player;
 	Player player2;
 	
-	public Player getPlayer() {
-		return player;
+	public Player getPlayer(int n) {
+		if (n==1)
+			return player;
+		else
+			return player2;
 	}
 
-	public void setPlayer(Player p) {
+	public void setPlayer(Player p,int n) {
+		if (n==1)
 		player=p;
+		else
+			player2=p;
 	}
-	public Player getPlayer2() {
-		return player2;
-	}
-
-	public void setPlayer2(Player p) {
-		player2=p;
-	}
+	
 	
 	
 

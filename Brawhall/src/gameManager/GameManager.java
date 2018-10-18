@@ -3,16 +3,6 @@ package gameManager;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-
-import gameManager.EventHandler;
-import interfaces.Direction;
-import World.MyFrame;
-import World.MyPanel;
-import World.Painter;
-import World.World;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -25,8 +15,13 @@ import Objects.Media;
 import Objects.ObjectRenderer;
 import Objects.Player;
 import Objects.PlayerRenderer;
+import Objects.PlayerState;
 import Objects.SoundClip;
-import Objects.State;
+import World.MyFrame;
+import World.MyPanel;
+import World.Painter;
+import World.World;
+import interfaces.Direction;
 
 
 
@@ -46,6 +41,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	
 	LinkedList<GameObject> objects;
+	LinkedList<Action> actions;
 	
 	LinkedList<ObjectRenderer>SavedRenderers;
 	LinkedList<GameObject> SavedObjects;
@@ -74,7 +70,7 @@ public class GameManager extends Thread implements Runnable{
 		tk = Toolkit.getDefaultToolkit();
 		m = new Media();
 		w=new World(300,300,null);
-		//cam=new Camera(w,null);
+		actions=new LinkedList<Action>();
 		DefaultMenu = new Menu(this);
 		
 		initGui();
@@ -128,12 +124,12 @@ public class GameManager extends Thread implements Runnable{
 		GameObject bg = new Background(w.getWidth(), w.getHeight());
 		w.addObject(o);
 		w.addObject(o2);
-		w.setPlayer((Player)o);
-		w.setPlayer2((Player)o2);
-		w.getPlayer().setName(DefaultMenu.Player1Preview.getSelectedPlayer());
-		w.getPlayer2().setName(DefaultMenu.Player2Preview.getSelectedPlayer());
-		loadPlayerSpecs(w.getPlayer());
-		loadPlayerSpecs(w.getPlayer2());
+		w.setPlayer((Player)o,1);
+		w.setPlayer((Player)o2,2);
+		w.getPlayer(1).setName(DefaultMenu.Player1Preview.getSelectedPlayer());
+		w.getPlayer(2).setName(DefaultMenu.Player2Preview.getSelectedPlayer());
+		loadPlayerSpecs(w.getPlayer(1));
+		loadPlayerSpecs(w.getPlayer(2));
 		
 		//cam=new Camera(w,o);
 		//cam.setViewH(500);
@@ -191,6 +187,7 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void tick(double delta) {	
 		checkInput();
+		resolveActions();
 		if(!menu)
 		{
 			if(MultiplayerGame)
@@ -267,6 +264,7 @@ public class GameManager extends Thread implements Runnable{
 						}
 						else if (C.getMessage().equals("PLAYER_STAND") && !C.getMessageReaded())
 						{
+							if( w.getPlayer(1).isCrouching())
 							performAction(Action.PLAYER_STAND);
 							C.setMessageReaded(true);
 						}
@@ -356,36 +354,31 @@ public class GameManager extends Thread implements Runnable{
 								DefaultMenu.prevPlayer(1);
 								C.setMessageReaded(true);
 							}
+							
 						}
 					}
 				}
 			}
 		}
 	}
-	public void checkInput() 
-	{
-		if(menu) 
-		{
-			if(ev.keys[Action.MUTE.key])
-			{
+	
+	public void checkInput() {
+		if(menu) {
+			if(ev.keys[Action.MUTE.key]){
 				SoundClips.get("Menu").Stop();
 				MuteSound = true;
 			}
-			if(DefaultMenu.MenuState.equals("StartMenu"))
-			{
-				if(ev.keys[Action.SELECT_MENU.key])
-				{
+			if(DefaultMenu.MenuState.equals("StartMenu")){
+				if(ev.keys[Action.SELECT_MENU.key]){
 					performAction(DefaultMenu.selectedAction()); 
 					ev.keys[Action.SELECT_MENU.key] = false;
 				}
-				
 				if(ev.keys[KeyEvent.VK_DOWN])
 					DefaultMenu.selectNext(); 
 				if(ev.keys[KeyEvent.VK_UP]) 
 					DefaultMenu.selectPrev();
 				if(!ev.keys[KeyEvent.VK_DOWN] && !ev.keys[KeyEvent.VK_UP] && !ev.keys[Action.SELECT_MENU.key])
-					DefaultMenu.ready = true;
-					
+					DefaultMenu.ready = true;		
 			}
 			else if(DefaultMenu.MenuState.equals("LocalGame"))
 			{
@@ -445,24 +438,17 @@ public class GameManager extends Thread implements Runnable{
 					{
 						
 						if(C == null)
-						{
-							if(S.getStateServer() == "Connected")
-							{
+							if(S.getStateServer() == "Connected"){
 								DefaultMenu.setPlayer1Choosed(true);
 								S.sendMessage(0, "PlayerChoosed");
 							}
-						}
 						else if(S == null)
-						{
-							if(C.getStateClient() == "Connected")
-							{
+							if(C.getStateClient() == "Connected"){
 								DefaultMenu.setPlayer2Choosed(true);
 								C.sendMessage("PlayerChoosed");
-							}
-						}
+							}	
 					}
-					else 
-					{
+					else {
 						performAction(Action.START_GAME);
 					}
 					ev.keys[Action.SELECT_MENU.key] = false;
@@ -516,323 +502,185 @@ public class GameManager extends Thread implements Runnable{
 		else if(!MultiplayerGame)
 		{	
 				if(ev.keys[Action.PAUSE.key])
+					
 					performAction(Action.PAUSE);
-				if(ev.keys[Action.PLAYER_ATTACK.key])
+				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking())
 					performAction(Action.PLAYER_ATTACK);
-				if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key])
 					performAction(Action.PLAYER_MOVE_LEFT);
-				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
+				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key])
 					performAction(Action.PLAYER_MOVE_RIGHT);
 				if(ev.keys[Action.PLAYER_JUMP.key])
 					performAction(Action.PLAYER_JUMP);
-				if(ev.keys[Action.PLAYER_CROUCH.key])
+				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
 					performAction(Action.PLAYER_CROUCH);
-				if(!ev.keys[Action.PLAYER_CROUCH.key])
+				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER_STAND);
-				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
+				}
+				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 					performAction(Action.PLAYER_MOVE_REST);
 				
-				if(ev.keys[Action.PLAYER2_ATTACK.key])
+				if(ev.keys[Action.PLAYER2_ATTACK.key]&& !w.getPlayer(2).isAttacking())
 					performAction(Action.PLAYER2_ATTACK);
-				if(ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+				if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER2_MOVE_LEFT.key])
 					performAction(Action.PLAYER2_MOVE_LEFT);
-				if(ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
+				if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
 					performAction(Action.PLAYER2_MOVE_RIGHT);
 				if(ev.keys[Action.PLAYER2_JUMP.key])
 					performAction(Action.PLAYER2_JUMP);
-				if(ev.keys[Action.PLAYER2_CROUCH.key])
+				if(ev.keys[Action.PLAYER2_CROUCH.key]&&!w.getPlayer(2).isCrouching())
 					performAction(Action.PLAYER2_CROUCH);
-				if(!ev.keys[Action.PLAYER2_CROUCH.key])
+				if(!ev.keys[Action.PLAYER2_CROUCH.key]&&w.getPlayer(2).isCrouching())
 					performAction(Action.PLAYER2_STAND);
-				if(!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+				if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
 					performAction(Action.PLAYER2_MOVE_REST);
 		}	
 		else if(MultiplayerGame)
 		{
-				if(ev.keys[Action.PAUSE.key])
-				{
-					performAction(Action.PAUSE);
-				}
-				if(ev.keys[Action.PLAYER_ATTACK.key])
-				{
-					//performAction(Action.PLAYER_ATTACK);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_ATTACK);
-							S.sendMessage(0, "PLAYER_ATTACK");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_ATTACK);
-							C.sendMessage("PLAYER_ATTACK");
-						}
-					}
-				}
-				if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
-				{
-					System.out.println("ASDADS");
-					//performAction(Action.PLAYER_MOVE_LEFT);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_MOVE_LEFT);
-							S.sendMessage(0, "PLAYER_MOVE_LEFT");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_MOVE_LEFT);
-							C.sendMessage("PLAYER_MOVE_LEFT");
-						}
-					}
-					
-				}
-				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key])
-				{
-					//performAction(Action.PLAYER_MOVE_RIGHT);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_MOVE_RIGHT);
-							S.sendMessage(0, "PLAYER_MOVE_RIGHT");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_MOVE_RIGHT);
-							C.sendMessage("PLAYER_MOVE_RIGHT");
-						}
-					}
-					//ev.keys[Action.PLAYER_MOVE_RIGHT.key] = false;
-				}
-				if(ev.keys[Action.PLAYER_JUMP.key])
-				{
-					//performAction(Action.PLAYER_JUMP);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_JUMP);
-							S.sendMessage(0, "PLAYER_JUMP");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_JUMP);
-							C.sendMessage("PLAYER_JUMP");
-						}
-					}
-					//ev.keys[Action.PLAYER_JUMP.key] = false;
-				}
-				if(ev.keys[Action.PLAYER_CROUCH.key])
-				{
-					//performAction(Action.PLAYER_CROUCH);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_CROUCH);
-							S.sendMessage(0, "PLAYER_CROUCH");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_CROUCH);
-							C.sendMessage("PLAYER_CROUCH");
-						}
-					}
-					//ev.keys[Action.PLAYER_CROUCH.key] = false;
-				}
-				if(!ev.keys[Action.PLAYER_CROUCH.key])
-				{
-					//performAction(Action.PLAYER_STAND);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_STAND);
-							S.sendMessage(0, "PLAYER_STAND");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_STAND);
-							C.sendMessage("PLAYER_STAND");
-						}
-					}
-				}
-				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
-				{
-					//performAction(Action.PLAYER_MOVE_REST);
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							performAction(Action.PLAYER_MOVE_REST);
-							S.sendMessage(0, "PLAYER_MOVE_REST");
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							performAction(Action.PLAYER2_MOVE_REST);
-							C.sendMessage("PLAYER_MOVE_REST");
-						}
-					}
-				}
-			}		
+			
+		}
 	}
-	public void performAction(Action a) {
-		switch (a) {
-		case PLAYER_JUMP:
-			w.PlayerJump();
-			break;
-		case PLAYER_ATTACK:
-			w.getPlayer().toggleAttack(true);
-		break;
-		case PLAYER_MOVE_LEFT: 
-			w.getPlayer().ChangeDirection(Direction.LEFT);
-			break;	
-		case PLAYER_MOVE_RIGHT:
-			w.getPlayer().ChangeDirection(Direction.RIGHT);
-			break;
-		case PLAYER_MOVE_REST:
-			w.getPlayer().ChangeDirection(Direction.REST);
-			break;
-		case PLAYER_CROUCH:
-			w.getPlayer().toggleCrouch(true);
-			break;
-		case PLAYER_STAND:
-			w.getPlayer().toggleCrouch(false);
-			break;
-		case PLAYER2_JUMP:
-			w.Player2Jump();
-			break;
-		case PLAYER2_ATTACK:
-			w.getPlayer2().toggleAttack(true);
-			break;
-		case PLAYER2_MOVE_LEFT: 
-			w.getPlayer2().ChangeDirection(Direction.LEFT);
-			break;	
-		case PLAYER2_MOVE_RIGHT:
-			w.getPlayer2().ChangeDirection(Direction.RIGHT);
-			break;
-		case PLAYER2_MOVE_REST:
-			w.getPlayer2().ChangeDirection(Direction.REST);
-			break;
-		case PLAYER2_CROUCH:
-			w.getPlayer2().toggleCrouch(true);
-			break;
-		case PLAYER2_STAND:
-			w.getPlayer2().toggleCrouch(false);
-			break;
-		case CLOSE_GAME: 
-			System.exit(0);
-			break;
-		case OPEN_SETTING:
-			break;
-		case SELECT_MENU:
-			break;
-		case START_GAME:
-			if(DefaultMenu.getStatus() == "StartMenu")
-			{
-				DefaultMenu.ChangeStatus("LocalGame");
-				painter.setRenderers(DefaultMenu.getRenderers());	
-			}
-			else
-			{
-				SoundClips.get("Menu").Stop();
-				menu=false;
-				if(MultiplayerGame)
-				{
-					if(C == null)
-					{
-						if(S.getStateServer() == "Connected")
-						{
-							S.setInGame(0, true);
-						}
-					}
-					else if(S == null)
-					{
-						if(C.getStateClient() == "Connected")
-						{
-							C.setInGame(true);
-						}
-					}
-				}
-				loadLevel();
-			}
-			break;
-		case START_MULTIPLAYER_GAME:
-			DefaultMenu.ChangeStatus("Multiplayer");
-			painter.setRenderers(DefaultMenu.getRenderers());	
-			break;
-		case START_TRAINING:
-			break;
-		case PAUSE:
-			menu = true;
-			SavedRenderers=painter.getRenderers();
-			DefaultMenu.ChangeStatus("Pause");
-			painter.setRenderers(DefaultMenu.getRenderers());	
-			break;
-		case RESUME:
-			menu=false;
-			SoundClips.get("Menu").Stop();
-			painter.setRenderers(SavedRenderers);
-			break;
-		case CREAPARTITA:
-			try 
-			{
-				DefaultMenu.ChangeStatus("WaitingConnection");
-				painter.setRenderers(DefaultMenu.getRenderers());	
-				S = new Server();
-				WaitingConnection = true;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case PARTECIPA:
-			try 
-			{
-				WaitingConnection = true;
-				DefaultMenu.ChangeStatus("WaitingConnection");
-				painter.setRenderers(DefaultMenu.getRenderers());	
-				C = new Client("localhost");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case BACKTOMENU:
-			DefaultMenu.ChangeStatus("StartMenu");
-			painter.setRenderers(DefaultMenu.getRenderers());
-			break;
-		case CHOOSE_PLAYER_MULTIPLAYER:
-			DefaultMenu.ChangeStatus("ChooseMultiplayerPlayer");
-			painter.setRenderers(DefaultMenu.getRenderers());
-			break;
-		default:
-			break;
+	private void performAction(Action a) {
+		actions.push(a);
 		
+	}
+	public void resolveActions() {
+		while(!actions.isEmpty()) {
+			Action a=actions.pop();
+			
+			switch (a) {
+			case PLAYER_JUMP:
+				w.PlayerJump();
+				break;
+			case PLAYER_ATTACK:
+				w.getPlayer(1).toggleAttack(true);
+			break;
+			case PLAYER_MOVE_LEFT: 
+				w.getPlayer(1).ChangeDirection(Direction.LEFT);
+				break;	
+			case PLAYER_MOVE_RIGHT:
+				w.getPlayer(1).ChangeDirection(Direction.RIGHT);
+				break;
+			case PLAYER_MOVE_REST:
+				w.getPlayer(1).ChangeDirection(Direction.REST);
+				break;
+			case PLAYER_CROUCH:
+				w.getPlayer(1).toggleCrouch(true);
+				break;
+			case PLAYER_STAND:
+				w.getPlayer(1).toggleCrouch(false);
+				break;
+			case PLAYER2_JUMP:
+				w.Player2Jump();
+				break;
+			case PLAYER2_ATTACK:
+				w.getPlayer(2).toggleAttack(true);
+				break;
+			case PLAYER2_MOVE_LEFT: 
+				w.getPlayer(2).ChangeDirection(Direction.LEFT);
+				break;	
+			case PLAYER2_MOVE_RIGHT:
+				w.getPlayer(2).ChangeDirection(Direction.RIGHT);
+				break;
+			case PLAYER2_MOVE_REST:
+				w.getPlayer(2).ChangeDirection(Direction.REST);
+				break;
+			case PLAYER2_CROUCH:
+				w.getPlayer(2).toggleCrouch(true);
+				break;
+			case PLAYER2_STAND:
+				w.getPlayer(2).toggleCrouch(false);
+				break;
+			case CLOSE_GAME: 
+				System.exit(0);
+				break;
+			case OPEN_SETTING:
+				break;
+			case SELECT_MENU:
+				break;
+			case START_GAME:
+				if(DefaultMenu.getStatus() == "StartMenu")
+				{
+					DefaultMenu.ChangeStatus("LocalGame");
+					painter.setRenderers(DefaultMenu.getRenderers());	
+				}
+				else
+				{
+					SoundClips.get("Menu").Stop();
+					menu=false;
+					if(MultiplayerGame)
+					{
+						if(C == null)
+						{
+							if(S.getStateServer() == "Connected")
+							{
+								S.setInGame(0, true);
+							}
+						}
+						else if(S == null)
+						{
+							if(C.getStateClient() == "Connected")
+							{
+								C.setInGame(true);
+							}
+						}
+					}
+					loadLevel();
+				}
+				break;
+			case START_MULTIPLAYER_GAME:
+				DefaultMenu.ChangeStatus("Multiplayer");
+				painter.setRenderers(DefaultMenu.getRenderers());	
+				break;
+			case START_TRAINING:
+				break;
+			case PAUSE:
+				menu = true;
+				SavedRenderers=painter.getRenderers();
+				DefaultMenu.ChangeStatus("Pause");
+				painter.setRenderers(DefaultMenu.getRenderers());	
+				break;
+			case RESUME:
+				menu=false;
+				SoundClips.get("Menu").Stop();
+				painter.setRenderers(SavedRenderers);
+				break;
+			case CREAPARTITA:
+				try 
+				{
+					DefaultMenu.ChangeStatus("WaitingConnection");
+					painter.setRenderers(DefaultMenu.getRenderers());	
+					S = new Server();
+					WaitingConnection = true;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case PARTECIPA:
+				try 
+				{
+					WaitingConnection = true;
+					DefaultMenu.ChangeStatus("WaitingConnection");
+					painter.setRenderers(DefaultMenu.getRenderers());	
+					C = new Client("localhost");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case BACKTOMENU:
+				DefaultMenu.ChangeStatus("StartMenu");
+				painter.setRenderers(DefaultMenu.getRenderers());
+				break;
+			case CHOOSE_PLAYER_MULTIPLAYER:
+				DefaultMenu.ChangeStatus("ChooseMultiplayerPlayer");
+				painter.setRenderers(DefaultMenu.getRenderers());
+				break;
+			default:
+				break;
+			
+			}
 		}
 	}
 	

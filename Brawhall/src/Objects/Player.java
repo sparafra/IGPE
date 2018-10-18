@@ -288,6 +288,9 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		}
 		p.getDamage(baseAttack);
 	}
+	public boolean isAttacking() {
+		return attacking;
+	}
 	@Override
 	public void attack(LinkedList<GameObject> list,double delta) {
 		attackTimer-=delta;
@@ -333,61 +336,59 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		life-=dmg;
 		staggering=true;
 	}
-	public State getState()
+	public PlayerState getState()
 	{
 		if(attacking)
 		{
 			//System.out.println("Attacking");
 			if(facing == Direction.LEFT)
-				return State.ATTACKINGBACK;
+				return PlayerState.ATTACKINGBACK;
 			else if(facing == Direction.RIGHT)
-				return State.ATTACKINGFORWARD;
+				return PlayerState.ATTACKINGFORWARD;
 		}
 		else if(isMovingRight())
-			return State.FORWARD;
+			return PlayerState.FORWARD;
 		else if (isMovingLeft())
-			return State.BACK;
+			return PlayerState.BACK;
 		else if (falling&& velY<0)
 		{
 			if(facing == Direction.LEFT)
-				return State.FALLINGBACK;
+				return PlayerState.FALLINGBACK;
 			else if(facing == Direction.RIGHT)
-				return State.FALLINGFORWARD;
+				return PlayerState.FALLINGFORWARD;
 		}
 		else if (crouching)
 		{
 			if(facing == Direction.LEFT)
-				return State.CROUCHINGBACK;
+				return PlayerState.CROUCHINGBACK;
 			else if(facing == Direction.RIGHT)
-				return State.CROUCHINGFORWARD;
+				return PlayerState.CROUCHINGFORWARD;
 		}
 		else if (jumping)
 		{
 			if(facing == Direction.LEFT)
-				return State.JUMPINGBACK;
+				return PlayerState.JUMPINGBACK;
 			else if(facing == Direction.RIGHT)
-				return State.JUMPINGFORWARD;
+				return PlayerState.JUMPINGFORWARD;
 		}
 		else if(dir==Direction.REST)
 		{
 			if(facing == Direction.LEFT)
-				return State.STEADYBACK;
+				return PlayerState.STEADYBACK;
 			else if(facing == Direction.RIGHT)
-				return State.STEADYFORWARD;
+				return PlayerState.STEADYFORWARD;
 		}
 		
-		return State.NULL;
+		return PlayerState.NULL;
+	}
+	public boolean isResting() {
+		return dir==Direction.REST ;
 	}
 	public boolean isMovingLeft() {
-		if(dir==Direction.LEFT)
-			return true;
-		return false;
+		return(dir==Direction.LEFT);		
 	}
 	public boolean isMovingRight() {
-		if(dir==Direction.RIGHT)
-			return true;
-		return false;	
-	
+		return(dir==Direction.RIGHT);
 	}
 	
 	@Override

@@ -16,19 +16,19 @@ public class Media
 	String Path;
 	
 	//Object Type
-	HashMap<String, HashMap<State, LinkedList<Image>>> Characters;
-	HashMap<String, HashMap<State, LinkedList<Image>>> Blocks;
-	HashMap<String, HashMap<State, LinkedList<Image>>> Buttons;
-	HashMap<String, HashMap<State, LinkedList<Image>>> Backgrounds;
+	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Characters;
+	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Blocks;
+	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Buttons;
+	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Backgrounds;
 	
 
 	//All Media
-	HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>> Media;
+	HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>> Media;
 	
 	HashMap<String, HashMap<String, Float>> PlayerSpecs;
 	
 	int CurrentFrame =0;
-	State LastState = State.FALLINGFORWARD;
+	PlayerState LastState = PlayerState.FALLINGFORWARD;
 	
 	LinkedList<String> charactersName;
 	
@@ -41,12 +41,12 @@ public class Media
 		
 		PlayerSpecs = new HashMap<String, HashMap<String, Float>>();
 		
-		Media = new HashMap<ObjectId, HashMap<String, HashMap<State, LinkedList<Image>>>>();
+		Media = new HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>>();
 
-		Characters = new HashMap<String, HashMap<State, LinkedList<Image>>>();
-		Blocks = new HashMap<String, HashMap<State, LinkedList<Image>>>();
-		Buttons = new HashMap<String, HashMap<State, LinkedList<Image>>>();
-		Backgrounds = new HashMap<String, HashMap<State, LinkedList<Image>>>();
+		Characters = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
+		Blocks = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
+		Buttons = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
+		Backgrounds = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		
 		
 		LoadMedia();
@@ -71,7 +71,7 @@ public class Media
 			LinkedList<File> Folders1 = getFolders(Path+Folders.get(k).getName()+"\\"); //Search SubFolders (ex IronMan, Hulk of Character, Start, Setting of Buttons ecc.)
 			for(int i=0; i<Folders1.size(); i++)
 			{
-				HashMap<State, LinkedList<Image>> objectName = new HashMap<State, LinkedList<Image>>();
+				HashMap<PlayerState, LinkedList<Image>> objectName = new HashMap<PlayerState, LinkedList<Image>>();
 
 				LinkedList<File> Folders2 = getFolders(Path+Folders.get(k).getName()+"\\"+Folders1.get(i).getName()+"\\"); //Search SubFolders (ex Left, Right ecc of IronMan, Left, Right ecc of Hulk, Null of Buttons ecc)
 				for(int j=0; j<Folders2.size(); j++)
@@ -95,63 +95,63 @@ public class Media
 					}
 					if(Folders2.get(j).getName().equals("Right"))
 					{
-						objectName.put(State.FORWARD, Frames);
+						objectName.put(PlayerState.FORWARD, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("Left"))
 					{
-						objectName.put(State.BACK, Frames);
+						objectName.put(PlayerState.BACK, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("SteadyRight"))
 					{
-						objectName.put(State.STEADYFORWARD, Frames);
+						objectName.put(PlayerState.STEADYFORWARD, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("SteadyLeft"))
 					{
-						objectName.put(State.STEADYBACK, Frames);
+						objectName.put(PlayerState.STEADYBACK, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("JumpingForward"))
 					{
-						objectName.put(State.JUMPINGFORWARD, Frames);
+						objectName.put(PlayerState.JUMPINGFORWARD, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("JumpingBack"))
 					{
-						objectName.put(State.JUMPINGBACK, Frames);
+						objectName.put(PlayerState.JUMPINGBACK, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("FallingForward"))
 					{
-						objectName.put(State.FALLINGFORWARD, Frames);
+						objectName.put(PlayerState.FALLINGFORWARD, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("FallingBack"))
 					{
-						objectName.put(State.FALLINGBACK, Frames);
+						objectName.put(PlayerState.FALLINGBACK, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("CrouchingForward"))
 					{
-						objectName.put(State.CROUCHINGFORWARD, Frames);
+						objectName.put(PlayerState.CROUCHINGFORWARD, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("CrouchingBack"))
 					{
-						objectName.put(State.CROUCHINGBACK, Frames);
+						objectName.put(PlayerState.CROUCHINGBACK, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("Icon"))
 					{
-						objectName.put(State.PREVIEW, Frames);
+						objectName.put(PlayerState.PREVIEW, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("AttackForward"))
 					{
-						objectName.put(State.ATTACKINGFORWARD, Frames);
+						objectName.put(PlayerState.ATTACKINGFORWARD, Frames);
 					}
 					else if (Folders2.get(j).getName().equals("AttackBack"))
 					{
-						objectName.put(State.ATTACKINGBACK, Frames);
+						objectName.put(PlayerState.ATTACKINGBACK, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("Null"))
 					{
-						objectName.put(State.NULL, Frames);
+						objectName.put(PlayerState.NULL, Frames);
 					}
 					else if(Folders2.get(j).getName().equals("Waiting"))
 					{
-						objectName.put(State.WAITING, Frames);
+						objectName.put(PlayerState.WAITING, Frames);
 					}
 				}
 				if(Folders.get(k).getName().equals("Characters"))
@@ -183,7 +183,7 @@ public class Media
 		
 	}
 	
-	public Image getImage(ObjectId Type, State S, String Name, int Frames)
+	public Image getImage(ObjectId Type, PlayerState S, String Name, int Frames)
 	{
 		return Media.get(Type).get(Name).get(S).get(Frames);
 	}
@@ -192,19 +192,19 @@ public class Media
 	{
 		return charactersName;
 	}
-	public int nextCharacterFrames(State S, String Name)
+	public int nextCharacterFrames(PlayerState S, String Name)
 	{
 		if(LastState != S)
 			CurrentFrame =0;
 		LastState = S;
-		if(S == State.JUMPINGFORWARD || S == State.JUMPINGBACK || S == State.FALLINGFORWARD || S == State.FALLINGBACK || S == State.CROUCHINGFORWARD || S == State.CROUCHINGBACK)
+		if(S == PlayerState.JUMPINGFORWARD || S == PlayerState.JUMPINGBACK || S == PlayerState.FALLINGFORWARD || S == PlayerState.FALLINGBACK || S == PlayerState.CROUCHINGFORWARD || S == PlayerState.CROUCHINGBACK)
 		{
 			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{
 				CurrentFrame++;
 			}
 		}
-		else if (S == State.FORWARD || S == State.BACK || S == State.ATTACKINGFORWARD || S == State.ATTACKINGBACK)
+		else if (S == PlayerState.FORWARD || S == PlayerState.BACK || S == PlayerState.ATTACKINGFORWARD || S == PlayerState.ATTACKINGBACK)
 		{
 			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{
