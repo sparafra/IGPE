@@ -514,9 +514,8 @@ public class GameManager extends Thread implements Runnable{
 					performAction(Action.PLAYER_JUMP);
 				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
 					performAction(Action.PLAYER_CROUCH);
-				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
+				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) 
 					performAction(Action.PLAYER_STAND);
-				}
 				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 					performAction(Action.PLAYER_MOVE_REST);
 				
@@ -538,15 +537,15 @@ public class GameManager extends Thread implements Runnable{
 		else if(MultiplayerGame)
 		{
 			if(C == null&& S.getStateServer() == "Connected") {
-				if(ev.keys[Action.PLAYER_ATTACK.key]) {
+				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
 					performAction(Action.PLAYER_ATTACK);
 					S.sendMessage(0, "PLAYER_ATTACK");
 				}
-				if(ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER_MOVE_LEFT);
 					S.sendMessage(0, "PLAYER_MOVE_LEFT");
 				}
-				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
+				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
 					performAction(Action.PLAYER_MOVE_RIGHT);
 					S.sendMessage(0, "PLAYER_MOVE_RIGHT");
 				}
@@ -554,29 +553,29 @@ public class GameManager extends Thread implements Runnable{
 					performAction(Action.PLAYER_JUMP);
 					S.sendMessage(0, "PLAYER_JUMP");
 				}
-				if(ev.keys[Action.PLAYER_CROUCH.key]) {
+				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER_CROUCH);
 					S.sendMessage(0, "PLAYER_CROUCH");
 				}
-				if(!ev.keys[Action.PLAYER_CROUCH.key]) {
+				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER_STAND);
 					S.sendMessage(0, "PLAYER_STAND");
 				}
-				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER_MOVE_REST);
 					S.sendMessage(0, "PLAYER_MOVE_REST");
 				}
 			}
 			if(S == null&&C.getStateClient() == "Connected") {
-				if(ev.keys[Action.PLAYER_ATTACK.key]) {
+				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
 					performAction(Action.PLAYER2_ATTACK);
 					C.sendMessage( "PLAYER_ATTACK");
 				}
-				if(ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_LEFT);
 					C.sendMessage( "PLAYER_MOVE_LEFT");
 				}
-				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
+				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
 					performAction(Action.PLAYER_MOVE_RIGHT);
 					C.sendMessage( "PLAYER_MOVE_RIGHT");
 				}
@@ -584,15 +583,15 @@ public class GameManager extends Thread implements Runnable{
 					performAction(Action.PLAYER2_JUMP);
 					C.sendMessage( "PLAYER_JUMP");
 				}
-				if(ev.keys[Action.PLAYER_CROUCH.key]) {
+				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER2_CROUCH);
 					C.sendMessage( "PLAYER_CROUCH");
 				}
-				if(!ev.keys[Action.PLAYER_CROUCH.key]) {
+				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER2_STAND);
 					C.sendMessage( "PLAYER_STAND");
 				}
-				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_REST);
 					C.sendMessage( "PLAYER_MOVE_REST");
 				}
