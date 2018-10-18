@@ -1,20 +1,17 @@
 package gameManager;
 
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
-
-import gameManager.EventHandler;
-import interfaces.Direction;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import Network.Client;
-import Network.Server;
+import TCP.Client;
+import TCP.Server;
+//import UDP.Client;
+//import UDP.Server;
+import interfaces.Direction;
 import object.Background;
 import object.Block;
 import object.GameObject;
@@ -23,7 +20,6 @@ import object.ObjectRenderer;
 import object.Player;
 import object.PlayerRenderer;
 import object.SoundClip;
-import object.State;
 import windows.MyFrame;
 import windows.MyPanel;
 import world.Camera;
@@ -68,6 +64,8 @@ public class GameManager extends Thread implements Runnable{
 	boolean MultiplayerGame = false;
 	boolean WaitingConnection = false;
 	boolean WaitingChoosePlayer = false;
+	
+	
 	public GameManager() 
 	{
 		tk = Toolkit.getDefaultToolkit();
@@ -180,7 +178,9 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
+		
 		checkInput();
+		
 		if(!menu)
 		{
 			if(MultiplayerGame)
@@ -565,7 +565,7 @@ public class GameManager extends Thread implements Runnable{
 				}
 				if(ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				{
-					System.out.println("ASDADS");
+					
 					//performAction(Action.PLAYER_MOVE_LEFT);
 					if(C == null)
 					{
@@ -609,6 +609,7 @@ public class GameManager extends Thread implements Runnable{
 				if(ev.keys[Action.PLAYER_JUMP.key])
 				{
 					//performAction(Action.PLAYER_JUMP);
+
 					if(C == null)
 					{
 						if(S.getStateServer() == "Connected")
@@ -630,6 +631,7 @@ public class GameManager extends Thread implements Runnable{
 				if(ev.keys[Action.PLAYER_CROUCH.key])
 				{
 					//performAction(Action.PLAYER_CROUCH);
+
 					if(C == null)
 					{
 						if(S.getStateServer() == "Connected")
@@ -651,6 +653,7 @@ public class GameManager extends Thread implements Runnable{
 				if(!ev.keys[Action.PLAYER_CROUCH.key])
 				{
 					//performAction(Action.PLAYER_STAND);
+					
 					if(C == null)
 					{
 						if(S.getStateServer() == "Connected")
@@ -667,10 +670,12 @@ public class GameManager extends Thread implements Runnable{
 							C.sendMessage("PLAYER_STAND");
 						}
 					}
+					
 				}
 				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 				{
 					//performAction(Action.PLAYER_MOVE_REST);
+					
 					if(C == null)
 					{
 						if(S.getStateServer() == "Connected")
@@ -687,6 +692,7 @@ public class GameManager extends Thread implements Runnable{
 							C.sendMessage("PLAYER_MOVE_REST");
 						}
 					}
+					
 				}
 			}		
 	}
@@ -793,7 +799,9 @@ public class GameManager extends Thread implements Runnable{
 			{
 				DefaultMenu.ChangeStatus("WaitingConnection");
 				p.setRenderers(DefaultMenu.getRenderers());	
-				S = new Server();
+				
+				S = new Server(); 
+				
 				WaitingConnection = true;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -807,6 +815,7 @@ public class GameManager extends Thread implements Runnable{
 				DefaultMenu.ChangeStatus("WaitingConnection");
 				p.setRenderers(DefaultMenu.getRenderers());	
 				C = new Client("localhost");
+				//C.sendMessage("ACK");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

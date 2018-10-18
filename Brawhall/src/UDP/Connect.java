@@ -1,4 +1,4 @@
-package Network;
+package UDP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,67 +12,65 @@ import java.net.Socket;
 
 import object.Player;
 
-public class Client extends Thread
+public class Connect extends Thread 
 {
+	private Socket client = null;
 	BufferedReader in = null;
 	PrintStream out = null;
+
 	
-	
-	
-	Socket socket = null;
 	String message="";
 	boolean messageReaded = false;
-	String StateClient;
 	boolean InGame = false;
 	
+	public Connect() {}
 	
-	
-	public Client(String Ip)throws Exception
+	public Connect(Socket clientSocket)
 	{
+		client = clientSocket;
 		try
 		{
-			// open a socket connection
-			socket = new Socket(Ip, 4000);
-			// Apre i canali I/O
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			out = new PrintStream(socket.getOutputStream(), true);
-			
-			// Legge dal server
-			//message = (String)ois.readObject();
-			message = in.readLine();
-			System.out.print("Messaggio Ricevuto dal Server: " + message);
-			StateClient = "Connected";
-			this.start();
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			out = new PrintStream(client.getOutputStream(), true);
+
 		}
-		catch(Exception e) 
-		{ 
-			StateClient = "Waiting";
-			System.out.println(e.getMessage());
+		catch(Exception e1)
+		{
+			try { client.close(); }
+			catch(Exception e) { System.out.println(e.getMessage());}
+			return;
 		}
+		this.start();
 	}
 	public void run()
 	{
-		while(true)
+		try
 		{
-			try
+			out.println("Generico messaggio dal Server");
+			out.flush();
+			
+			while(true)
 			{
 					if(in.ready())
 					{
 						message = in.readLine();
-						//System.out.print("Messaggio Ricevuto : " + message);
+						//System.out.print("Messaggio Ricevuto Dal Client: " + message);
 						messageReaded = false;
 					}
+
 			}
-			catch(Exception e) {}
+			
 		}
+		catch(Exception e) {}
 	}
 	public String getMessage() {return message;}
 	public void sendMessage(String Data)
-	{
+	{	
 		out.println(Data);
 		out.flush();
 	}
-	public boolean getMessageReaded() {return messageReaded;}
+
+	public boolean getMessageReaded() {return messageReaded;} 
 	public void setMessageReaded(boolean R) {messageReaded = R;}
 	public void CloseConnection()
 	{
@@ -80,10 +78,9 @@ public class Client extends Thread
 		{
 			out.close();
 			in.close();
+			client.close();
 		}
 		catch(Exception e){};
 	}
 	public void setInGame(boolean G) {InGame=G;}
-	public String getStateClient() {return StateClient;};
 }
-
