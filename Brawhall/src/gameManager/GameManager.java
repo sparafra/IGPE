@@ -537,7 +537,66 @@ public class GameManager extends Thread implements Runnable{
 		}	
 		else if(MultiplayerGame)
 		{
-			
+			if(C == null&& S.getStateServer() == "Connected") {
+				if(ev.keys[Action.PLAYER_ATTACK.key]) {
+					performAction(Action.PLAYER_ATTACK);
+					S.sendMessage(0, "PLAYER_ATTACK");
+				}
+				if(ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+					performAction(Action.PLAYER_MOVE_LEFT);
+					S.sendMessage(0, "PLAYER_MOVE_LEFT");
+				}
+				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
+					performAction(Action.PLAYER_MOVE_RIGHT);
+					S.sendMessage(0, "PLAYER_MOVE_RIGHT");
+				}
+				if(ev.keys[Action.PLAYER_JUMP.key]) {
+					performAction(Action.PLAYER_JUMP);
+					S.sendMessage(0, "PLAYER_JUMP");
+				}
+				if(ev.keys[Action.PLAYER_CROUCH.key]) {
+					performAction(Action.PLAYER_CROUCH);
+					S.sendMessage(0, "PLAYER_CROUCH");
+				}
+				if(!ev.keys[Action.PLAYER_CROUCH.key]) {
+					performAction(Action.PLAYER_STAND);
+					S.sendMessage(0, "PLAYER_STAND");
+				}
+				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+					performAction(Action.PLAYER_MOVE_REST);
+					S.sendMessage(0, "PLAYER_MOVE_REST");
+				}
+			}
+			if(S == null&&C.getStateClient() == "Connected") {
+				if(ev.keys[Action.PLAYER_ATTACK.key]) {
+					performAction(Action.PLAYER2_ATTACK);
+					C.sendMessage( "PLAYER_ATTACK");
+				}
+				if(ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+					performAction(Action.PLAYER2_MOVE_LEFT);
+					C.sendMessage( "PLAYER_MOVE_LEFT");
+				}
+				if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
+					performAction(Action.PLAYER_MOVE_RIGHT);
+					C.sendMessage( "PLAYER_MOVE_RIGHT");
+				}
+				if(ev.keys[Action.PLAYER_JUMP.key]) {
+					performAction(Action.PLAYER2_JUMP);
+					C.sendMessage( "PLAYER_JUMP");
+				}
+				if(ev.keys[Action.PLAYER_CROUCH.key]) {
+					performAction(Action.PLAYER2_CROUCH);
+					C.sendMessage( "PLAYER_CROUCH");
+				}
+				if(!ev.keys[Action.PLAYER_CROUCH.key]) {
+					performAction(Action.PLAYER2_STAND);
+					C.sendMessage( "PLAYER_STAND");
+				}
+				if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+					performAction(Action.PLAYER2_MOVE_REST);
+					C.sendMessage( "PLAYER_MOVE_REST");
+				}
+			}	
 		}
 	}
 	private void performAction(Action a) {
