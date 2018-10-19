@@ -307,8 +307,12 @@ public class GameManager extends Thread implements Runnable{
 			}
 			else if(DefaultMenu.getStatus() == "ChooseMultiplayerPlayer" )
 			{
+				System.out.println(DefaultMenu.getPlayer1Choosed() );
+				System.out.println(DefaultMenu.getPlayer2Choosed() );
+
 				if(DefaultMenu.getPlayer1Choosed() && DefaultMenu.getPlayer2Choosed())
 				{
+					System.out.println("START");
 					MultiplayerGame = true;
 					performAction(Action.START_GAME);
 				}
@@ -363,7 +367,8 @@ public class GameManager extends Thread implements Runnable{
 	}
 	
 	public void checkInput() {
-		if(menu) {
+		if(menu) 
+		{
 			if(ev.keys[Action.MUTE.key]){
 				SoundClips.get("Menu").Stop();
 				MuteSound = true;
@@ -438,17 +443,24 @@ public class GameManager extends Thread implements Runnable{
 					{
 						
 						if(C == null)
-							if(S.getStateServer() == "Connected"){
+						{
+							if(S.getStateServer() == "Connected")
+							{
 								DefaultMenu.setPlayer1Choosed(true);
 								S.sendMessage(0, "PlayerChoosed");
 							}
+						}
 						else if(S == null)
-							if(C.getStateClient() == "Connected"){
+						{
+							if(C.getStateClient() == "Connected")
+							{
 								DefaultMenu.setPlayer2Choosed(true);
 								C.sendMessage("PlayerChoosed");
 							}	
+						}
 					}
-					else {
+					else 
+					{
 						performAction(Action.START_GAME);
 					}
 					ev.keys[Action.SELECT_MENU.key] = false;
@@ -536,7 +548,7 @@ public class GameManager extends Thread implements Runnable{
 		}	
 		else if(MultiplayerGame)
 		{
-			if(C == null&& S.getStateServer() == "Connected") {
+			if(C == null && S.getStateServer() == "Connected") {
 				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
 					performAction(Action.PLAYER_ATTACK);
 					S.sendMessage(0, "PLAYER_ATTACK");
@@ -566,32 +578,32 @@ public class GameManager extends Thread implements Runnable{
 					S.sendMessage(0, "PLAYER_MOVE_REST");
 				}
 			}
-			if(S == null&&C.getStateClient() == "Connected") {
-				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
+			if(S == null && C.getStateClient() == "Connected") {
+				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(2).isAttacking()) {
 					performAction(Action.PLAYER2_ATTACK);
 					C.sendMessage( "PLAYER_ATTACK");
 				}
-				if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_LEFT);
 					C.sendMessage( "PLAYER_MOVE_LEFT");
 				}
-				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
+				if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
 					performAction(Action.PLAYER_MOVE_RIGHT);
 					C.sendMessage( "PLAYER_MOVE_RIGHT");
 				}
 				if(ev.keys[Action.PLAYER_JUMP.key]) {
 					performAction(Action.PLAYER2_JUMP);
-					C.sendMessage( "PLAYER_JUMP");
+					C.sendMessage("PLAYER_JUMP");
 				}
-				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching()) {
+				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(2).isCrouching()) {
 					performAction(Action.PLAYER2_CROUCH);
 					C.sendMessage( "PLAYER_CROUCH");
 				}
-				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
+				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(2).isCrouching()) {
 					performAction(Action.PLAYER2_STAND);
 					C.sendMessage( "PLAYER_STAND");
 				}
-				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+				if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_REST);
 					C.sendMessage( "PLAYER_MOVE_REST");
 				}
