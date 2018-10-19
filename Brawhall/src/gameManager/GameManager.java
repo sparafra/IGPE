@@ -3,11 +3,14 @@ package gameManager;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import Network.Client;
 import Network.Server;
+//import Network.UDP.Client;
+//import Network.UDP.Server;
 import Objects.Background;
 import Objects.Block;
 import Objects.GameObject;
@@ -186,7 +189,9 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
+		
 		checkInput();
+		
 		resolveActions();
 		if(!menu)
 		{
@@ -307,9 +312,6 @@ public class GameManager extends Thread implements Runnable{
 			}
 			else if(DefaultMenu.getStatus() == "ChooseMultiplayerPlayer" )
 			{
-				System.out.println(DefaultMenu.getPlayer1Choosed() );
-				System.out.println(DefaultMenu.getPlayer2Choosed() );
-
 				if(DefaultMenu.getPlayer1Choosed() && DefaultMenu.getPlayer2Choosed())
 				{
 					System.out.println("START");
