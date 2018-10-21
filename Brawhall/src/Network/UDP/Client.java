@@ -16,7 +16,7 @@ public class Client extends Thread{
 	
 	public Client(String Ip) throws IOException 
 	{
-	       IpServer = InetAddress.getByName("192.168.1.5");
+	       IpServer = InetAddress.getByName(Ip);
 	       Port = 4000;
 	       Client = new DatagramSocket();
 	       StateClient = "Connected";

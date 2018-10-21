@@ -15,6 +15,7 @@ public class Server extends Thread
 		
 		listConnect = new ArrayList<Connect>();
 		Server = new ServerSocket(4000);
+		
 		System.out.println("Il Server è in attesa sulla porta 4000.");
 		this.start();
 	}

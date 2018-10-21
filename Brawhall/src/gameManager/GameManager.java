@@ -290,6 +290,7 @@ public class GameManager extends Thread implements Runnable{
 		{
 			if(!MuteSound)
 				SoundClips.get("Menu").Play();
+			
 			painter.render();
 			if(WaitingConnection)
 			{
@@ -469,7 +470,6 @@ public class GameManager extends Thread implements Runnable{
 				}
 				if(ev.keys[KeyEvent.VK_RIGHT] )
 				{
-					
 					if(C == null && !DefaultMenu.getPlayer1Choosed())
 					{
 						if(S.getStateServer() == "Connected")
@@ -478,7 +478,7 @@ public class GameManager extends Thread implements Runnable{
 							S.sendMessage(0, "NextPlayer");
 						}
 					}
-					else if(S == null && !DefaultMenu.getPlayer1Choosed())
+					else if(S == null && !DefaultMenu.getPlayer2Choosed())
 					{
 						if(C.getStateClient() == "Connected")
 						{
@@ -490,7 +490,6 @@ public class GameManager extends Thread implements Runnable{
 				}
 				if(ev.keys[KeyEvent.VK_LEFT]  ) 
 				{
-					
 					if(C == null && !DefaultMenu.getPlayer1Choosed())
 					{
 						if(S.getStateServer() == "Connected")
@@ -515,8 +514,7 @@ public class GameManager extends Thread implements Runnable{
 		}
 		else if(!MultiplayerGame)
 		{	
-				if(ev.keys[Action.PAUSE.key])
-					
+				if(ev.keys[Action.PAUSE.key])				
 					performAction(Action.PAUSE);
 				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking())
 					performAction(Action.PLAYER_ATTACK);
@@ -524,7 +522,7 @@ public class GameManager extends Thread implements Runnable{
 					performAction(Action.PLAYER_MOVE_LEFT);
 				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key])
 					performAction(Action.PLAYER_MOVE_RIGHT);
-				if(ev.keys[Action.PLAYER_JUMP.key])
+				if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(1).isJumping())
 					performAction(Action.PLAYER_JUMP);
 				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
 					performAction(Action.PLAYER_CROUCH);
@@ -539,7 +537,7 @@ public class GameManager extends Thread implements Runnable{
 					performAction(Action.PLAYER2_MOVE_LEFT);
 				if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
 					performAction(Action.PLAYER2_MOVE_RIGHT);
-				if(ev.keys[Action.PLAYER2_JUMP.key])
+				if(ev.keys[Action.PLAYER2_JUMP.key] && !w.getPlayer(2).isJumping())
 					performAction(Action.PLAYER2_JUMP);
 				if(ev.keys[Action.PLAYER2_CROUCH.key]&&!w.getPlayer(2).isCrouching())
 					performAction(Action.PLAYER2_CROUCH);
@@ -554,67 +552,80 @@ public class GameManager extends Thread implements Runnable{
 				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
 					performAction(Action.PLAYER_ATTACK);
 					S.sendMessage(0, "PLAYER_ATTACK");
+					System.out.println("PLAYER_ATTACK");
 				}
 				if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER_MOVE_LEFT);
 					S.sendMessage(0, "PLAYER_MOVE_LEFT");
+					System.out.println("PLAYER_MOVE_LEFT");
 				}
 				if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
 					performAction(Action.PLAYER_MOVE_RIGHT);
 					S.sendMessage(0, "PLAYER_MOVE_RIGHT");
+					System.out.println("PLAYER_MOVE_RIGHT");
 				}
-				if(ev.keys[Action.PLAYER_JUMP.key]) {
+				if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(1).isJumping()) {
 					performAction(Action.PLAYER_JUMP);
 					S.sendMessage(0, "PLAYER_JUMP");
+					System.out.println("PLAYER_JUMP");
 				}
 				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER_CROUCH);
 					S.sendMessage(0, "PLAYER_CROUCH");
+					System.out.println("PLAYER_CROUCH");
 				}
 				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) {
 					performAction(Action.PLAYER_STAND);
 					S.sendMessage(0, "PLAYER_STAND");
+					System.out.println("PLAYER_STAND");
 				}
 				if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER_MOVE_REST);
 					S.sendMessage(0, "PLAYER_MOVE_REST");
+					System.out.println("PLAYER_MOVE_REST");
 				}
 			}
 			if(S == null && C.getStateClient() == "Connected") {
 				if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(2).isAttacking()) {
 					performAction(Action.PLAYER2_ATTACK);
 					C.sendMessage( "PLAYER_ATTACK");
+					System.out.println("PLAYER_ATTACK");
 				}
 				if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_LEFT);
 					C.sendMessage( "PLAYER_MOVE_LEFT");
+					System.out.println("PLAYER_MOVE_LEFT");
 				}
 				if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key]) {
-					performAction(Action.PLAYER_MOVE_RIGHT);
+					performAction(Action.PLAYER2_MOVE_RIGHT);
 					C.sendMessage( "PLAYER_MOVE_RIGHT");
+					System.out.println("PLAYER_MOVE_RIGHT");
 				}
-				if(ev.keys[Action.PLAYER_JUMP.key]) {
+				if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(2).isJumping()) {
 					performAction(Action.PLAYER2_JUMP);
 					C.sendMessage("PLAYER_JUMP");
+					System.out.println("PLAYER_JUMP");
 				}
 				if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(2).isCrouching()) {
 					performAction(Action.PLAYER2_CROUCH);
 					C.sendMessage( "PLAYER_CROUCH");
+					System.out.println("PLAYER_CROUCH");
 				}
 				if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(2).isCrouching()) {
 					performAction(Action.PLAYER2_STAND);
 					C.sendMessage( "PLAYER_STAND");
+					System.out.println("PLAYER_STAND");
 				}
 				if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 					performAction(Action.PLAYER2_MOVE_REST);
 					C.sendMessage( "PLAYER_MOVE_REST");
+					System.out.println("PLAYER_MOVE_REST");
 				}
 			}	
 		}
 	}
 	private void performAction(Action a) {
-		actions.push(a);
-		
+		actions.push(a);		
 	}
 	public void resolveActions() {
 		while(!actions.isEmpty()) {

@@ -400,6 +400,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		return crouching;
 	}
 	
+	public boolean isJumping() {return jumping;}
 	public void setName(String Name) {this.Name = Name;}
 	public String getName() {return this.Name;}
 	
