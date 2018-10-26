@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class Connect extends Thread 
 {
@@ -11,8 +12,7 @@ public class Connect extends Thread
 	BufferedReader in = null;
 	PrintStream out = null;
 
-	
-	String message="";
+	LinkedList<String> messages;
 	boolean messageReaded = false;
 	boolean InGame = false;
 	
@@ -21,6 +21,7 @@ public class Connect extends Thread
 	public Connect(Socket clientSocket)
 	{
 		client = clientSocket;
+		messages=new LinkedList<String>();
 		try
 		{
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -39,16 +40,17 @@ public class Connect extends Thread
 	{
 		try
 		{
-			out.println("Generico messaggio dal Server");
-			out.flush();
+			
 			
 			while(true)
 			{
 					if(in.ready())
 					{
-						message = in.readLine();
-						//System.out.print("Messaggio Ricevuto Dal Client: " + message);
-						messageReaded = false;
+						String message=in.readLine();
+						if(message!=null) {
+							messages.push( message);
+							
+						}
 					}
 
 			}
@@ -56,15 +58,14 @@ public class Connect extends Thread
 		}
 		catch(Exception e) {}
 	}
-	public String getMessage() {return message;}
+	public String getMessage() {return messages.poll();}
 	public void sendMessage(String Data)
 	{	
 		out.println(Data);
 		out.flush();
 	}
 
-	public boolean getMessageReaded() {return messageReaded;} 
-	public void setMessageReaded(boolean R) {messageReaded = R;}
+	
 	public void CloseConnection()
 	{
 		try

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class Client extends Thread
 {
@@ -13,8 +14,8 @@ public class Client extends Thread
 	
 	
 	Socket socket = null;
-	String message="";
-	boolean messageReaded = false;
+	LinkedList<String> messages;
+
 	String StateClient;
 	boolean InGame = false;
 	
@@ -22,6 +23,7 @@ public class Client extends Thread
 	
 	public Client(String Ip)throws Exception
 	{
+		messages=new LinkedList<String>();
 		try
 		{
 			// open a socket connection
@@ -32,15 +34,15 @@ public class Client extends Thread
 			
 			// Legge dal server
 			//message = (String)ois.readObject();
-			message = in.readLine();
-			System.out.print("Messaggio Ricevuto dal Server: " + message);
+			messages.push( in.readLine());
+			
 			StateClient = "Connected";
 			this.start();
 		}
 		catch(Exception e) 
 		{ 
 			StateClient = "Waiting";
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	public void run()
@@ -51,22 +53,25 @@ public class Client extends Thread
 			{
 					if(in.ready())
 					{
-						message = in.readLine();
-						//System.out.print("Messaggio Ricevuto : " + message);
-						messageReaded = false;
+						String message=in.readLine();
+						if(message!=null) {
+							messages.push( message);
+							
+						}
 					}
 			}
 			catch(Exception e) {}
 		}
 	}
-	public String getMessage() {return message;}
+	public String getMessage() {
+			return messages.poll();
+	}
 	public void sendMessage(String Data)
 	{
 		out.println(Data);
 		out.flush();
 	}
-	public boolean getMessageReaded() {return messageReaded;}
-	public void setMessageReaded(boolean R) {messageReaded = R;}
+	public void reputMessage(String s) { messages.addFirst(s); }
 	public void CloseConnection()
 	{
 		try

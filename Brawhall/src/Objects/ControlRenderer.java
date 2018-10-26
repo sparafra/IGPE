@@ -21,15 +21,13 @@ public class ControlRenderer extends ObjectRenderer
 			if(obj instanceof Button)
 			{
 				Button b = (Button)obj;
-				if(b.act == Action.START_GAME)
+				if(b.act == Action.MENU_START_LOCAL_GAME)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "Start", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
-				else if (b.act == Action.START_MULTIPLAYER_GAME)
+				else if (b.act == Action.MENU_START_MULTIPLAYER_GAME)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "Multiplayer", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
-				else if (b.act == Action.START_TRAINING)
-					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "EditorMap", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				else if (b.act == Action.OPEN_SETTING)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "Settings", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
-				else if (b.act == Action.CLOSE_GAME)
+				else if (b.act == Action.MENU_CLOSE_GAME)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "Exit", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);
 				else if (b.act == Action.RESUME)
 					g.drawImage(gm.getMedia().getImage(ObjectId.BUTTON, PlayerState.NULL, "Resume", 0), gm.ConvertPosX(obj.getPosX()), gm.ConvertPosY(obj.getPosY()), gm.ConvertX(obj.getWidth()), gm.ConvertY(obj.getHeight()), null);

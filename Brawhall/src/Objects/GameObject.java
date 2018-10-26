@@ -2,21 +2,20 @@ package Objects;
 
 import java.util.LinkedList;
 
+import org.json.JSONObject;
+
 import Objects.BoundingBox.Side;
+import interfaces.Direction;
 
 public abstract class GameObject {
 
 	float posX,posY;
 	float height=1,width=1;
 	ObjectId id;
-	boolean updated=true;
 	
-	public boolean isUpdated() {
-		return updated;
-	}
-	public void setUpdated(boolean updated) {
-		this.updated = updated;
-	}
+	
+	
+	
 	public GameObject(float x,float y,ObjectId id) {
 		posX=x;
 		posY=y;
@@ -61,6 +60,22 @@ public abstract class GameObject {
 		b=new BoundingBox(this,posX,posY,width,height);	
 		return b;
 	}
-	
+	public JSONObject getJSON() {
+		JSONObject j=new JSONObject();
+		j.put("posX", posX);
+		j.put("posY", posY);
+		j.put("height", height);
+		j.put("width", width);
+		j.put("id", id.name());
+		return j;
+	}
 	public abstract void tick(LinkedList<GameObject> objects, double delta) ;
+	public void sync(JSONObject o) {
+		posX=o.getFloat("posX");
+		posY=o.getFloat("posY");
+		height=o.getFloat("height");
+		width=o.getFloat("width");
+		width=o.getFloat("width");
+		id=ObjectId.valueOf(o.getString("id"));
+	}
 }

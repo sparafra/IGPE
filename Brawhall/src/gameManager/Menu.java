@@ -24,11 +24,11 @@ public class Menu {
 	int selectedIndex=0;
 	float distanceBetweenButton = 3;
 	
-	boolean ready = true;
+	
 	
 	GameManager gm;
 	
-	boolean Rendered = false;
+
 	
 	String MenuState;
 	
@@ -36,36 +36,32 @@ public class Menu {
 	
 	PlayerPreview Player1Preview;
 	PlayerPreview Player2Preview;
+	
 	boolean Player1Choosed = false;
 	boolean Player2Choosed = false;
+
+	private double delay=0;
+	private double inputDelay=30;
+	private boolean ready;
+	private boolean locked;
 	
 	public Menu(GameManager gm)  {
-		
 		MenuState = "StartMenu";
 		this.gm = gm;
-		
 		height=gm.w.getHeight();
-		width=gm.w.getWidth();
-		
+		width=gm.w.getWidth();	
 		initGUI();
-		
-		
 	}
 	
-	public Menu(GameManager gm, String status)  
-	{
+	public Menu(GameManager gm, String status)  {
 		MenuState = status;
 		this.gm = gm;
-		
 		height=gm.w.getHeight();
 		width=gm.w.getWidth();
-		
-		initGUI();
-		
+		initGUI();	
 	}
 	
 	public LinkedList<ObjectRenderer> getRenderers(){return renderers;}
-	
 	public void initGUI()
 	{
 		controls=new LinkedList<Control>();
@@ -76,34 +72,23 @@ public class Menu {
 		
 		renderers.add(RBG);
 		
-		if(MenuState == "StartMenu")
-		{
+		if(MenuState == "StartMenu"){
 			selectedIndex = 0;
-			Control Local = new Button(50,25,Action.START_GAME);
+			Control Local = new Button(50,25,Action.MENU_START_LOCAL_GAME);
 			ObjectRenderer RLocal = new ControlRenderer(Local, gm);
-			Control Multiplayer = new Button(50,25,Action.START_MULTIPLAYER_GAME);
+			Control Multiplayer = new Button(50,25,Action.MENU_START_MULTIPLAYER_GAME);
 			ObjectRenderer RMultiplayer = new ControlRenderer(Multiplayer, gm);
-			Control Training = new Button(50,25,Action.START_TRAINING);
-			ObjectRenderer RTraining = new ControlRenderer(Training, gm);
-			Control Setting = new Button(50,25,Action.OPEN_SETTING);
-			ObjectRenderer RSetting = new ControlRenderer(Setting, gm);
-			Control Exit = new Button(50,25,Action.CLOSE_GAME);
-			ObjectRenderer RExit = new ControlRenderer(Exit, gm);
-
 			
+			Control Exit = new Button(50,25,Action.MENU_CLOSE_GAME);
+			ObjectRenderer RExit = new ControlRenderer(Exit, gm);
 			
 			controls.add(Local);
 			controls.add(Multiplayer);
-			controls.add(Training);
-			controls.add(Setting);
 			controls.add(Exit);
-
 			controls.get(selectedIndex).setSelected(true);
 			
 			renderers.add(RLocal);
 			renderers.add(RMultiplayer);
-			renderers.add(RTraining);
-			renderers.add(RSetting);
 			renderers.add(RExit);
 
 			posx = (width/2) - (controls.get(1).getWidth()/2);
@@ -119,7 +104,7 @@ public class Menu {
 			
 			
 		}
-		else if(MenuState == "LocalGame")
+		else if(MenuState == "ChooseLocalPlayer")
 		{
 			//LOCAL SELECTION MENU'
 			PlayerSelectionTurn = 1;
@@ -162,10 +147,7 @@ public class Menu {
 			
 			posx = (width/2) - (controls.get(1).getWidth()/2);
 			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
-			/*
-			posx = (width) - (width-controls.get(1).getWidth());
-			posy = (height) - (height-((controls.size())/2)*controls.get(1).getHeight());
-			*/
+			
 			float pad = 10;
 			
 			for(int k=0; k<controls.size(); k++)
@@ -175,14 +157,7 @@ public class Menu {
 			}
 			
 		} 
-		else if(MenuState == "Training")
-		{
-			// TRAINING SELECTION MENU'
-		} 
-		else if(MenuState == "Setting")
-		{
-			// TRAINING SELECTION MENU'
-		}
+		
 		else if(MenuState == "Pause")
 		{
 			// PAUSE SELECTION MENU'
@@ -201,10 +176,7 @@ public class Menu {
 			
 			posx = (width/2) - (controls.get(1).getWidth()/2);
 			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
-			/*
-			posx = (width) - (width-controls.get(1).getWidth());
-			posy = (height) - (height-((controls.size())/2)*controls.get(1).getHeight());
-			*/
+			
 			float pad = 10;
 			
 			for(int k=0; k<controls.size(); k++)
@@ -213,7 +185,7 @@ public class Menu {
 				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
 			}
 		}
-		else if(MenuState =="WaitingConnection")
+		else if(MenuState =="waitingConnection")
 		{
 			((Background) background).setState("Waiting");
 		}
@@ -222,73 +194,64 @@ public class Menu {
 			//LOCAL SELECTION MENU'
 			PlayerSelectionTurn = 1;
 			Player1Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), true);
-			Player2Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), false);
-			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
-			ObjectRenderer rPlayer2Preview = new ControlRenderer(Player2Preview, gm);
-
 			
+			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
+			
+
 			Player1Preview.setPosX(50);
 			Player1Preview.setPosY(80);
-			Player2Preview.setPosX(200);
-			Player2Preview.setPosY(80);
+			
 			
 			controls.add(Player1Preview);
-			controls.add(Player2Preview);
+			
 			renderers.add(rPlayer1Preview);
-			renderers.add(rPlayer2Preview);
+			
 		}
 	}
 	public void selectNext() {  
 		
-		if(ready)
-		{
 			controls.get(selectedIndex).setSelected(false);
 			selectedIndex+=1;
 			if(selectedIndex>controls.size()-1)
 				selectedIndex=0;
 			controls.get(selectedIndex).setSelected(true); 
-			ready =false;
-		}
+			setReady(false);
+		
 	}
 	public void selectPrev() { 
 		
-		if(ready)
-		{
+		
 			controls.get(selectedIndex).setSelected(false);
 			selectedIndex-=1;
 			if(selectedIndex<0)
 				selectedIndex=controls.size()-1;
 			controls.get(selectedIndex).setSelected(true); 
-			ready = false;
-		}
+			setReady(false);
+		
 	}
 	
 	public Action selectedAction() {
 		Button b=(Button)controls.get(selectedIndex);
-		ready = false;
+		setReady(false);
 		return b.getAction();
 		
 	} 
 	
 	public void nextPlayer() 
 	{
-		if(ready)
+		if(PlayerSelectionTurn == 1)
 		{
-				if(PlayerSelectionTurn == 1)
-				{
-					Player1Preview.Next();					
-				}
-				else if (PlayerSelectionTurn == 2)
-				{
-					Player2Preview.Next();
-				}	
-				ready = false;
+			Player1Preview.Next();					
 		}
+		else if (PlayerSelectionTurn == 2)
+		{
+			Player2Preview.Next();
+		}	
+		setReady(false);
 	}
 	public void nextPlayer(int PlayerId) 
 	{
-		if(ready)
-		{
+		
 			if(PlayerId == 1)
 			{
 				Player1Preview.Next();
@@ -298,14 +261,12 @@ public class Menu {
 				Player2Preview.Next();
 				
 			}
-			ready = false;
-		}
+			setReady(false);
 		
 	}
 	public void prevPlayer() 
 	{
-		if(ready)
-		{
+		if(!isLocked()) {
 			if(PlayerSelectionTurn == 1)
 			{
 				Player1Preview.Prev();
@@ -314,14 +275,12 @@ public class Menu {
 			{
 				Player2Preview.Prev();
 			}
-			ready = false;
-
-		}		
+			setReady(false);
+		}
 	}
 	public void prevPlayer(int PlayerId) 
 	{
-		if(ready)
-		{
+		if(!isLocked()) {
 			if(PlayerId == 1)
 			{
 				Player1Preview.Prev();
@@ -330,17 +289,16 @@ public class Menu {
 			{
 				Player2Preview.Prev();
 			}
-			ready = false;
-
-		}		
+			setReady(false);	
+		}
 	}
 	public void nextPlayerSelectionTurn() 
 	{
-		if(ready)
-		{
+		if(!isLocked()) {
 				if(PlayerSelectionTurn == 1)
 				{
 					Player1Preview.setActive(false);
+					if(Player2Preview!=null)
 					Player2Preview.setActive(true);
 					PlayerSelectionTurn++;
 				}
@@ -349,27 +307,21 @@ public class Menu {
 					PlayerSelectionTurn = -1;
 					Player2Preview.setActive(false);
 				}
-			ready = false;
 		}
 	}
 	public int getPlayerSelectionTurn() {return PlayerSelectionTurn;} 
 	public void setPlayer1Choosed(boolean C) 
 	{
-		if(C == true)
-		{
 			Player1Choosed = C;
 			Player1Preview.setActive(false);
-		}
-		ready = false;
+		
 	}
 	public void setPlayer2Choosed(boolean C) 
 	{
-		if(C == true)
-		{
+		
 			Player2Choosed = C;
 			Player2Preview.setActive(false);
-		}
-		ready = false;
+		
 	}
 	public boolean getPlayer1Choosed(){return Player1Choosed;} 
 	public boolean getPlayer2Choosed(){return Player2Choosed;} 
@@ -377,6 +329,41 @@ public class Menu {
 	{
 		MenuState = Status; 
 		initGUI();
+		unlock();
+		setReady(false);
 	}
 	public String getStatus() {return MenuState;}
+
+	public void tick(double delta) {
+		delay+=delta;
+		if (delay>inputDelay) {
+			setReady(true);
+			delay=0;
+		}	
+	}
+	public boolean isBusy() {return !isReady();}
+
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+
+	public void hold() {
+		ready=false;
+		
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void lock() {
+		this.locked = true;
+	}
+	public void unlock() {
+		this.locked = false;
+	}
 }

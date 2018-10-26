@@ -9,6 +9,7 @@ public class EventHandler {
 	
 	
 	public boolean[] keys;
+	KeyAdapter kl;
 	public EventHandler(GameManager g) 
 	{
 		
@@ -26,11 +27,16 @@ public class EventHandler {
 		});
 				
 		gm.painter.getPanel().addKeyListener( new KeyAdapter() {
+			private long lastPressProcessed = 0;
 			@Override
 			public void keyPressed(KeyEvent e) {
-				int key = e.getKeyCode();
-				keys[key]=true;
 				
+				 if(System.currentTimeMillis() - lastPressProcessed > 50) {
+			            //Do your work here...
+						int key = e.getKeyCode();
+						keys[key]=true;
+			            lastPressProcessed = System.currentTimeMillis();
+			        }     
 			}
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -42,5 +48,12 @@ public class EventHandler {
 			
 		});	
 	}
-	
+	public boolean getKey(int k) {
+		if(k>=KeyEvent.KEY_FIRST&&k<=KeyEvent.KEY_LAST) {
+			boolean r=keys[k];
+			keys[k]=false;
+			return r;
+		}
+		return false;
+	}
 }

@@ -2,6 +2,8 @@ package Objects;
 
 import java.util.LinkedList;
 
+import org.json.JSONObject;
+
 import interfaces.CanCrouch;
 import interfaces.CanFight;
 import interfaces.CanJump;
@@ -19,7 +21,6 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	
 	float life=250.0f;
 	float baseAttack=1.0f;
-	
 	float standHeight;
 	
 	
@@ -43,6 +44,31 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	HitBox h=null;
 	
 	Direction facing=Direction.RIGHT;
+	
+	public JSONObject getJSON() {
+		JSONObject j=super.getJSON();
+		j.put("name", Name);
+		j.put("life", life);
+		
+		j.put("falling", falling);
+		j.put("jumping", jumping);
+		j.put("crouching", crouching);
+		j.put("attacking", attacking);
+		j.put("staggering", staggering);
+		j.put("facing", facing.name());
+		
+		return j;
+		
+	}
+	public void sync(JSONObject o) {
+		super.sync(o);
+		falling=o.getBoolean("falling");
+		jumping=o.getBoolean("jumping");
+		crouching=o.getBoolean("crouching");
+		attacking=o.getBoolean("attacking");
+		staggering=o.getBoolean("staggering");
+		facing=Direction.valueOf(o.getString("facing"));
+	}
 	
 	public Player(float x,float y) 
 	{
@@ -434,5 +460,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public void setWeight(float weight) {
 		this.weight = weight;
 	}
+
+	
 	
 }
