@@ -192,8 +192,9 @@ public class GameManager extends Thread implements Runnable{
 				
 			}
 			try {
-				Thread.sleep(1);
+				sleep(1);
 			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}	
@@ -294,6 +295,7 @@ public class GameManager extends Thread implements Runnable{
 				}
 			}
 			else{
+				 if(!menu.isLocked()) {
 				if(ev.keys[Action.SELECT_MENU.key])
 					performAction(menu.selectedAction()); 
 				
@@ -302,28 +304,29 @@ public class GameManager extends Thread implements Runnable{
 				if(ev.keys[KeyEvent.VK_UP]) 
 					menu.selectPrev();		
 				}
+			}
 		}
 	}
 	private void checkMultiplayerInputs() {
 		if( C.getStateClient() == "Connected") {
 			if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(myPlayer).isAttacking()) 
 				C.sendMessage(new JAction(Action.PLAYER_ATTACK).toString());
-			if(ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isMovingLeft()) {
+			 if(ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isMovingLeft()) {
 				C.sendMessage(new JAction(Action.PLAYER_MOVE_LEFT).toString());
 			}
-			if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!w.getPlayer(myPlayer).isMovingRight()) {
+			 if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!w.getPlayer(myPlayer).isMovingRight()) {
 				C.sendMessage(new JAction(Action.PLAYER_MOVE_RIGHT).toString());
 			}
-			if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(myPlayer).isJumping()) {
+			 if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(myPlayer).isJumping()) {
 				C.sendMessage(new JAction(Action.PLAYER_JUMP).toString());
 			}
-			if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(myPlayer).isCrouching()) {
+			 if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(myPlayer).isCrouching()) {
 				C.sendMessage(new JAction(Action.PLAYER_CROUCH).toString());
 			}
-			if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(myPlayer).isCrouching()) {
+			 if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(myPlayer).isCrouching()) {
 				C.sendMessage(new JAction(Action.PLAYER_STAND).toString());
 			}
-			if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
+			 if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isResting()) {
 				C.sendMessage(new JAction(Action.PLAYER_MOVE_REST).toString());				
 			}
 		}	

@@ -78,13 +78,7 @@ public class Server extends Thread
 					
 					
 				}
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			
-					
+						
 			}
 		}
 	}

@@ -160,6 +160,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 					velY=0;
 					falling=false;
 					jumping=false;
+					
 				}
 				else if(this.getBounds(Side.Top).intersects( ((Block)t).getBounds(Side.Left)) ){
 					if(height<standHeight) {
@@ -408,7 +409,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		return PlayerState.NULL;
 	}
 	public boolean isResting() {
-		return dir==Direction.REST ;
+		return(!jumping&&!falling);
 	}
 	public boolean isMovingLeft() {
 		return(dir==Direction.LEFT);		

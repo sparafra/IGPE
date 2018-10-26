@@ -49,11 +49,11 @@ public class EventHandler {
 		});	
 	}
 	public boolean getKey(int k) {
-		if(k>=KeyEvent.KEY_FIRST&&k<=KeyEvent.KEY_LAST) {
-			boolean r=keys[k];
-			keys[k]=false;
-			return r;
+		try {
+			return keys[k];
 		}
-		return false;
+		finally {
+			keys[k]=false;
+		}
 	}
 }

@@ -231,9 +231,11 @@ public class Menu {
 	}
 	
 	public Action selectedAction() {
+		
 		Button b=(Button)controls.get(selectedIndex);
 		setReady(false);
 		return b.getAction();
+		
 		
 	} 
 	
@@ -327,7 +329,8 @@ public class Menu {
 	public boolean getPlayer2Choosed(){return Player2Choosed;} 
 	public void ChangeStatus(String Status) 
 	{
-		MenuState = Status; 
+		MenuState = Status;
+		selectedIndex=0;
 		initGUI();
 		unlock();
 		setReady(false);
