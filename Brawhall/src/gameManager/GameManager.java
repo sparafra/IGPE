@@ -67,7 +67,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	Server S = null;
 	Client C = null;
-	int myPlayer=0;
+	int myPlayer=1;
 	
 	private boolean running=false;
 	boolean inMenu;
@@ -78,6 +78,7 @@ public class GameManager extends Thread implements Runnable{
 	boolean waitingChoosePlayer = false;
 	public GameManager() 
 	{
+		this.setName("Game Manager");
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
 		m = new Media();
@@ -200,7 +201,9 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
+		if(!multiplayerGame)
 		w.Update(delta);
+		
 		menu.tick(delta);
 		checkInput(delta);
 		resolveActions();	
@@ -219,33 +222,47 @@ public class GameManager extends Thread implements Runnable{
 			checkLocalGameInputs();		
 		}	
 		else if(inGame&&multiplayerGame){
-			checkMultiplayerInputs();	
+			try {
+				checkMultiplayerInputs();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
 		
 	}
 	private void checkServerInputs(){
-		String s = C.getMessage();
-		if(s!=null) {
+		
+		
 		try {
-			
-			Message m=new Message(s);
-			s=m.getString("type");
-			
-			if (s.compareTo("message")==0) {
-				System.out.println(m.get("content"));
-			}
-			else if(s.compareTo("action")==0) {
-				JAction a=new JAction(m.toString());
-				performAction(a);
-			}
-			else if(s.compareTo("sync")==0) {
-				w.sync(m);
+			String s = C.getMessage();
+			if(s!=null) {
+				
+				Message m=new Message(s);
+				s=m.getString("type");
+				
+				if (s.compareTo("message")==0) {
+					System.out.println(m.get("content"));
+				}
+				else if(s.compareTo("action")==0) {
+					JAction a=new JAction(m.toString());
+					performAction(a);
+				}
+				else if(s.compareTo("sync")==0) {
+					w.sync(m);
+				}
 			}
 		} catch (JSONException e) {
 			//e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		 
-		}
+		
 	}
 	
 	private void checkMenuInputs(){
@@ -307,11 +324,11 @@ public class GameManager extends Thread implements Runnable{
 			}
 		}
 	}
-	private void checkMultiplayerInputs() {
+	private void checkMultiplayerInputs() throws JSONException, InterruptedException {
 		if( C.getStateClient() == "Connected") {
 			if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(myPlayer).isAttacking()) 
 				C.sendMessage(new JAction(Action.PLAYER_ATTACK).toString());
-			 if(ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isMovingLeft()) {
+			if(ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isMovingLeft()) {
 				C.sendMessage(new JAction(Action.PLAYER_MOVE_LEFT).toString());
 			}
 			 if(ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!w.getPlayer(myPlayer).isMovingRight()) {
@@ -326,7 +343,7 @@ public class GameManager extends Thread implements Runnable{
 			 if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(myPlayer).isCrouching()) {
 				C.sendMessage(new JAction(Action.PLAYER_STAND).toString());
 			}
-			 if(!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]&&!w.getPlayer(myPlayer).isResting()) {
+			 if(!w.getPlayer(myPlayer).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key]) {
 				C.sendMessage(new JAction(Action.PLAYER_MOVE_REST).toString());				
 			}
 		}	
@@ -335,34 +352,33 @@ public class GameManager extends Thread implements Runnable{
 		if(ev.keys[Action.PAUSE.key])				
 			performAction(Action.PAUSE);
 		
-		if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) {
+		 if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) 
 			performAction(Action.PLAYER_ATTACK,1);
-		}
-		if(!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key])
+		else if (!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key])
 			performAction(Action.PLAYER_MOVE_LEFT,1);
-		if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key])
+		else if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key])
 			performAction(Action.PLAYER_MOVE_RIGHT,1);
-		if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(1).isJumping())
+		else if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(1).isJumping())
 			performAction(Action.PLAYER_JUMP,1);
-		if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
+		else if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
 			performAction(Action.PLAYER_CROUCH,1);
-		if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) 
+		else if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) 
 			performAction(Action.PLAYER_STAND,1);
-		if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
+		else if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
 			performAction(Action.PLAYER_MOVE_REST,1);	
-		if(ev.keys[Action.PLAYER2_ATTACK.key]&& !w.getPlayer(2).isAttacking())
+		else if(ev.keys[Action.PLAYER2_ATTACK.key]&& !w.getPlayer(2).isAttacking())
 			performAction(Action.PLAYER_ATTACK,2);
-		if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+		else if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER2_MOVE_LEFT.key])
 			performAction(Action.PLAYER_MOVE_LEFT,2);
-		if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
+		else if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
 			performAction(Action.PLAYER_MOVE_RIGHT,2);
-		if(ev.keys[Action.PLAYER2_JUMP.key] && !w.getPlayer(2).isJumping())
+		else if(ev.keys[Action.PLAYER2_JUMP.key] && !w.getPlayer(2).isJumping())
 			performAction(Action.PLAYER_JUMP,2);
-		if(ev.keys[Action.PLAYER2_CROUCH.key]&&!w.getPlayer(2).isCrouching())
+		else if(ev.keys[Action.PLAYER2_CROUCH.key]&&!w.getPlayer(2).isCrouching())
 			performAction(Action.PLAYER_CROUCH,2);
-		if(!ev.keys[Action.PLAYER2_CROUCH.key]&&w.getPlayer(2).isCrouching())
+		else if(!ev.keys[Action.PLAYER2_CROUCH.key]&&w.getPlayer(2).isCrouching())
 			performAction(Action.PLAYER_STAND,2);
-		if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
+		else if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
 			performAction(Action.PLAYER_MOVE_REST,2);
 	}
 	private void performAction(JAction a) {
@@ -399,7 +415,7 @@ public class GameManager extends Thread implements Runnable{
 			try {
 				switch (a.getAction()) {
 				case PLAYER_JUMP:
-					w.PlayerJump(a.getInt("client"));
+					w.getPlayer(a.getInt("client")).jump();
 					break;
 				case PLAYER_ATTACK:
 					w.getPlayer(a.getInt("client")).toggleAttack(true);
@@ -433,7 +449,6 @@ public class GameManager extends Thread implements Runnable{
 						loadLevel();
 					break;
 				case START_MULTIPLAYER_GAME:
-						myPlayer=a.getInt("target");
 						menu.ChangeStatus("Pause");
 						w.setPlayerName(a.getString("playerName"));
 						w.setPlayer2Name(a.getString("player2Name"));
@@ -478,7 +493,7 @@ public class GameManager extends Thread implements Runnable{
 						waitingConnection = true;
 						menu.ChangeStatus("waitingConnection");
 						painter.setRenderers(menu.getRenderers());	
-						C = new Client("localhost");
+						C = new Client();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -490,6 +505,7 @@ public class GameManager extends Thread implements Runnable{
 					break;
 				case CHOOSE_PLAYER_MULTIPLAYER:
 					menu.ChangeStatus("ChooseMultiplayerPlayer");
+					myPlayer=a.getInt("target");
 					painter.setRenderers(menu.getRenderers());
 					break;
 				case MENU_CLOSE_GAME:
@@ -497,7 +513,12 @@ public class GameManager extends Thread implements Runnable{
 				
 				case PLAYER_CHOOSED_MULTIPLAYER:
 					if(!menu.getPlayer1Choosed())
-					C.sendMessage(a.toString());
+						try {
+							C.sendMessage(a.toString());
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					
 					break;
 				default:

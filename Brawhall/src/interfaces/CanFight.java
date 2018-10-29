@@ -7,6 +7,7 @@ import Objects.GameObject;
 public interface CanFight {
 
 	public void attack(LinkedList<GameObject> list,double delta);
-	public void toggleAttack(boolean b);
+	public void toggleAttack(Boolean b);
 	public void getDamage(float dmg);
+	
 }

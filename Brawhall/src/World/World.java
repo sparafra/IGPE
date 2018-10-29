@@ -1,5 +1,6 @@
 package World;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.json.JSONArray;
@@ -13,8 +14,8 @@ public class World {
 	int width,height;
 	
 	LinkedList<GameObject> objects;
-	Player player;
-	Player player2;
+	
+	ArrayList<Player> players;
 	String playerName="Zombie";
 	String player2Name="Zombie";
 	
@@ -25,11 +26,11 @@ public class World {
 		j.put("playerName", playerName);
 		j.put("player2Name", player2Name);
 	
-		JSONArray players=new JSONArray();
-		players.put(player.getJSON());
-		players.put(player2.getJSON());
+		JSONArray pl=new JSONArray();
 		
-		j.put("players",players);
+		pl.put(this.players.get(0).getJSON());
+		pl.put(this.players.get(1).getJSON());
+		j.put("players",pl);
 		return j;
 	}
 	public void sync(JSONObject j) {
@@ -38,23 +39,17 @@ public class World {
 		playerName=j.getString("playerName");
 		player2Name =j.getString("player2Name");
 		JSONArray ja= j.getJSONArray("players");
-		player.sync( ja.getJSONObject(0));
-		player2.sync(ja.getJSONObject(1));
+		players.get(0).sync( ja.getJSONObject(0));
+		players.get(1).sync(ja.getJSONObject(1));
 		
 	}
 	
  	public Player getPlayer(int n) {
-		if (n==1)
-			return player;
-		else
-			return player2;
+		return players.get(n-1);
 	}
 
 	public void setPlayer(Player p,int n) {
-		if (n==1)
-		player=p;
-		else
-			player2=p;
+		players.set(n-1, p);
 	}
 	
 	
@@ -79,14 +74,16 @@ public class World {
 	public World(int w, int h,LinkedList<GameObject> l) {
 		objects=l;
 		width=w;
-		player=new Player(0,0);
-		player2=new Player(0,0);
+		players=new ArrayList<Player>();
+		players.add(new Player(0,0));
+		players.add(new Player(0,0));
 		height=h;
 	}
 	public World(int w, int h) {
 		objects=new LinkedList<GameObject>();
-		player=new Player(0,0);
-		player2=new Player(0,0);
+		players=new ArrayList<Player>();
+		players.add(new Player(0,0));
+		players.add(new Player(0,0));
 		width=w;
 		height=h;
 	}
@@ -121,14 +118,7 @@ public void Update(double delta) {
 		objects.add(o);
 	}
 
-	public void PlayerJump(int i) {
-		if (i==1) {
-			player.jump();
-		}
-		else if(i==2) {
-			player2.jump();
-		}
-	}
+	
 	
 	
 }

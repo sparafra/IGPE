@@ -1,31 +1,33 @@
 package Network;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Connect extends Thread 
 {
 	private Socket client = null;
-	BufferedReader in = null;
-	PrintStream out = null;
+	DataInputStream in = null;
+	DataOutputStream out = null;
 
-	LinkedList<String> messages;
-	boolean messageReaded = false;
-	boolean InGame = false;
-	
+	LinkedBlockingQueue<Message> messages;
+	int id;
 	public Connect() {}
 	
-	public Connect(Socket clientSocket)
+	public Connect(Socket clientSocket, LinkedBlockingQueue<Message> messages)
 	{
 		client = clientSocket;
-		messages=new LinkedList<String>();
+		this.messages=messages;
 		try
 		{
-			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			out = new PrintStream(client.getOutputStream(), true);
+			in = new DataInputStream(client.getInputStream());
+			out = new DataOutputStream(client.getOutputStream());
 
 		}
 		catch(Exception e1)
@@ -44,25 +46,31 @@ public class Connect extends Thread
 			
 			while(true)
 			{
-					if(in.ready())
-					{
-						String message=in.readLine();
+					
+						String message=in.readUTF();
 						if(message!=null) {
-							messages.push( message);
-							
+							Message m=new Message(message);
+							m.put("client", id);
+							messages.put(m);
+							System.out.println(message);
 						}
-					}
+					
 
 			}
 			
 		}
 		catch(Exception e) {}
 	}
-	public String getMessage() {return messages.poll();}
+	
 	public void sendMessage(String Data)
 	{	
-		out.println(Data);
-		out.flush();
+		try {
+			out.writeUTF(Data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	
@@ -76,5 +84,10 @@ public class Connect extends Thread
 		}
 		catch(Exception e){};
 	}
-	public void setInGame(boolean G) {InGame=G;}
+
+
+	public void setId(int i) {
+		id=i;
+		
+	}
 }

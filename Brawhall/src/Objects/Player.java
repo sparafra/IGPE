@@ -30,11 +30,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	float damage=0.0f;
 	int hitCount=0;
 	
-	boolean falling=true;
-	boolean jumping=false;
-	boolean crouching=false;
-	boolean attacking=false;
-	boolean staggering=false;
+	Boolean falling=true;
+	Boolean jumping=false;
+	Boolean crouching=false;
+	Boolean attacking=false;
+	Boolean staggering=false;
 	
 	double attackTimer=0;
 	double staggerTimer=0;
@@ -50,11 +50,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		j.put("name", Name);
 		j.put("life", life);
 		
-		j.put("falling", falling);
-		j.put("jumping", jumping);
-		j.put("crouching", crouching);
-		j.put("attacking", attacking);
-		j.put("staggering", staggering);
+		j.put("falling", falling.toString());
+		j.put("jumping", jumping.toString());
+		j.put("crouching", crouching.toString());
+		j.put("attacking", attacking.toString());
+		j.put("staggering", staggering.toString());
 		j.put("facing", facing.name());
 		
 		return j;
@@ -62,11 +62,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	}
 	public void sync(JSONObject o) {
 		super.sync(o);
-		falling=o.getBoolean("falling");
-		jumping=o.getBoolean("jumping");
-		crouching=o.getBoolean("crouching");
-		attacking=o.getBoolean("attacking");
-		staggering=o.getBoolean("staggering");
+		falling=Boolean.valueOf(o.getString("falling"));
+		jumping=Boolean.valueOf(o.getString("jumping"));
+		crouching=Boolean.valueOf(o.getString("jumping"));
+		attacking=Boolean.valueOf(o.getString("attacking"));
+		staggering=Boolean.valueOf(o.getString("staggering"));
 		facing=Direction.valueOf(o.getString("facing"));
 	}
 	
@@ -212,7 +212,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			}
 		}
 	}
-	public boolean Intersect(BoundingBox b) {
+	public Boolean Intersect(BoundingBox b) {
 		return (b.intersects(this.getBounds(Side.Bottom))||b.intersects(this.getBounds(Side.Top))||b.intersects(this.getBounds(Side.Right))||b.intersects(this.getBounds(Side.Left)));
 	}
 	@Override
@@ -315,7 +315,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		}
 		p.getDamage(baseAttack);
 	}
-	public boolean isAttacking() {
+	public Boolean isAttacking() {
 		return attacking;
 	}
 	@Override
@@ -348,7 +348,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			
 	}
 	@Override
-	public void toggleAttack(boolean b) {
+	public void toggleAttack(Boolean b) {
 		if(attacking==false&&b) {
 			attacking=true;
 			attackTimer=atkSpeed;
@@ -408,26 +408,26 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		
 		return PlayerState.NULL;
 	}
-	public boolean isResting() {
-		return(!jumping&&!falling);
+	public Boolean isResting() {
+		return(dir==Direction.REST);
 	}
-	public boolean isMovingLeft() {
+	public Boolean isMovingLeft() {
 		return(dir==Direction.LEFT);		
 	}
-	public boolean isMovingRight() {
+	public Boolean isMovingRight() {
 		return(dir==Direction.RIGHT);
 	}
 	
 	@Override
-	public void toggleCrouch(boolean b) {
+	public void toggleCrouch(Boolean b) {
 		crouching=b;
 		
 	}
-	public boolean isCrouching() {
+	public Boolean isCrouching() {
 		return crouching;
 	}
 	
-	public boolean isJumping() {return jumping;}
+	public Boolean isJumping() {return jumping;}
 	public void setName(String Name) {this.Name = Name;}
 	public String getName() {return this.Name;}
 	

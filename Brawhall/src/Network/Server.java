@@ -3,12 +3,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import World.World;
 import gameManager.Action;
 import Network.ActionMessage;
+import Objects.Background;
 import Objects.Block;
 import Objects.GameObject;
+import Objects.ObjectRenderer;
 import Objects.Player;
+import Objects.PlayerRenderer;
 import interfaces.Direction;
 
 public class Server extends Thread
@@ -17,17 +22,17 @@ public class Server extends Thread
 	private ServerSocket Server;
 	
 	ArrayList<Connect> clients;
-	LinkedList<Message>messages;
+	LinkedBlockingQueue<Message>messages;
 	ServerState state;
 	World w;
 	boolean playerSelected[]=new boolean[3];
 	
 	public Server() throws Exception
 	{
-		
+		this.setName("Server");
 		clients = new ArrayList<Connect>();
-		Server = new ServerSocket(4000);
-		messages=new LinkedList<Message>();
+		Server = new ServerSocket(1234);
+		messages=new LinkedBlockingQueue<Message>();
 		System.out.println("Il Server è in attesa sulla porta 4000.");
 		state=ServerState.WAITING_CONNECTIONS;
 		w=new World(300,300);
@@ -48,10 +53,11 @@ public class Server extends Thread
 					System.out.println("In attesa di Connessione.");
 					Socket client = Server.accept();
 					System.out.println("Connessione accettata da: "+ client.getInetAddress());
-					Connect c = new Connect(client);
+					Connect c = new Connect(client,messages);
 					Message o=new Message();
 					o.write("Hello m8");
 					c.sendMessage(o.toString());
+					c.setId(clients.size()+1);
 					clients.add(c);
 					if(clients.size()==2) {
 						ActionMessage a= new ActionMessage(Action.CHOOSE_PLAYER_MULTIPLAYER);
@@ -76,24 +82,24 @@ public class Server extends Thread
 				if(draw>1) {
 					draw=0;
 					
+					if(state==ServerState.IN_GAME) {
 					
+						sendBroadcast(new SyncMessage(w.getJSON().toString()));
+					}
 				}
 						
 			}
 		}
 	}
 	private void tick(double delta) {
-		checkInput();
-		resolveActions();
-		w.Update(delta);
-		sendBroadcast(new SyncMessage(w.getJSON().toString()));
 		
+		resolveActions();
+		if(state==ServerState.IN_GAME) {
+			w.Update(delta);
+		
+		}
 	}
-	private void checkInput() {
-		for(int i=0;i<clients.size();i++)
-			getMessage(i);
-			
-	}
+	
 	private void resolveActions() {
 		Message m=messages.poll();
 		if(m!=null){
@@ -107,7 +113,7 @@ public class Server extends Thread
 				case CLOSE_GAME:
 					break;
 				case PLAYER_JUMP:
-					w.PlayerJump(sender);
+					w.getPlayer(sender).jump();
 					break;
 				case PLAYER_ATTACK:
 					w.getPlayer(sender).toggleAttack(true);
@@ -172,31 +178,36 @@ public class Server extends Thread
 	}
 	private void loadLevel() {
 		
-		String p1=w.getPlayerName();
-		String p2=w.getPlayer2Name();
 		
+		String p2=w.getPlayer2Name();
+		String p1=w.getPlayerName();
 		w=new World(300,500);
 		GameObject o=new Player(50,0);
 		GameObject o2 =new Player(250,0);
+		
 		w.addObject(o);
 		w.addObject(o2);
 		w.setPlayer((Player)o,1);
 		w.setPlayer((Player)o2,2);
 		w.getPlayer(1).setName(p1);
 		w.getPlayer(2).setName(p2);
-
 		
 		
+		//cam=new Camera(w,o);
+		//cam.setViewH(500);
+		//cam.setViewW(300);
+		
+	
 		
 		for (int i=50;i<w.getWidth()-50;i+=6) {
 			o=new Block(i, w.getHeight()/2-18);
 			w.addObject(o);
-			
+		
 		}
 		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
 			o=new Block(i, w.getHeight()/2-40);
 			w.addObject(o);
-			
+		
 		}
 		for (int i=50;i<w.getWidth()/2-30;i+=6) {
 			o=new Block(i, w.getHeight()/2-60);
@@ -206,36 +217,27 @@ public class Server extends Thread
 		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
 			o=new Block(i, w.getHeight()/2-100);
 			w.addObject(o);
-			
+		
 		}
 		
 	}
+		
+	
 	public ServerState getStateServer() {return state;};
-	public boolean getMessage(int idConnection) {
-		
-		String s= clients.get(idConnection).getMessage();
-		if(s!=null) {
-			Message m=new Message(s);
-			m.put("client", idConnection+1);
-			messages.push(m);
-			return true;
-		}
-		return false;
-		
-	}
-	//public void putMessage(int idConnection,String s) { clients.get(idConnection).messages.addFirst(s); }
+	
+	
 	public void sendMessage(int idConnection, Message message) {
 		
 		clients.get(idConnection).sendMessage(message.toString());
 		
 	}
 	public void sendBroadcast( Message message) {
-		for(int id =0;id<clients.size();id++) {
-		message.put("target", id);
-		clients.get(id).sendMessage(message.toString());
+		for(int id = 0;id<clients.size();id++) {
+			message.put("target", id+1);
+			clients.get(id).sendMessage(message.toString());
 		
 		}
 	}
-	public void setInGame(int idConnection, boolean G) { clients.get(idConnection).setInGame(G);}
+
 	
 }

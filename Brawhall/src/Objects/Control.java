@@ -9,12 +9,12 @@ import interfaces.Drawable;
 public class Control extends GameObject implements Clickable, Drawable {
 	
 	Action act; 
-	boolean selected = false;
+	Boolean selected = false;
 	
-	public boolean isSelected() {
+	public Boolean isSelected() {
 		return selected;
 	}
-	public void setSelected(boolean selected) {
+	public void setSelected(Boolean selected) {
 		this.selected = selected;
 	}
 	
