@@ -6,54 +6,66 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Media 
+public final class Media 
 {
-	Toolkit tk;
+	static Toolkit tk;
 	
-	String Path;
+	static String Path;
 	
 	//Object Type
-	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Characters;
-	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Blocks;
-	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Buttons;
-	HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Backgrounds;
+	static HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Characters;
+	static HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Blocks;
+	static HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Buttons;
+	static HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Backgrounds;
 	
 
-	//All Media
-	HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>> Media;
-	
-	HashMap<String, HashMap<String, Float>> PlayerSpecs;
-	
-	int CurrentFrame =0;
-	PlayerState LastState = PlayerState.FALLINGFORWARD;
-	
-	LinkedList<String> charactersName;
+	//All Medias
+	static HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>> Medias;
+	static HashMap<String, HashMap<String, Float>> PlayerSpecs;
+	static LinkedList<String> CharacterNames;
 	
 	
 	public Media()
 	{
+		
+	}
+	
+	public static void LoadMedia()
+	{
+
+		Toolkit tk;
+		
+		String Path;
+		
+		//Object Type
+		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Characters;
+		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Blocks;
+		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Buttons;
+		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Backgrounds;
+		
+
+		//All Medias
+		HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>> Medias;
+		HashMap<String, HashMap<String, Float>> PlayerSpecs;
+		LinkedList<String> CharacterNames;
+		
 		tk = Toolkit.getDefaultToolkit();
 		
-		charactersName = new LinkedList<String>();
+		CharacterNames = new LinkedList<String>();
 		
 		PlayerSpecs = new HashMap<String, HashMap<String, Float>>();
 		
-		Media = new HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>>();
+		Medias = new HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>>();
 
 		Characters = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		Blocks = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		Buttons = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		Backgrounds = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		
-		
-		LoadMedia();
-	}
-	
-	public void LoadMedia()
-	{
 		
 		Path = "";
 		try {
@@ -157,7 +169,7 @@ public class Media
 				if(Folders.get(k).getName().equals("Characters"))
 				{
 					Characters.put(Folders1.get(i).getName(), objectName);
-					charactersName.add(Folders1.get(i).getName());
+					CharacterNames.add(Folders1.get(i).getName());
 					System.out.println(Folders1.get(i).getName() + "  Aggiunto");
 				}
 				else if(Folders.get(k).getName().equals("Blocks"))
@@ -176,37 +188,50 @@ public class Media
 			}
 		}
 		
-		Media.put(ObjectId.CHARACTER, Characters);
-		Media.put(ObjectId.BUTTON, Buttons);
-		Media.put(ObjectId.BACKGROUND, Backgrounds);
-		Media.put(ObjectId.BLOCK, Blocks);
+		Medias.put(ObjectId.CHARACTER, Characters);
+		Medias.put(ObjectId.BUTTON, Buttons);
+		Medias.put(ObjectId.BACKGROUND, Backgrounds);
+		Medias.put(ObjectId.BLOCK, Blocks);
 		
+		Media.Medias= Medias;
+		Media.Backgrounds=Backgrounds;
+		Media.Characters=Characters;
+		Media.Buttons=Buttons;
+		Media.Blocks=Blocks;
+		
+		Media.CharacterNames=CharacterNames;
+		Media.PlayerSpecs=PlayerSpecs;
+		
+	
+	
 	}
 	
-	public Image getImage(ObjectId Type, PlayerState S, String Name, int Frames)
+	public static Image getImage(ObjectId Type, PlayerState S, String Name, int Frames)
 	{
-		return Media.get(Type).get(Name).get(S).get(Frames);
+		return Media.Medias.get(Type).get(Name).get(S).get(Frames);
 	}
-	public int getCharacters() {return Media.get(ObjectId.CHARACTER).size();} 
-	public LinkedList<String> getCharactersName() 
+	public static int getCharacters() {return Medias.get(ObjectId.CHARACTER).size();} 
+	public static LinkedList<String> getCharactersName() 
 	{
-		return charactersName;
+		return CharacterNames;
 	}
-	public int nextCharacterFrames(PlayerState S, String Name)
+	public static int nextCharacterFrames(PlayerState S, String Name)
 	{
+		return 0;
+		/*
 		if(LastState != S)
 			CurrentFrame =0;
 		LastState = S;
 		if(S == PlayerState.JUMPINGFORWARD || S == PlayerState.JUMPINGBACK || S == PlayerState.FALLINGFORWARD || S == PlayerState.FALLINGBACK || S == PlayerState.CROUCHINGFORWARD || S == PlayerState.CROUCHINGBACK)
 		{
-			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
+			if(CurrentFrame < Medias.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{
 				CurrentFrame++;
 			}
 		}
 		else if (S == PlayerState.FORWARD || S == PlayerState.BACK || S == PlayerState.ATTACKINGFORWARD || S == PlayerState.ATTACKINGBACK)
 		{
-			if(CurrentFrame < Media.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
+			if(CurrentFrame < Medias.get(ObjectId.CHARACTER).get(Name).get(S).size() -1)
 			{
 				CurrentFrame++;
 			}
@@ -217,8 +242,8 @@ public class Media
 		}
 		
 		return CurrentFrame;
-	}
-	private LinkedList<File> getFolders(String Path)
+	*/}
+	private static LinkedList<File> getFolders(String Path)
 	{
 		File directory = new File(Path);
         //get all the files from a directory
@@ -233,7 +258,7 @@ public class Media
         }
         return Folders;
 	}
-	private LinkedList<File> getFiles(String Path)
+	private static LinkedList<File> getFiles(String Path)
 	{
 		File directory = new File(Path);
         //get all the files from a directory
@@ -249,7 +274,7 @@ public class Media
         return Files;
 	}
 	
-	private HashMap<String, Float> loadSpecs(File f) 
+	private static HashMap<String, Float> loadSpecs(File f) 
 	{
 		try
 		{
@@ -271,6 +296,6 @@ public class Media
 		}catch(IOException e) {return null;}
 	}
 		
-	//public HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}
-	public HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}
-}
+	public static HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}
+
+	}

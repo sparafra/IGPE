@@ -38,6 +38,7 @@ public class GameManager extends Thread implements Runnable{
 		
 		
 		GameManager gm= new GameManager();
+		Media.LoadMedia();
 		gm.start();
 	}
 	
@@ -58,7 +59,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	HashMap<String, SoundClip> SoundClips;
 	
-	Media m;
+	
 	EventHandler ev;
 	World w;
 	
@@ -81,7 +82,7 @@ public class GameManager extends Thread implements Runnable{
 		this.setName("Game Manager");
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
-		m = new Media();
+		
 		w=new World(300,300);
 		actions=new LinkedList<JAction>();
 		menu = new Menu(this);
@@ -102,11 +103,11 @@ public class GameManager extends Thread implements Runnable{
 	private void loadPlayerSpecs(Player obj)
 	{
 		
-		obj.setBaseAttack(m.getPlayerSpecs(obj.getName()).get("baseAttack"));
-		obj.setStandHeight(m.getPlayerSpecs(obj.getName()).get("standHeight"));
-		obj.setAtkSpeed(m.getPlayerSpecs(obj.getName()).get("atkSpeed"));
-		obj.setAtkRange(m.getPlayerSpecs(obj.getName()).get("atkRange"));
-		obj.setWeight(m.getPlayerSpecs(obj.getName()).get("weight"));
+		obj.setBaseAttack(Media.getPlayerSpecs(obj.getName()).get("baseAttack"));
+		obj.setStandHeight(Media.getPlayerSpecs(obj.getName()).get("standHeight"));
+		obj.setAtkSpeed(Media.getPlayerSpecs(obj.getName()).get("atkSpeed"));
+		obj.setAtkRange(Media.getPlayerSpecs(obj.getName()).get("atkRange"));
+		obj.setWeight(Media.getPlayerSpecs(obj.getName()).get("weight"));
 		
 		
 	}
@@ -176,17 +177,22 @@ public class GameManager extends Thread implements Runnable{
 		super.start();
 	}
 	public void run() {
-		double lastTime = System.nanoTime();
+	/*	double lastTime = System.nanoTime();
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
-		double delta = 0;
+		double delta = 0;*/
 		double draw=0;
 		while(isRunning()){
-			double now = System.nanoTime();
+			/*double now = System.nanoTime();
 			delta = (now - lastTime) / ns;
 			tick(delta );
+			
+			lastTime = now;*/
+			
+			Time.update();
+			double delta=Time.deltaTime();
 			draw+=delta;
-			lastTime = now;
+			tick(delta );
 			if(draw>1) {
 				draw=0;
 				painter.render();
@@ -554,7 +560,7 @@ public class GameManager extends Thread implements Runnable{
 	}
 	
 	public World getWorld() {return w;}
-	public Media getMedia() {return m;}
+	
 	public void setMenu(boolean m) {this.inMenu = m;}
 	public boolean isRunning() {
 		return running;

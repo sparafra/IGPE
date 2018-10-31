@@ -46,12 +46,22 @@ public class MyPanel extends JPanel {
 		}
 
 	}
-	/*public void render(LinkedList<ObjectRenderer> l) {
-		list=l;
-		repaint();
-	}*/
+	
+	public void paint(Graphics g,double delta) {
+		super.paint(g);
+		for(int i=0;i<renderers.size();i++) {
+			renderers.get(i).DefaultRender(g,delta);
+			
+		}
+
+	}
+	
 	public void render() {
 		
 		repaint();
+	}
+	public void render(double draw) {
+		paint(this.getGraphics(),draw);
+		
 	}
 }

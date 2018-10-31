@@ -7,6 +7,7 @@ import Objects.Button;
 import Objects.Control;
 import Objects.ControlRenderer;
 import Objects.GameObject;
+import Objects.Media;
 import Objects.ObjectRenderer;
 import Objects.PlayerPreview;
 import Objects.SoundClip;
@@ -108,8 +109,8 @@ public class Menu {
 		{
 			//LOCAL SELECTION MENU'
 			PlayerSelectionTurn = 1;
-			Player1Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), true);
-			Player2Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), false);
+			Player1Preview = new PlayerPreview(30,200, Media.getCharactersName(), true);
+			Player2Preview = new PlayerPreview(30,200, Media.getCharactersName(), false);
 			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
 			ObjectRenderer rPlayer2Preview = new ControlRenderer(Player2Preview, gm);
 
@@ -193,7 +194,7 @@ public class Menu {
 		{
 			//LOCAL SELECTION MENU'
 			PlayerSelectionTurn = 1;
-			Player1Preview = new PlayerPreview(30,200, gm.getMedia().getCharactersName(), true);
+			Player1Preview = new PlayerPreview(30,200, Media.getCharactersName(), true);
 			
 			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
 			
