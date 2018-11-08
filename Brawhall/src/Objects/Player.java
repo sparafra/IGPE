@@ -28,13 +28,16 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	float atkRange=5.0f;
 	float weight=0.0f;
 	float damage=0.0f;
+	
 	int hitCount=0;
+	int lives=1;
 	
 	Boolean falling=true;
 	Boolean jumping=false;
 	Boolean crouching=false;
 	Boolean attacking=false;
 	Boolean staggering=false;
+	Boolean dead=false;
 	
 	double attackTimer=0;
 	double staggerTimer=0;
@@ -365,6 +368,8 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	}
 	public PlayerState getState()
 	{
+		if (dead)
+			return PlayerState.DEAD;
 		if(attacking)
 		{
 			//System.out.println("Attacking");

@@ -210,6 +210,9 @@ public final class Media
 	{
 		return Media.Medias.get(Type).get(Name).get(S).get(Frames);
 	}
+	public static LinkedList<Image> getImages(ObjectId Type, PlayerState S, String Name){
+		return Media.Medias.get(Type).get(Name).get(S);
+	}
 	public static int getCharacters() {return Medias.get(ObjectId.CHARACTER).size();} 
 	public static LinkedList<String> getCharactersName() 
 	{

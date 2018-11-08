@@ -42,8 +42,8 @@ public class GameManager extends Thread implements Runnable{
 		gm.start();
 	}
 	
-	static final int panelWidth=1440;	
-	static final int panelHeight=900;
+	static final int panelWidth=1920;	
+	static final int panelHeight=1080;
 
 	Toolkit tk;
 
@@ -60,7 +60,7 @@ public class GameManager extends Thread implements Runnable{
 	HashMap<String, SoundClip> SoundClips;
 	
 	
-	EventHandler ev;
+	GMEventHandler ev;
 	World w;
 	
 	
@@ -127,9 +127,9 @@ public class GameManager extends Thread implements Runnable{
 		objects=new LinkedList<GameObject>();
 		String p2=w.getPlayer2Name();
 		String p1=w.getPlayerName();
-		w=new World(300,500,objects);
+		w=new World(250,400,objects);
 		GameObject o=new Player(50,0);
-		GameObject o2 =new Player(250,0);
+		GameObject o2 =new Player(200,0);
 		GameObject bg = new Background(w.getWidth(), w.getHeight());
 		w.addObject(o);
 		w.addObject(o2);
@@ -148,23 +148,23 @@ public class GameManager extends Thread implements Runnable{
 		painter.addRenderer(new PlayerRenderer((Player)o,this));	
 		painter.addRenderer(new PlayerRenderer((Player)o2,this));	
 		
-		for (int i=50;i<w.getWidth()-50;i+=6) {
-			o=new Block(i, w.getHeight()/2-18);
+		for (int i=20;i<w.getWidth()-50;i+=6) {
+			o=new Block(i, w.getHeight()/2+40);
 			w.addObject(o);
 			painter.addRenderer(new ObjectRenderer(o,this));
 		}
 		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
-			o=new Block(i, w.getHeight()/2-40);
+			o=new Block(i, w.getHeight()/2+20);
 			w.addObject(o);
 			painter.addRenderer(new ObjectRenderer(o,this));
 		}
-		for (int i=50;i<w.getWidth()/2-30;i+=6) {
-			o=new Block(i, w.getHeight()/2-60);
+		for (int i=15;i<w.getWidth()/2-30;i+=6) {
+			o=new Block(i, w.getHeight()/2);
 			w.addObject(o);
 			painter.addRenderer(new ObjectRenderer(o,this));
 		}
 		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
-			o=new Block(i, w.getHeight()/2-100);
+			o=new Block(i, w.getHeight()/2-40);
 			w.addObject(o);
 			painter.addRenderer(new ObjectRenderer(o,this));
 		}
@@ -172,7 +172,7 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void start() {
 		if(isRunning() )return;
-		ev=new EventHandler(this);
+		ev=new GMEventHandler(this);
 		running=true;
 		super.start();
 	}
@@ -211,11 +211,11 @@ public class GameManager extends Thread implements Runnable{
 		w.Update(delta);
 		
 		menu.tick(delta);
-		checkInput(delta);
+		checkInput();
 		resolveActions();	
 	}
 	
-	public void checkInput(double delta) {
+	public void checkInput() {
 		
 		if(C!=null&&C.getStateClient()=="Connected") {
 			checkServerInputs();
@@ -264,7 +264,7 @@ public class GameManager extends Thread implements Runnable{
 		} catch (JSONException e) {
 			//e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch block 
 			e.printStackTrace();
 		}
 		 
@@ -285,6 +285,9 @@ public class GameManager extends Thread implements Runnable{
 						menu.nextPlayerSelectionTurn();
 					else
 					{
+						w.setPlayerName(menu.Player1Preview.getSelectedPlayer());
+						w.setPlayer2Name(menu.Player2Preview.getSelectedPlayer());
+						
 						performAction(Action.START_GAME);
 					}
 					
