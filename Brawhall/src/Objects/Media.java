@@ -28,6 +28,7 @@ public final class Media
 	static HashMap<String, HashMap<String, Float>> PlayerSpecs;
 	static LinkedList<String> CharacterNames;
 	
+	static HashMap<String, LinkedList<String>> Levels;
 	
 	public Media()
 	{
@@ -47,11 +48,14 @@ public final class Media
 		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Buttons;
 		HashMap<String, HashMap<PlayerState, LinkedList<Image>>> Backgrounds;
 		
+		HashMap<String, LinkedList<String>> Levels;
 
 		//All Medias
 		HashMap<ObjectId, HashMap<String, HashMap<PlayerState, LinkedList<Image>>>> Medias;
 		HashMap<String, HashMap<String, Float>> PlayerSpecs;
 		LinkedList<String> CharacterNames;
+		
+		LinkedList<String> jsonLevel;
 		
 		tk = Toolkit.getDefaultToolkit();
 		
@@ -66,6 +70,9 @@ public final class Media
 		Buttons = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		Backgrounds = new HashMap<String, HashMap<PlayerState, LinkedList<Image>>>();
 		
+		jsonLevel = new LinkedList<String>();
+		
+		Levels = new HashMap<String, LinkedList<String>>();
 		
 		Path = "";
 		try {
@@ -97,6 +104,11 @@ public final class Media
 						{
 							PlayerSpecs.put(Folders1.get(i).getName(), loadSpecs(Files.get(t)));
 							
+						}
+						else if(Folders2.get(j).getName().equals("Json"))
+						{
+							jsonLevel.add(loadJson(Files.get(t)));
+							System.out.println(Folders1.get(i).getName());
 						}
 						else
 						{
@@ -185,6 +197,10 @@ public final class Media
 				{
 					Backgrounds.put(Folders1.get(i).getName(), objectName);
 				}
+				else if(Folders.get(k).getName().equals("Levels"))
+				{
+					Levels.put(Folders1.get(i).getName(), jsonLevel);
+				}
 			}
 		}
 		
@@ -202,7 +218,7 @@ public final class Media
 		Media.CharacterNames=CharacterNames;
 		Media.PlayerSpecs=PlayerSpecs;
 		
-	
+		Media.Levels = Levels;
 	
 	}
 	
@@ -297,6 +313,24 @@ public final class Media
 			br.close();
 			return specs;
 		}catch(IOException e) {return null;}
+	}
+	private static String loadJson(File f) 
+	{
+		try
+		{
+			System.out.println(f.getPath());
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			String st = br.readLine();
+			
+			br.close();
+			return st;
+		}catch(IOException e) {return null;}
+	}
+	
+	public static String getLevel(String LevelName)
+	{
+		//System.out.println(Levels.get(LevelName).get(0));
+		return Levels.get(LevelName).get(0);
 	}
 		
 	public static HashMap<String, Float> getPlayerSpecs(String PlayerName){return PlayerSpecs.get(PlayerName);}

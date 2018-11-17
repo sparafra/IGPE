@@ -39,6 +39,7 @@ public class GameManager extends Thread implements Runnable{
 		
 		GameManager gm= new GameManager();
 		Media.LoadMedia();
+		
 		gm.start();
 	}
 	
@@ -80,6 +81,7 @@ public class GameManager extends Thread implements Runnable{
 	public GameManager() 
 	{
 		this.setName("Game Manager");
+		
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
 		
