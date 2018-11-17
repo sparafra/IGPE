@@ -21,8 +21,7 @@ public class MyPanel extends JPanel {
 		return renderers ;
 	}
 	GameManager gm;
-	int h;
-	int w;
+
 	private static final long serialVersionUID = 1L;
 
 	public MyPanel(GameManager g,int height,int width)  {

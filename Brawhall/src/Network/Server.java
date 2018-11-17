@@ -7,6 +7,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import World.World;
 import gameManager.Action;
+import gameManager.EventHandler;
+import gameManager.JAction;
 import Network.ActionMessage;
 import Objects.Background;
 import Objects.Block;
@@ -25,6 +27,7 @@ public class Server extends Thread
 	LinkedBlockingQueue<Message>messages;
 	ServerState state;
 	World w;
+	EventHandler ev;
 	boolean playerSelected[]=new boolean[3];
 	
 	public Server() throws Exception
@@ -33,11 +36,85 @@ public class Server extends Thread
 		clients = new ArrayList<Connect>();
 		Server = new ServerSocket(1234);
 		messages=new LinkedBlockingQueue<Message>();
+		initEH();
 		System.out.println("Il Server è in attesa sulla porta 4000.");
 		state=ServerState.WAITING_CONNECTIONS;
-		w=new World(300,300);
+		w=new World(300,300,ev);
 		this.start();
 		
+	}
+	private void initEH() {
+		ev=new EventHandler() {
+			@Override
+			public void performAction(Action a) {
+				ActionMessage action=new ActionMessage(a);
+				putMessage(action);
+			}
+			@Override
+			public void resolveActions() {
+				Message m=messages.poll();
+				if(m!=null){
+					int sender=m.getInt("client");
+					if(m.getString("type").compareTo("message")==0) {
+						System.out.println(m.get("content"));
+					}else if(m.getString("type").compareTo("action")==0) {
+						ActionMessage a=new ActionMessage(m.toString());
+					switch(a.getAction()) {
+						
+						case CLOSE_GAME:
+							break;
+						case PLAYER_JUMP:
+							w.getPlayer(sender).jump();
+							break;
+						case PLAYER_ATTACK:
+							w.getPlayer(sender).toggleAttack(true);
+							break;
+						case PLAYER_MOVE_LEFT: 
+							w.getPlayer(sender).ChangeDirection(Direction.LEFT);
+							break;	
+						case PLAYER_MOVE_RIGHT:
+							w.getPlayer(sender).ChangeDirection(Direction.RIGHT);
+							break;
+						case PLAYER_MOVE_REST:
+							w.getPlayer(sender).ChangeDirection(Direction.REST);
+							break;
+						case PLAYER_CROUCH:
+							w.getPlayer(sender).toggleCrouch(true);
+							break;
+						case PLAYER_STAND:
+							w.getPlayer(sender).toggleCrouch(false);
+							break;
+						case START_MULTIPLAYER_GAME:
+							loadLevel();
+							state=ServerState.IN_GAME;
+							break;
+						case PLAYER_CHOOSED_MULTIPLAYER:
+							if(sender==1)
+								w.setPlayerName(1,a.getString("playerName"));
+							else if (sender==2)
+								w.setPlayerName(2,a.getString("playerName"));
+							playerSelected[sender]=true;
+							if(playerSelected[1]&&playerSelected[2]) {
+								ActionMessage am=new ActionMessage(Action.START_MULTIPLAYER_GAME);
+								am.put("playerName", w.getPlayerName(1));
+								am.put("player2Name", w.getPlayerName(2));
+								putMessage(am);
+							}
+							break;
+						
+						default:
+							break;
+						
+						
+						}
+					
+						if(needBroadcast(a))sendBroadcast(a);
+					}
+					
+				}
+			}
+			
+		};
 	}
 	public void run(){
 		double lastTime = System.nanoTime();
@@ -93,75 +170,14 @@ public class Server extends Thread
 	}
 	private void tick(double delta) {
 		
-		resolveActions();
+		ev.resolveActions();
 		if(state==ServerState.IN_GAME) {
 			w.Update(delta);
 		
 		}
 	}
 	
-	private void resolveActions() {
-		Message m=messages.poll();
-		if(m!=null){
-			int sender=m.getInt("client");
-			if(m.getString("type").compareTo("message")==0) {
-				System.out.println(m.get("content"));
-			}else if(m.getString("type").compareTo("action")==0) {
-				ActionMessage a=new ActionMessage(m.toString());
-			switch(a.getAction()) {
-				
-				case CLOSE_GAME:
-					break;
-				case PLAYER_JUMP:
-					w.getPlayer(sender).jump();
-					break;
-				case PLAYER_ATTACK:
-					w.getPlayer(sender).toggleAttack(true);
-					break;
-				case PLAYER_MOVE_LEFT: 
-					w.getPlayer(sender).ChangeDirection(Direction.LEFT);
-					break;	
-				case PLAYER_MOVE_RIGHT:
-					w.getPlayer(sender).ChangeDirection(Direction.RIGHT);
-					break;
-				case PLAYER_MOVE_REST:
-					w.getPlayer(sender).ChangeDirection(Direction.REST);
-					break;
-				case PLAYER_CROUCH:
-					w.getPlayer(sender).toggleCrouch(true);
-					break;
-				case PLAYER_STAND:
-					w.getPlayer(sender).toggleCrouch(false);
-					break;
-				case START_MULTIPLAYER_GAME:
-					loadLevel();
-					state=ServerState.IN_GAME;
-					break;
-				case PLAYER_CHOOSED_MULTIPLAYER:
-					if(sender==1)
-						w.setPlayerName(a.getString("playerName"));
-					else if (sender==2)
-						w.setPlayer2Name(a.getString("playerName"));
-					playerSelected[sender]=true;
-					if(playerSelected[1]&&playerSelected[2]) {
-						ActionMessage am=new ActionMessage(Action.START_MULTIPLAYER_GAME);
-						am.put("playerName", w.getPlayerName());
-						am.put("player2Name", w.getPlayer2Name());
-						putMessage(am);
-					}
-					break;
-				
-				default:
-					break;
-				
-				
-				}
-			
-				if(needBroadcast(a))sendBroadcast(a);
-			}
-			
-		}
-	}
+	
 	private void putMessage(ActionMessage a) {
 		a.put("client", 0);
 		messages.add(a);
@@ -179,9 +195,9 @@ public class Server extends Thread
 	private void loadLevel() {
 		
 		
-		String p2=w.getPlayer2Name();
-		String p1=w.getPlayerName();
-		w=new World(300,500);
+		String p2=w.getPlayerName(2);
+		String p1=w.getPlayerName(1);
+		w=new World(300,500,ev);
 		GameObject o=new Player(50,0);
 		GameObject o2 =new Player(250,0);
 		
@@ -238,6 +254,9 @@ public class Server extends Thread
 		
 		}
 	}
-
+	public void close(){
+		for (int i =0;i<clients.size();i++)
+			clients.get(i).CloseConnection();
+	}
 	
 }

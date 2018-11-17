@@ -14,6 +14,7 @@ public class Client
   LinkedBlockingQueue<String> received;
   boolean running=true;
   String StateClient;
+  Socket s;
     public Client() throws UnknownHostException, IOException  
     { 
        
@@ -22,7 +23,7 @@ public class Client
         InetAddress ip = InetAddress.getByName("localhost"); 
           
         // establish the connection 
-        Socket s = new Socket(ip, ServerPort); 
+         s = new Socket(ip, ServerPort); 
           
         toSend=new  LinkedBlockingQueue<String>();
         received=new  LinkedBlockingQueue<String>();
@@ -91,5 +92,14 @@ public class Client
 	public String getStateClient() {
 		// TODO Auto-generated method stub
 		return StateClient;
+	}
+	public void close() {
+		try {
+			s.close();
+			running=false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 } 

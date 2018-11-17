@@ -8,23 +8,24 @@ import org.json.JSONObject;
 
 import Objects.GameObject;
 import Objects.Player;
+import gameManager.Action;
+import gameManager.EventHandler;
 
 public class World {
 	
 	int width,height;
 	
 	LinkedList<GameObject> objects;
+	EventHandler ev;
 	
 	ArrayList<Player> players;
-	String playerName="Zombie";
-	String player2Name="Zombie";
+	
 	
 	public JSONObject getJSON() {
 		JSONObject j=new JSONObject();
 		j.put("width", width);
 		j.put("height", height);
-		j.put("playerName", playerName);
-		j.put("player2Name", player2Name);
+		
 	
 		JSONArray pl=new JSONArray();
 		
@@ -36,8 +37,7 @@ public class World {
 	public void sync(JSONObject j) {
 		width=j.getInt("width");
 		height=j.getInt("height");
-		playerName=j.getString("playerName");
-		player2Name =j.getString("player2Name");
+		
 		JSONArray ja= j.getJSONArray("players");
 		players.get(0).sync( ja.getJSONObject(0));
 		players.get(1).sync(ja.getJSONObject(1));
@@ -55,37 +55,25 @@ public class World {
 	
 	
 
-	public String getPlayerName() {
-		return playerName;
+	public String getPlayerName(int i) {
+		return players.get(i-1).getName();
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setPlayerName(int i,String n) {
+		this.players.get(i-1).setName(n);
 	}
 
-	public String getPlayer2Name() {
-		return player2Name;
-	}
 
-	public void setPlayer2Name(String player2Name) {
-		this.player2Name = player2Name;
-	}
 
-	public World(int w, int h,LinkedList<GameObject> l) {
-		objects=l;
-		width=w;
-		players=new ArrayList<Player>();
-		players.add(new Player(0,0));
-		players.add(new Player(0,0));
-		height=h;
-	}
-	public World(int w, int h) {
+	
+	public World(int w, int h, EventHandler e) {
 		objects=new LinkedList<GameObject>();
 		players=new ArrayList<Player>();
 		players.add(new Player(0,0));
 		players.add(new Player(0,0));
 		width=w;
 		height=h;
+		ev=e;
 	}
 	
 	
@@ -100,15 +88,14 @@ public class World {
 
 
 
-	/*public void Update() {
-		
-		for (int i=0;i<objects.size();i++) {
-			objects.get(i).tick(objects);
-		}
-	}*/
-	
+
 public void Update(double delta) {
-		
+		for (int i=0;i<players.size();i++){
+			Player p=players.get(i);
+			if(p.isDead()&&p.getlives()==0) {
+				ev.performAction(Action.GAMEOVER);
+			}
+		}
 		for (int i=0;i<objects.size();i++) {
 			objects.get(i).tick(objects,delta);
 		}

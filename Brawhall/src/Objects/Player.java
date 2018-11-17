@@ -466,7 +466,8 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public void setWeight(float weight) {
 		this.weight = weight;
 	}
-
+	public Boolean isDead() {return dead;}
+	public int getlives() {return lives;}
 	
 	
 }

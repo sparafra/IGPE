@@ -13,6 +13,10 @@ public class Block extends GameObject implements Collides, Drawable{
 		width=12;
 		height=12;
 	}
+	public Block(float x,float y,float w,float h) {
+		super(x,y,w,h,ObjectId.BLOCK);
+		
+	}
 
 //	@Override
 //	public void tick(LinkedList<GameObject>objs) {

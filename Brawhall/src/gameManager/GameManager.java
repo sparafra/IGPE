@@ -42,8 +42,8 @@ public class GameManager extends Thread implements Runnable{
 		gm.start();
 	}
 	
-	static final int panelWidth=1920;	
-	static final int panelHeight=1080;
+	static final int panelWidth=1440;	
+	static final int panelHeight=900;
 
 	Toolkit tk;
 
@@ -51,8 +51,8 @@ public class GameManager extends Thread implements Runnable{
 	Menu menu;
 	
 	
-	LinkedList<GameObject> objects;
-	LinkedList<JAction> actions;
+	
+	
 	
 	LinkedList<ObjectRenderer>SavedRenderers;
 	LinkedList<GameObject> SavedObjects;
@@ -83,8 +83,8 @@ public class GameManager extends Thread implements Runnable{
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
 		
-		w=new World(300,300);
-		actions=new LinkedList<JAction>();
+		w=new World(300,300,ev);
+		
 		menu = new Menu(this);
 		
 		initGui();
@@ -122,52 +122,40 @@ public class GameManager extends Thread implements Runnable{
 		f.setContentPane(pn);
 		f.setVisible(true);
 	}
-	public void loadLevel() {
+	public void loadLevel(Level l) {
 		painter.clear();
-		objects=new LinkedList<GameObject>();
-		String p2=w.getPlayer2Name();
-		String p1=w.getPlayerName();
-		w=new World(250,400,objects);
-		GameObject o=new Player(50,0);
-		GameObject o2 =new Player(200,0);
-		GameObject bg = new Background(w.getWidth(), w.getHeight());
-		w.addObject(o);
-		w.addObject(o2);
-		w.setPlayer((Player)o,1);
-		w.setPlayer((Player)o2,2);
-		w.getPlayer(1).setName(p1);
-		w.getPlayer(2).setName(p2);
+		
+		String s2=w.getPlayerName(1);
+		String s1=w.getPlayerName(2);
+		w=new World(l.getWidth(),l.getHeight(),ev);
+		
+		Player p=new Player(50,0);
+		Player p2 =new Player(200,0);
+		
+		w.addObject(p);
+		w.addObject(p2);
+		
+		w.setPlayer(p,1);
+		w.setPlayer(p2,2);
+		w.getPlayer(1).setName(s1);
+		w.getPlayer(2).setName(s2);
+		
 		loadPlayerSpecs(w.getPlayer(1));
 		loadPlayerSpecs(w.getPlayer(2));
 		
 		//cam=new Camera(w,o);
 		//cam.setViewH(500);
 		//cam.setViewW(300);
+		for(int i=0;i<l.objects.size();i++) {
+			GameObject o= l.objects.get(i);
+			w.addObject(o);
+			painter.addRenderer(new ObjectRenderer(l.objects.get(i),this));
+		}
 		
-		painter.addRenderer(new ObjectRenderer(bg, this));
-		painter.addRenderer(new PlayerRenderer((Player)o,this));	
-		painter.addRenderer(new PlayerRenderer((Player)o2,this));	
+		painter.addRenderer(new PlayerRenderer(p,this));	
+		painter.addRenderer(new PlayerRenderer(p2,this));
 		
-		for (int i=20;i<w.getWidth()-50;i+=6) {
-			o=new Block(i, w.getHeight()/2+40);
-			w.addObject(o);
-			painter.addRenderer(new ObjectRenderer(o,this));
-		}
-		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
-			o=new Block(i, w.getHeight()/2+20);
-			w.addObject(o);
-			painter.addRenderer(new ObjectRenderer(o,this));
-		}
-		for (int i=15;i<w.getWidth()/2-30;i+=6) {
-			o=new Block(i, w.getHeight()/2);
-			w.addObject(o);
-			painter.addRenderer(new ObjectRenderer(o,this));
-		}
-		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
-			o=new Block(i, w.getHeight()/2-40);
-			w.addObject(o);
-			painter.addRenderer(new ObjectRenderer(o,this));
-		}
+		
 		
 	}
 	public void start() {
@@ -212,7 +200,7 @@ public class GameManager extends Thread implements Runnable{
 		
 		menu.tick(delta);
 		checkInput();
-		resolveActions();	
+		ev.resolveActions();	
 	}
 	
 	public void checkInput() {
@@ -255,7 +243,7 @@ public class GameManager extends Thread implements Runnable{
 				}
 				else if(s.compareTo("action")==0) {
 					JAction a=new JAction(m.toString());
-					performAction(a);
+					ev.performAction(a);
 				}
 				else if(s.compareTo("sync")==0) {
 					w.sync(m);
@@ -285,10 +273,10 @@ public class GameManager extends Thread implements Runnable{
 						menu.nextPlayerSelectionTurn();
 					else
 					{
-						w.setPlayerName(menu.Player1Preview.getSelectedPlayer());
-						w.setPlayer2Name(menu.Player2Preview.getSelectedPlayer());
+						w.setPlayerName(1,menu.Player1Preview.getSelectedPlayer());
+						w.setPlayerName(2,menu.Player2Preview.getSelectedPlayer());
 						
-						performAction(Action.START_GAME);
+						ev.performAction(Action.START_GAME);
 					}
 					
 					menu.hold();
@@ -311,7 +299,7 @@ public class GameManager extends Thread implements Runnable{
 								JAction a=new JAction(Action.PLAYER_CHOOSED_MULTIPLAYER);
 								a.put("playerName",menu.Player1Preview.getSelectedPlayer());
 								menu.lock();
-								performAction(a);
+								ev.performAction(a);
 								}
 						}
 						if(ev.keys[KeyEvent.VK_RIGHT])
@@ -323,7 +311,7 @@ public class GameManager extends Thread implements Runnable{
 			else{
 				 if(!menu.isLocked()) {
 				if(ev.keys[Action.SELECT_MENU.key])
-					performAction(menu.selectedAction()); 
+					ev.performAction(menu.selectedAction()); 
 				
 				if(ev.keys[KeyEvent.VK_DOWN]) 
 					menu.selectNext(); 
@@ -359,188 +347,40 @@ public class GameManager extends Thread implements Runnable{
 	}
 	private void checkLocalGameInputs() {
 		if(ev.keys[Action.PAUSE.key])				
-			performAction(Action.PAUSE);
+			ev.performAction(Action.PAUSE);
 		
 		 if(ev.keys[Action.PLAYER_ATTACK.key]&& !w.getPlayer(1).isAttacking()) 
-			performAction(Action.PLAYER_ATTACK,1);
+			 ev.performAction(Action.PLAYER_ATTACK,1);
 		else if (!w.getPlayer(1).isMovingLeft()&&ev.keys[Action.PLAYER_MOVE_LEFT.key])
-			performAction(Action.PLAYER_MOVE_LEFT,1);
+			ev.performAction(Action.PLAYER_MOVE_LEFT,1);
 		else if(!w.getPlayer(1).isMovingRight()&&ev.keys[Action.PLAYER_MOVE_RIGHT.key])
-			performAction(Action.PLAYER_MOVE_RIGHT,1);
+			ev.performAction(Action.PLAYER_MOVE_RIGHT,1);
 		else if(ev.keys[Action.PLAYER_JUMP.key] && !w.getPlayer(1).isJumping())
-			performAction(Action.PLAYER_JUMP,1);
+			ev.performAction(Action.PLAYER_JUMP,1);
 		else if(ev.keys[Action.PLAYER_CROUCH.key]&& !w.getPlayer(1).isCrouching())
-			performAction(Action.PLAYER_CROUCH,1);
+			ev.performAction(Action.PLAYER_CROUCH,1);
 		else if(!ev.keys[Action.PLAYER_CROUCH.key]&& w.getPlayer(1).isCrouching()) 
-			performAction(Action.PLAYER_STAND,1);
+			ev.performAction(Action.PLAYER_STAND,1);
 		else if(!w.getPlayer(1).isResting()&&!ev.keys[Action.PLAYER_JUMP.key]&&!ev.keys[Action.PLAYER_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER_MOVE_LEFT.key])
-			performAction(Action.PLAYER_MOVE_REST,1);	
+			ev.performAction(Action.PLAYER_MOVE_REST,1);	
 		else if(ev.keys[Action.PLAYER2_ATTACK.key]&& !w.getPlayer(2).isAttacking())
-			performAction(Action.PLAYER_ATTACK,2);
+			ev.performAction(Action.PLAYER_ATTACK,2);
 		else if(!w.getPlayer(2).isMovingLeft()&&ev.keys[Action.PLAYER2_MOVE_LEFT.key])
-			performAction(Action.PLAYER_MOVE_LEFT,2);
+			ev.performAction(Action.PLAYER_MOVE_LEFT,2);
 		else if(!w.getPlayer(2).isMovingRight()&&ev.keys[Action.PLAYER2_MOVE_RIGHT.key])
-			performAction(Action.PLAYER_MOVE_RIGHT,2);
+			ev.performAction(Action.PLAYER_MOVE_RIGHT,2);
 		else if(ev.keys[Action.PLAYER2_JUMP.key] && !w.getPlayer(2).isJumping())
-			performAction(Action.PLAYER_JUMP,2);
+			ev.performAction(Action.PLAYER_JUMP,2);
 		else if(ev.keys[Action.PLAYER2_CROUCH.key]&&!w.getPlayer(2).isCrouching())
-			performAction(Action.PLAYER_CROUCH,2);
+			ev.performAction(Action.PLAYER_CROUCH,2);
 		else if(!ev.keys[Action.PLAYER2_CROUCH.key]&&w.getPlayer(2).isCrouching())
-			performAction(Action.PLAYER_STAND,2);
+			ev.performAction(Action.PLAYER_STAND,2);
 		else if(!w.getPlayer(2).isResting()&&!ev.keys[Action.PLAYER2_JUMP.key]&&!ev.keys[Action.PLAYER2_MOVE_RIGHT.key]&&!ev.keys[Action.PLAYER2_MOVE_LEFT.key])
-			performAction(Action.PLAYER_MOVE_REST,2);
-	}
-	private void performAction(JAction a) {
-		actions.push(a);		
-	}
-	private void performAction(Action a) {
-		JAction ja;
-		try {
-			ja = new JAction(a);
-			actions.push(ja);	
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
-	}
-	private void performAction(Action a,int client) {
-		JAction ja;
-		try {
-			ja = new JAction(a);
-			ja.put("client",client);
-			actions.push(ja);	
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			
+			ev.performAction(Action.PLAYER_MOVE_REST,2);
 	}
 	
-	public void resolveActions() {
-		
-			JAction a=actions.poll();
-			if(a!=null)
-			try {
-				switch (a.getAction()) {
-				case PLAYER_JUMP:
-					w.getPlayer(a.getInt("client")).jump();
-					break;
-				case PLAYER_ATTACK:
-					w.getPlayer(a.getInt("client")).toggleAttack(true);
-				break;
-				case PLAYER_MOVE_LEFT: 
-					w.getPlayer(a.getInt("client")).ChangeDirection(Direction.LEFT);
-					break;	
-				case PLAYER_MOVE_RIGHT:
-					w.getPlayer(a.getInt("client")).ChangeDirection(Direction.RIGHT);
-					break;
-				case PLAYER_MOVE_REST:
-					w.getPlayer(a.getInt("client")).ChangeDirection(Direction.REST);
-					break;
-				case PLAYER_CROUCH:
-					w.getPlayer(a.getInt("client")).toggleCrouch(true);
-					break;
-				case PLAYER_STAND:
-					w.getPlayer(a.getInt("client")).toggleCrouch(false);
-					break;
-				case CLOSE_GAME: 
-					System.exit(0);
-					break;
-				case OPEN_SETTING:
-					break;
-				case SELECT_MENU:
-					break;
-				case START_GAME:
-						menu.ChangeStatus("Pause");
-						inMenu=false;
-						inGame=true;
-						loadLevel();
-					break;
-				case START_MULTIPLAYER_GAME:
-						menu.ChangeStatus("Pause");
-						w.setPlayerName(a.getString("playerName"));
-						w.setPlayer2Name(a.getString("player2Name"));
-						inMenu=false;
-						multiplayerGame=true;
-						inGame=true;
-						loadLevel();
-					break;
-				case MENU_START_LOCAL_GAME:
-					menu.ChangeStatus("ChooseLocalPlayer");
-					painter.setRenderers(menu.getRenderers());	
-					break;
-				case MENU_START_MULTIPLAYER_GAME:
-					menu.ChangeStatus("Multiplayer");
-					painter.setRenderers(menu.getRenderers());	
-					break;
-				case PAUSE:
-					inMenu = true;
-					SavedRenderers=painter.getRenderers();
-					menu.ChangeStatus("Pause");
-					painter.setRenderers(menu.getRenderers());	
-					break;
-				case RESUME:
-					inMenu=false;
-					SoundClips.get("Menu").Stop();
-					painter.setRenderers(SavedRenderers);
-					break;
-				case CREAPARTITA:
-					try 
-					{	
-						S = new Server();
-						performAction(Action.PARTECIPA);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					
-					
-					break;
-				case PARTECIPA:
-					try 
-					{
-						waitingConnection = true;
-						menu.ChangeStatus("waitingConnection");
-						painter.setRenderers(menu.getRenderers());	
-						C = new Client();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-				case BACKTOMENU:
-					menu.ChangeStatus("StartMenu");
-					painter.setRenderers(menu.getRenderers());
-					break;
-				case CHOOSE_PLAYER_MULTIPLAYER:
-					menu.ChangeStatus("ChooseMultiplayerPlayer");
-					myPlayer=a.getInt("target");
-					painter.setRenderers(menu.getRenderers());
-					break;
-				case MENU_CLOSE_GAME:
-					break;
-				
-				case PLAYER_CHOOSED_MULTIPLAYER:
-					if(!menu.getPlayer1Choosed())
-						try {
-							C.sendMessage(a.toString());
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					
-					break;
-				default:
-					break;
-				
-				
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-	}
+	
+	
 	
 	public int ConvertX(float wx) {
 		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;	
