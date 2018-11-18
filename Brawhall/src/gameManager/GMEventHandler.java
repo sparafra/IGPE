@@ -120,6 +120,9 @@ public class GMEventHandler implements EventHandler {
 			case PLAYER_STAND:
 				gm.w.getPlayer(a.getInt("client")).toggleCrouch(false);
 				break;
+			case OPEN_START_MENU:
+				
+				break;
 			case CLOSE_GAME: 
 				System.exit(0);
 				break;
@@ -215,9 +218,15 @@ public class GMEventHandler implements EventHandler {
 					if (gm.S!=null) {
 						gm.S.close();
 					}
+					gm.inMenu=true;
+					gm.painter.setRenderers(gm.menu.getRenderers());
+					
 				}
 				else {
-					
+					gm.inGame=false;
+					gm.menu.ChangeStatus("StartMenu");
+					gm.inMenu=true;
+					gm.painter.setRenderers(gm.menu.getRenderers());
 				}
 				break;
 			default:

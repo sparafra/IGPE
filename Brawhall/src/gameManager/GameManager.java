@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Graphics.Camera;
 import Network.ActionMessage;
 import Network.Client;
 import Network.Message;
@@ -65,6 +66,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	
 	Painter painter;
+	Camera cam;
 	
 	Server S = null;
 	Client C = null;
@@ -82,13 +84,18 @@ public class GameManager extends Thread implements Runnable{
 		this.setName("Game Manager");
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
+		initGui();
+		initSound();
+		
 		
 		w=new World(300,300,ev);
+		cam=new Camera(w);
+		cam.setFree(true);
+		cam.center();
 		
 		menu = new Menu(this);
 		
-		initGui();
-		initSound();
+		
 		
 		inMenu=true;
 		painter.setRenderers(menu.getRenderers());
@@ -135,6 +142,7 @@ public class GameManager extends Thread implements Runnable{
 		w.addObject(p);
 		w.addObject(p2);
 		
+		
 		w.setPlayer(p,1);
 		w.setPlayer(p2,2);
 		w.getPlayer(1).setName(s1);
@@ -143,9 +151,10 @@ public class GameManager extends Thread implements Runnable{
 		loadPlayerSpecs(w.getPlayer(1));
 		loadPlayerSpecs(w.getPlayer(2));
 		
-		//cam=new Camera(w,o);
-		//cam.setViewH(500);
-		//cam.setViewW(300);
+		cam=new Camera(w);
+		
+		cam.addAnchor(p);
+		cam.addAnchor(p2);
 		for(int i=0;i<l.objects.size();i++) {
 			GameObject o= l.objects.get(i);
 			w.addObject(o);
@@ -195,10 +204,10 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
-		if(!multiplayerGame)
+		if(!multiplayerGame&&inGame)
 		w.Update(delta);
-		
 		menu.tick(delta);
+		cam.tick();
 		checkInput();
 		ev.resolveActions();	
 	}
@@ -298,7 +307,7 @@ public class GameManager extends Thread implements Runnable{
 							else {
 								JAction a=new JAction(Action.PLAYER_CHOOSED_MULTIPLAYER);
 								a.put("playerName",menu.Player1Preview.getSelectedPlayer());
-								menu.lock();
+								
 								ev.performAction(a);
 								}
 						}
@@ -382,26 +391,29 @@ public class GameManager extends Thread implements Runnable{
 	
 	
 	
-	public int ConvertX(float wx) {
-		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;	
-	}
-	public int ConvertY(float wy) {
-		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;	
-	}
-	public int ConvertPosX(float wx) {
-		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;
-	}
-	public int ConvertPosY(float wy) {
-		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;
-	}
-	
-	public int ConvertPanelX(float px) {
-		return (int) ((px*w.getWidth())/painter.getPanel().getWidth()) ;
-	}
-	public int ConvertPanelY(float py) {
-		return (int) ((py*w.getHeight())/painter.getPanel().getHeight()) ;
-	}
-	
+	public float ConvertX(float wx) {
+		return  ((wx*painter.getPanel().getWidth())/cam.getWidth()) ;
+		
+ 	}
+ 	public float ConvertY(float wy) {
+ 		return  ((wy*painter.getPanel().getHeight())/cam.getHeight()) ;
+ 		
+ 	}
+ 	public float ConvertPosX(float wx) { 
+ 		return (int) (((wx-cam.getPosX())*painter.getPanel().getWidth())/cam.getWidth()) ;
+ 		
+ 	}
+ 	public float ConvertPosY(float wy) {
+ 		return  (((wy-cam.getPosY())*painter.getPanel().getHeight())/cam.getHeight()) ;
+ 		
+ 	}
+ 	public float ConvertPanelX(float px) {
+ 		return  ((px*cam.getWidth())/painter.getPanel().getWidth()) ;
+ 		
+ 	}
+ 	public float ConvertPanelY(float py) {
+ 		return  ((py*cam.getHeight())/painter.getPanel().getHeight()) ;
+ 	}
 	public World getWorld() {return w;}
 	
 	public void setMenu(boolean m) {this.inMenu = m;}

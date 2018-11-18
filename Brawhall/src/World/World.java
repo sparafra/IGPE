@@ -17,8 +17,7 @@ public class World {
 	
 	LinkedList<GameObject> objects;
 	EventHandler ev;
-	
-	ArrayList<Player> players;
+	LinkedList<Player> players;
 	
 	
 	public JSONObject getJSON() {
@@ -68,7 +67,7 @@ public class World {
 	
 	public World(int w, int h, EventHandler e) {
 		objects=new LinkedList<GameObject>();
-		players=new ArrayList<Player>();
+		players=new LinkedList<Player>();
 		players.add(new Player(0,0));
 		players.add(new Player(0,0));
 		width=w;
@@ -103,6 +102,10 @@ public void Update(double delta) {
 
 	public void addObject(GameObject o) {
 		objects.add(o);
+	}
+	public LinkedList<Player> getPlayers() {
+		// TODO Auto-generated method stub
+		return players;
 	}
 
 	

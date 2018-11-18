@@ -333,7 +333,7 @@ public class Menu {
 		MenuState = Status;
 		selectedIndex=0;
 		initGUI();
-		unlock();
+		
 		setReady(false);
 	}
 	public String getStatus() {return MenuState;}
@@ -364,10 +364,4 @@ public class Menu {
 		return locked;
 	}
 
-	public void lock() {
-		this.locked = true;
-	}
-	public void unlock() {
-		this.locked = false;
-	}
 }

@@ -26,7 +26,7 @@ public class PlayerRenderer extends ObjectRenderer{
 			currentImage=Media.getImage(ObjectId.CHARACTER, p.getState(), p.getName(),currentFrame);
 			lastRender=0;
 		}	 
-		g.drawImage(currentImage,gm.ConvertPosX(obj.posX), gm.ConvertPosY(obj.posY), gm.ConvertX(obj.width), gm.ConvertY(obj.height), null);
+		g.drawImage(currentImage,(int)gm.ConvertPosX(obj.posX),(int) gm.ConvertPosY(obj.posY),(int) gm.ConvertX(obj.width),(int) gm.ConvertY(obj.height), null);
 	}
 
 	private int getNextFrame() {
