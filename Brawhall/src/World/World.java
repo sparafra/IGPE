@@ -7,13 +7,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Objects.GameObject;
+import Objects.ObjectId;
 import Objects.Player;
 import gameManager.Action;
 import gameManager.EventHandler;
 
-public class World {
+public class World extends GameObject{
 	
-	int width,height;
+	
 	
 	LinkedList<GameObject> objects;
 	EventHandler ev;
@@ -66,22 +67,22 @@ public class World {
 
 	
 	public World(int w, int h, EventHandler e) {
+		super(0, 0, w, h, ObjectId.WORLD);
 		objects=new LinkedList<GameObject>();
 		players=new LinkedList<Player>();
 		players.add(new Player(0,0));
 		players.add(new Player(0,0));
-		width=w;
-		height=h;
+		
 		ev=e;
 	}
 	
 	
 	
-	public int getWidth() {	return width;}
+	public float getWidth() {	return width;}
 
 	public void setWidth(int width) {this.width = width;}
 
-	public int getHeight() {return height;}
+	public float getHeight() {return height;}
 
 	public void setHeight(int height) {this.height = height;}
 
@@ -106,6 +107,11 @@ public void Update(double delta) {
 	public LinkedList<Player> getPlayers() {
 		// TODO Auto-generated method stub
 		return players;
+	}
+	@Override
+	public void tick(LinkedList<GameObject> objects, double delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

@@ -86,19 +86,12 @@ public class GameManager extends Thread implements Runnable{
 		tk = Toolkit.getDefaultToolkit();
 		initGui();
 		initSound();
+		openStartMenu();
+		ev=new GMEventHandler(this);
+		w=new World(0,0,ev);
+	
 		
 		
-		w=new World(300,300,ev);
-		cam=new Camera(w);
-		cam.setFree(true);
-		cam.center();
-		
-		menu = new Menu(this);
-		
-		
-		
-		inMenu=true;
-		painter.setRenderers(menu.getRenderers());
 			
 	}
 	public void initSound()
@@ -169,7 +162,6 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void start() {
 		if(isRunning() )return;
-		ev=new GMEventHandler(this);
 		running=true;
 		super.start();
 	}
@@ -419,6 +411,14 @@ public class GameManager extends Thread implements Runnable{
 	public void setMenu(boolean m) {this.inMenu = m;}
 	public boolean isRunning() {
 		return running;
+	}
+	public void openStartMenu() {
+		menu = new Menu(300,300,this);
+		cam=new Camera(menu);
+		cam.setFree(true);
+		cam.center();
+		inMenu=true;
+		painter.setRenderers(menu.getRenderers());
 	}
 	
 }

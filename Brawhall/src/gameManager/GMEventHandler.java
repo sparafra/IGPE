@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import org.json.JSONException;
 
+import Graphics.Camera;
 import Network.Client;
 import Network.Server;
 import interfaces.Direction;
@@ -121,7 +122,7 @@ public class GMEventHandler implements EventHandler {
 				gm.w.getPlayer(a.getInt("client")).toggleCrouch(false);
 				break;
 			case OPEN_START_MENU:
-				
+				gm.openStartMenu();
 				break;
 			case CLOSE_GAME: 
 				System.exit(0);
@@ -228,6 +229,7 @@ public class GMEventHandler implements EventHandler {
 					gm.inMenu=true;
 					gm.painter.setRenderers(gm.menu.getRenderers());
 				}
+				performAction(Action.OPEN_START_MENU);
 				break;
 			default:
 				break;

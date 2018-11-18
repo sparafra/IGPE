@@ -13,7 +13,7 @@ public class Camera  {
 
 	
 
-	World world;
+	GameObject holder;
 	LinkedList<GameObject> anchors;
 	
 	float posX,posY,viewH=300,viewW=300,minH=300,maxH=400,minW=300,maxW=400;
@@ -58,11 +58,11 @@ public class Camera  {
 		minW=viewW-10;
 		maxW=viewW+50;
 	}
-	public Camera(World w) {		
-		world=w;
+	public Camera(GameObject w) {		
+		holder=w;
 		anchors=new LinkedList<GameObject>();
-		maxW=world.getWidth();
-		minW=maxW-world.getWidth()/4;
+		maxW=holder.getWidth();
+		minW=maxW-holder.getWidth()/4;
 
 	}
 	public void tick() {
@@ -72,19 +72,19 @@ public class Camera  {
 			if (this.posX-viewW/2<0) 
 				posX=viewW/2;
 			
-			if(this.posX+viewW/2>world.getWidth() )
-			 posX=world.getWidth()-viewW/2;
+			if(this.posX+viewW/2>holder.getWidth() )
+			 posX=holder.getWidth()-viewW/2;
 			
 			if (this.posY-viewH/2<0) 
 				posY=viewH/2;
 			
-			if(this.posY+viewH/2>world.getHeight() )
-			 posY=world.getHeight()-viewH/2;
+			if(this.posY+viewH/2>holder.getHeight() )
+			 posY=holder.getHeight()-viewH/2;
 		}
 	}
 	public void center() {
-		posX=world.getWidth()/2;
-		posY=world.getHeight()/2;
+		posX=holder.getWidth()/2;
+		posY=holder.getHeight()/2;
 		
 	}
 	
@@ -99,7 +99,7 @@ public class Camera  {
  }
  private void rescale() {
 	 float Xmax=0,Ymax=0;
-	 float Xmin=world.getWidth(),Ymin=world.getHeight();
+	 float Xmin=holder.getWidth(),Ymin=holder.getHeight();
 		for (int i=0;i<anchors.size();i++) {
 			GameObject o=anchors.get(i);
 			if(o.getPosX()<Xmin)
