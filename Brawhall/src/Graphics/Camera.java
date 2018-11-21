@@ -62,7 +62,7 @@ public class Camera  {
 		holder=w;
 		anchors=new LinkedList<GameObject>();
 		maxW=holder.getWidth();
-		minW=maxW-holder.getWidth()/4;
+		minW=maxW-holder.getWidth()/3;
 
 	}
 	public void tick() {

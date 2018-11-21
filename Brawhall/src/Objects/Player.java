@@ -76,8 +76,8 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public Player(float x,float y) 
 	{
 		super(x, y, ObjectId.PLAYER);
-		this.height = 20;
-		this.width = 10;
+		this.height = 40;
+		this.width = 20;
 		standHeight=20;
 		Name = "";
 	}
@@ -317,7 +317,7 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		//se è stato hittato più volte consecutivamente
 		
 		if(p.hitCount>2) {
-			p.velY-=1.0f+p.damage/10;
+			p.velY-=0.8f+p.damage/10;
 		if(facing==Direction.RIGHT)
 			p.velX+=1.5f+p.damage/10;
 		else

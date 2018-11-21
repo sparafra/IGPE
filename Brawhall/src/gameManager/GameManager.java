@@ -1,11 +1,22 @@
 package gameManager;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,15 +54,15 @@ public class GameManager extends Thread implements Runnable{
 		gm.start();
 	}
 	
-	static final int panelWidth=1440;	
-	static final int panelHeight=900;
+	int panelWidth=1440;	
+	int panelHeight=900;
 
 	Toolkit tk;
 
 	Image BackgroundMenu;
 	Menu menu;
-	
-	
+	MyFrame frame;
+	double draw;
 	
 	
 	
@@ -115,12 +126,56 @@ public class GameManager extends Thread implements Runnable{
 	{
 		
 		
-		MyFrame f= new MyFrame(panelWidth,panelHeight);
-		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
+		frame= new MyFrame(panelWidth,panelHeight);
 		
+		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
+		JPanel content= new JPanel(new GridBagLayout());
+		content.setBackground(Color.BLACK);
+		
+		content.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent c) {
+				super.componentResized(c);
+				draw=0;
+				int W=16;
+				int H=9;
+				Rectangle b= c.getComponent().getBounds();
+		
+				
+				MyPanel p=pn;
+				p.setBorder(new EmptyBorder(0,0,0,0));
+				if(b.width*H<=b.height*W) {
+					int sH = b.width*H/W;
+					int bH =b.height-sH;
+					
+				    p.setPreferredSize(new Dimension( b.width,sH));
+				    
+				    p.setBorder(new EmptyBorder(bH/2,0,bH/2,0));
+				}
+				else {
+					int sW =b.height*W/H;
+					int bW =b.width-sW;
+					p.setPreferredSize(new Dimension(sW, b.height));
+					p.setBorder(new EmptyBorder(0,bW/2,0,bW/2));
+					
+				}
+				p.repaint();
+				
+			}
+
+			});	
+		GridBagConstraints gbc= new GridBagConstraints();
+		gbc.anchor=GridBagConstraints.CENTER;
+		
+		content.add(pn,gbc);
+		
+	
 		painter.setPanel(pn);
-		f.setContentPane(pn);
-		f.setVisible(true);
+		frame.setContentPane(content);
+		frame.setLocationRelativeTo(null);
+		//frame.pack();
+		frame.setVisible(true);
 	}
 	public void loadLevel(Level l) {
 		painter.clear();
@@ -170,7 +225,7 @@ public class GameManager extends Thread implements Runnable{
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;*/
-		double draw=0;
+		draw=0;
 		while(isRunning()){
 			/*double now = System.nanoTime();
 			delta = (now - lastTime) / ns;

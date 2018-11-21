@@ -1,15 +1,24 @@
 package gameManager;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.LinkedList;
+
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import org.json.JSONException;
 
 import Graphics.Camera;
 import Network.Client;
 import Network.Server;
+import World.MyPanel;
 import interfaces.Direction;
 public class GMEventHandler implements EventHandler {
 	
@@ -35,7 +44,9 @@ public class GMEventHandler implements EventHandler {
 		gm.painter.getPanel().addMouseListener(new MouseAdapter() {			
 			
 		});
-				
+			
+		
+	
 		gm.painter.getPanel().addKeyListener( new KeyAdapter() {
 			private long lastPressProcessed = 0;
 			@Override
