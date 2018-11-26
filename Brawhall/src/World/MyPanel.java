@@ -1,5 +1,6 @@
 package World;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,6 +36,7 @@ public class MyPanel extends JPanel {
 		//Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension d= new Dimension(height,width);
 		this.setPreferredSize(d);
+		this.setBackground(Color.BLACK);
 		//Dimension FullScreen = tk.getScreenSize();
 				
 		this.setDoubleBuffered(true);
@@ -45,10 +47,13 @@ public class MyPanel extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2d= (Graphics2D)g;
+		g2d.translate(-gm.getCamera().getPosX(), -gm.getCamera().getPosY());
 		for(int i=0;i<renderers.size();i++) {
+			
 			renderers.get(i).DefaultRender(g2d);
 			
 		}
+		g2d.translate(0,0);
 
 	}
 	

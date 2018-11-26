@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -447,11 +448,11 @@ public class GameManager extends Thread implements Runnable{
  		
  	}
  	public float ConvertPosX(float wx) { 
- 		return (int) (((wx-cam.getPosX())*painter.getPanel().getWidth())/cam.getWidth()) ;
+ 		return (int) (((wx)*painter.getPanel().getWidth())/cam.getWidth()) ;
  		
  	}
  	public float ConvertPosY(float wy) {
- 		return  (((wy-cam.getPosY())*painter.getPanel().getHeight())/cam.getHeight()) ;
+ 		return  (((wy)*painter.getPanel().getHeight())/cam.getHeight()) ;
  		
  	}
  	public float ConvertPanelX(float px) {
@@ -474,6 +475,10 @@ public class GameManager extends Thread implements Runnable{
 		cam.center();
 		inMenu=true;
 		painter.setRenderers(menu.getRenderers());
+	}
+	public Camera getCamera() {
+		// TODO Auto-generated method stub
+		return cam;
 	}
 	
 }
