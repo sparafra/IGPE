@@ -9,8 +9,8 @@ import interfaces.Direction;
 
 public abstract class GameObject {
 
-	float posX,posY;
-	float height=1,width=1;
+	protected float posX,posY;
+	protected float height=1,width=1;
 	ObjectId id;
 	
 	

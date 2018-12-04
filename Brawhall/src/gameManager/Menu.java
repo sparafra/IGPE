@@ -8,19 +8,18 @@ import Objects.Control;
 import Objects.ControlRenderer;
 import Objects.GameObject;
 import Objects.Media;
+import Objects.ObjectId;
 import Objects.ObjectRenderer;
 import Objects.PlayerPreview;
 import Objects.SoundClip;
 
-public class Menu {
-	float posx,posy;
-
+public class Menu extends GameObject {
+	
 	LinkedList<Control> controls;
 	LinkedList<ObjectRenderer> renderers; 
 	GameObject background;
 	
-	float height;
-	float width;
+	
 	
 	int selectedIndex=0;
 	float distanceBetweenButton = 3;
@@ -46,20 +45,19 @@ public class Menu {
 	private boolean ready;
 	private boolean locked;
 	
-	public Menu(GameManager gm)  {
+	public Menu(float w,float h,GameManager gm)  {
+		super(0,0,w,h,ObjectId.MENU);
 		MenuState = "StartMenu";
 		this.gm = gm;
-		height=gm.w.getHeight();
-		width=gm.w.getWidth();	
+		height=h;
+		width=w;
 		initGUI();
 	}
 	
-	public Menu(GameManager gm, String status)  {
+	public Menu(float w,float h,GameManager gm, String status)  {
+		this(w,h,gm);
 		MenuState = status;
-		this.gm = gm;
-		height=gm.w.getHeight();
-		width=gm.w.getWidth();
-		initGUI();	
+		
 	}
 	
 	public LinkedList<ObjectRenderer> getRenderers(){return renderers;}
@@ -68,7 +66,7 @@ public class Menu {
 		controls=new LinkedList<Control>();
 		renderers =  new LinkedList<ObjectRenderer>();
 		
-		background = new Background(gm.w.getWidth(), gm.w.getHeight());
+		background = new Background(width,height);
 		ObjectRenderer RBG = new ObjectRenderer(background, gm);
 		
 		renderers.add(RBG);
@@ -92,8 +90,8 @@ public class Menu {
 			renderers.add(RMultiplayer);
 			renderers.add(RExit);
 
-			posx = (width/2) - (controls.get(1).getWidth()/2);
-			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			float posx = (width/2) - (controls.get(1).getWidth()/2);
+			float posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
 			
 			float pad = 10;
 			
@@ -146,8 +144,8 @@ public class Menu {
 			renderers.add(RPartecipa);
 			renderers.add(RBack);
 			
-			posx = (width/2) - (controls.get(1).getWidth()/2);
-			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			float posx = (width/2) - (controls.get(1).getWidth()/2);
+			float posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
 			
 			float pad = 10;
 			
@@ -175,8 +173,8 @@ public class Menu {
 			renderers.add(RContinue);
 			renderers.add(RExit);
 			
-			posx = (width/2) - (controls.get(1).getWidth()/2);
-			posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			float posx = (width/2) - (controls.get(1).getWidth()/2);
+			float posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
 			
 			float pad = 10;
 			
@@ -207,6 +205,45 @@ public class Menu {
 			
 			renderers.add(rPlayer1Preview);
 			
+		}
+		else if(MenuState == "GameOver")
+		{
+			selectedIndex = 0;
+			Player1Preview = new PlayerPreview(30,200, Media.getCharactersName(), true);
+			ObjectRenderer rPlayer1Preview = new ControlRenderer(Player1Preview, gm);
+
+			
+			Player1Preview.setPosX(60);
+			Player1Preview.setPosY(50);
+		
+			
+			controls.add(Player1Preview);
+			renderers.add(rPlayer1Preview);
+			
+			// PAUSE SELECTION MENU'
+			Control Restart = new Button(50,25,Action.START_MULTIPLAYER_GAME);
+			ObjectRenderer RRestart = new ControlRenderer(Restart, gm);
+			Control Exit = new Button(50,25,Action.CLOSE_GAME);
+			ObjectRenderer RExit = new ControlRenderer(Exit, gm);
+			
+			controls.add(Restart);
+			controls.add(Exit);
+			
+			controls.get(selectedIndex).setSelected(true);
+			
+			renderers.add(RRestart);
+			renderers.add(RExit);
+			
+			float posx = (width/2) - (controls.get(1).getWidth()/2);
+			float posy = (height/2) - (((controls.size()-1)/2)*controls.get(1).getHeight());
+			
+			float pad = 10;
+			
+			for(int k=1; k<controls.size(); k++)
+			{
+				controls.get(k).setPosX(posx);
+				controls.get(k).setPosY(posy +(pad*(k-1))+ (controls.get(k).getHeight()+(controls.get(k).getHeight()*(k-1))));
+			}
 		}
 	}
 	public void selectNext() {  
@@ -333,7 +370,7 @@ public class Menu {
 		MenuState = Status;
 		selectedIndex=0;
 		initGUI();
-		unlock();
+		
 		setReady(false);
 	}
 	public String getStatus() {return MenuState;}
@@ -364,10 +401,10 @@ public class Menu {
 		return locked;
 	}
 
-	public void lock() {
-		this.locked = true;
+	@Override
+	public void tick(LinkedList<GameObject> objects, double delta) {
+		// TODO Auto-generated method stub
+		
 	}
-	public void unlock() {
-		this.locked = false;
-	}
+
 }

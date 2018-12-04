@@ -48,11 +48,6 @@ public class Painter {
 		return p;
 	}
 
-	public void render(double draw) {
-		p.render(draw);
-		
-	}
 
-	
 	
 }

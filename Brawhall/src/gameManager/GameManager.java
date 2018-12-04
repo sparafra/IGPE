@@ -1,15 +1,28 @@
 package gameManager;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import Graphics.Camera;
 import Network.ActionMessage;
 import Network.Client;
 import Network.Message;
@@ -43,15 +56,15 @@ public class GameManager extends Thread implements Runnable{
 		gm.start();
 	}
 	
-	static final int panelWidth=1440;	
-	static final int panelHeight=900;
+	int panelWidth=1440;	
+	int panelHeight=900;
 
 	Toolkit tk;
 
 	Image BackgroundMenu;
 	Menu menu;
-	
-	
+	MyFrame frame;
+	double draw;
 	
 	
 	
@@ -66,6 +79,7 @@ public class GameManager extends Thread implements Runnable{
 	
 	
 	Painter painter;
+	Camera cam;
 	
 	Server S = null;
 	Client C = null;
@@ -82,18 +96,18 @@ public class GameManager extends Thread implements Runnable{
 	{
 		this.setName("Game Manager");
 		
+		menu = new Menu(300, 300, this);
+		
 		painter=new Painter();
 		tk = Toolkit.getDefaultToolkit();
-		
-		w=new World(300,300,ev);
-		
-		menu = new Menu(this);
-		
 		initGui();
 		initSound();
+		openMenu();
+		ev=new GMEventHandler(this);
+		w=new World(0,0,ev);
 		
-		inMenu=true;
-		painter.setRenderers(menu.getRenderers());
+		
+		
 			
 	}
 	public void initSound()
@@ -117,12 +131,56 @@ public class GameManager extends Thread implements Runnable{
 	{
 		
 		
-		MyFrame f= new MyFrame(panelWidth,panelHeight);
-		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
+		frame= new MyFrame(panelWidth,panelHeight);
 		
+		MyPanel pn=new MyPanel(this,panelWidth, panelHeight);
+		JPanel content= new JPanel(new GridBagLayout());
+		content.setBackground(Color.BLACK);
+		
+		content.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent c) {
+				super.componentResized(c);
+				draw=0;
+				int W=16;
+				int H=9;
+				Rectangle b= c.getComponent().getBounds();
+		
+				
+				MyPanel p=pn;
+				p.setBorder(new EmptyBorder(0,0,0,0));
+				if(b.width*H<=b.height*W) {
+					int sH = b.width*H/W;
+					int bH =b.height-sH;
+					
+				    p.setPreferredSize(new Dimension( b.width,sH));
+				    
+				    p.setBorder(new EmptyBorder(bH/2,0,bH/2,0));
+				}
+				else {
+					int sW =b.height*W/H;
+					int bW =b.width-sW;
+					p.setPreferredSize(new Dimension(sW, b.height));
+					p.setBorder(new EmptyBorder(0,bW/2,0,bW/2));
+					
+				}
+				p.repaint();
+				
+			}
+
+			});	
+		GridBagConstraints gbc= new GridBagConstraints();
+		gbc.anchor=GridBagConstraints.CENTER;
+		
+		content.add(pn,gbc);
+		
+	
 		painter.setPanel(pn);
-		f.setContentPane(pn);
-		f.setVisible(true);
+		frame.setContentPane(content);
+		frame.setLocationRelativeTo(null);
+		//frame.pack();
+		frame.setVisible(true);
 	}
 	public void loadLevel(Level l) {
 		painter.clear();
@@ -137,6 +195,7 @@ public class GameManager extends Thread implements Runnable{
 		w.addObject(p);
 		w.addObject(p2);
 		
+		
 		w.setPlayer(p,1);
 		w.setPlayer(p2,2);
 		w.getPlayer(1).setName(s1);
@@ -145,9 +204,10 @@ public class GameManager extends Thread implements Runnable{
 		loadPlayerSpecs(w.getPlayer(1));
 		loadPlayerSpecs(w.getPlayer(2));
 		
-		//cam=new Camera(w,o);
-		//cam.setViewH(500);
-		//cam.setViewW(300);
+		cam=new Camera(w);
+		
+		cam.addAnchor(p);
+		cam.addAnchor(p2);
 		for(int i=0;i<l.objects.size();i++) {
 			GameObject o= l.objects.get(i);
 			w.addObject(o);
@@ -162,7 +222,6 @@ public class GameManager extends Thread implements Runnable{
 	}
 	public void start() {
 		if(isRunning() )return;
-		ev=new GMEventHandler(this);
 		running=true;
 		super.start();
 	}
@@ -171,7 +230,7 @@ public class GameManager extends Thread implements Runnable{
 		double amountOfTicks = 60.0;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;*/
-		double draw=0;
+		draw=0;
 		while(isRunning()){
 			/*double now = System.nanoTime();
 			delta = (now - lastTime) / ns;
@@ -197,10 +256,10 @@ public class GameManager extends Thread implements Runnable{
 		}	
 	}
 	public void tick(double delta) {	
-		if(!multiplayerGame)
+		if(!multiplayerGame&&inGame)
 		w.Update(delta);
-		
 		menu.tick(delta);
+		cam.tick();
 		checkInput();
 		ev.resolveActions();	
 	}
@@ -300,7 +359,7 @@ public class GameManager extends Thread implements Runnable{
 							else {
 								JAction a=new JAction(Action.PLAYER_CHOOSED_MULTIPLAYER);
 								a.put("playerName",menu.Player1Preview.getSelectedPlayer());
-								menu.lock();
+								
 								ev.performAction(a);
 								}
 						}
@@ -384,31 +443,46 @@ public class GameManager extends Thread implements Runnable{
 	
 	
 	
-	public int ConvertX(float wx) {
-		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;	
-	}
-	public int ConvertY(float wy) {
-		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;	
-	}
-	public int ConvertPosX(float wx) {
-		return (int) ((wx*painter.getPanel().getWidth())/w.getWidth()) ;
-	}
-	public int ConvertPosY(float wy) {
-		return (int) ((wy*painter.getPanel().getHeight())/w.getHeight()) ;
-	}
-	
-	public int ConvertPanelX(float px) {
-		return (int) ((px*w.getWidth())/painter.getPanel().getWidth()) ;
-	}
-	public int ConvertPanelY(float py) {
-		return (int) ((py*w.getHeight())/painter.getPanel().getHeight()) ;
-	}
-	
+	public float ConvertX(float wx) {
+		return  ((wx*painter.getPanel().getWidth())/cam.getWidth()) ;
+		
+ 	}
+ 	public float ConvertY(float wy) {
+ 		return  ((wy*painter.getPanel().getHeight())/cam.getHeight()) ;
+ 		
+ 	}
+ 	public float ConvertPosX(float wx) { 
+ 		return (int) (((wx)*painter.getPanel().getWidth())/cam.getWidth()) ;
+ 		
+ 	}
+ 	public float ConvertPosY(float wy) {
+ 		return  (((wy)*painter.getPanel().getHeight())/cam.getHeight()) ;
+ 		
+ 	}
+ 	public float ConvertPanelX(float px) {
+ 		return  ((px*cam.getWidth())/painter.getPanel().getWidth()) ;
+ 		
+ 	}
+ 	public float ConvertPanelY(float py) {
+ 		return  ((py*cam.getHeight())/painter.getPanel().getHeight()) ;
+ 	}
 	public World getWorld() {return w;}
 	
 	public void setMenu(boolean m) {this.inMenu = m;}
 	public boolean isRunning() {
 		return running;
+	}
+	public void openMenu() {
+		//menu = new Menu(300,300,this);
+		cam=new Camera(menu);
+		cam.setFree(true);
+		cam.center();
+		inMenu=true;
+		painter.setRenderers(menu.getRenderers());
+	}
+	public Camera getCamera() {
+		// TODO Auto-generated method stub
+		return cam;
 	}
 	
 }

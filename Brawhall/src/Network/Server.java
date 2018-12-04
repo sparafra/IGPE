@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import Graphics.Camera;
 import World.World;
 import gameManager.Action;
 import gameManager.EventHandler;
 import gameManager.JAction;
+import gameManager.Level;
 import Network.ActionMessage;
 import Objects.Background;
 import Objects.Block;
 import Objects.GameObject;
+import Objects.Media;
 import Objects.ObjectRenderer;
 import Objects.Player;
 import Objects.PlayerRenderer;
@@ -85,7 +88,7 @@ public class Server extends Thread
 							w.getPlayer(sender).toggleCrouch(false);
 							break;
 						case START_MULTIPLAYER_GAME:
-							loadLevel();
+							loadLevel(new Level());
 							state=ServerState.IN_GAME;
 							break;
 						case PLAYER_CHOOSED_MULTIPLAYER:
@@ -192,48 +195,33 @@ public class Server extends Thread
 		}	
 		
 	}
-	private void loadLevel() {
+	private void loadLevel(Level l) {
 		
 		
-		String p2=w.getPlayerName(2);
-		String p1=w.getPlayerName(1);
-		w=new World(300,500,ev);
-		GameObject o=new Player(50,0);
-		GameObject o2 =new Player(250,0);
+		String s2=w.getPlayerName(1);
+		String s1=w.getPlayerName(2);
+		w=new World(l.getWidth(),l.getHeight(),ev);
 		
-		w.addObject(o);
-		w.addObject(o2);
-		w.setPlayer((Player)o,1);
-		w.setPlayer((Player)o2,2);
-		w.getPlayer(1).setName(p1);
-		w.getPlayer(2).setName(p2);
+		Player p=new Player(50,0);
+		Player p2 =new Player(200,0);
+		
+		w.addObject(p);
+		w.addObject(p2);
 		
 		
-		//cam=new Camera(w,o);
-		//cam.setViewH(500);
-		//cam.setViewW(300);
+		w.setPlayer(p,1);
+		w.setPlayer(p2,2);
+		w.getPlayer(1).setName(s1);
+		w.getPlayer(2).setName(s2);
 		
-	
+		loadPlayerSpecs(w.getPlayer(1));
+		loadPlayerSpecs(w.getPlayer(2));
 		
-		for (int i=50;i<w.getWidth()-50;i+=6) {
-			o=new Block(i, w.getHeight()/2-18);
-			w.addObject(o);
 		
-		}
-		for (int i=w.getWidth()/2+20;i<w.getWidth();i+=6) {
-			o=new Block(i, w.getHeight()/2-40);
-			w.addObject(o);
-		
-		}
-		for (int i=50;i<w.getWidth()/2-30;i+=6) {
-			o=new Block(i, w.getHeight()/2-60);
+		for(int i=0;i<l.getObjects().size();i++) {
+			GameObject o= l.getObjects().get(i);
 			w.addObject(o);
 			
-		}
-		for (int i=w.getWidth()/2-50;i<w.getWidth()/2+50;i+=6) {
-			o=new Block(i, w.getHeight()/2-100);
-			w.addObject(o);
-		
 		}
 		
 	}
@@ -257,6 +245,17 @@ public class Server extends Thread
 	public void close(){
 		for (int i =0;i<clients.size();i++)
 			clients.get(i).CloseConnection();
+	}
+	private void loadPlayerSpecs(Player obj)
+	{
+		
+		obj.setBaseAttack(Media.getPlayerSpecs(obj.getName()).get("baseAttack"));
+		obj.setStandHeight(Media.getPlayerSpecs(obj.getName()).get("standHeight"));
+		obj.setAtkSpeed(Media.getPlayerSpecs(obj.getName()).get("atkSpeed"));
+		obj.setAtkRange(Media.getPlayerSpecs(obj.getName()).get("atkRange"));
+		obj.setWeight(Media.getPlayerSpecs(obj.getName()).get("weight"));
+		
+		
 	}
 	
 }

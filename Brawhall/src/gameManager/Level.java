@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import Objects.Background;
 import Objects.Block;
+import Objects.Border;
 import Objects.GameObject;
 
 public class Level {
@@ -15,35 +16,29 @@ public class Level {
 	
 	
 	public Level() {
-		GameObject o;
-		height=500;
-		width=300;
-				objects= new LinkedList<GameObject>();
+		
+		height=260;
+		width=440;
+		
+		objects= new LinkedList<GameObject>();
+		
+
 		
 		GameObject bg = new Background(getWidth(), getHeight());
 		objects.add(bg);
 		
-		o=new Block(20,getHeight()/2+40,100,10);
-		for (int i=20;i<getWidth()-50;i+=6) {
-			o=new Block(i, getHeight()/2+40);
-			addObject(o);
-			
-		}
-		for (int i=getWidth()/2+20;i<getWidth();i+=6) {
-			o=new Block(i, getHeight()/2+20);
-			addObject(o);
-			
-		}
-		for (int i=15;i<getWidth()/2-30;i+=6) {
-			o=new Block(i, getHeight()/2);
-			addObject(o);
-			
-		}
-		for (int i=getWidth()/2-50;i<getWidth()/2+50;i+=6) {
-			o=new Block(i, getHeight()/2-40);
-			addObject(o);
-			
-		}
+		//borders
+		addObject(new Border(-width,-height,getWidth()/2,getHeight()*3));
+		addObject(new Border(-width,-height,width*3,height/2));
+		addObject(new Border(-width,height+height/2,width*3,height/2));
+		addObject(new Border (width+width/2,-height,width/2,height*3));
+		
+		addObject(new Block(20,getHeight()/2+40,300,10));
+		addObject(new Block(getWidth()/2+20, getHeight()/2+20,100,10));
+		addObject(new Block(60, getHeight()/2,100,10));
+		addObject(new Block(getWidth()/2-50, getHeight()/2-40,200,10));
+		
+		
 		
 	}
 	

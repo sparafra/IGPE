@@ -1,14 +1,24 @@
 package gameManager;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.LinkedList;
 
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 import org.json.JSONException;
 
+import Graphics.Camera;
 import Network.Client;
 import Network.Server;
+import World.MyPanel;
 import interfaces.Direction;
 public class GMEventHandler implements EventHandler {
 	
@@ -34,7 +44,9 @@ public class GMEventHandler implements EventHandler {
 		gm.painter.getPanel().addMouseListener(new MouseAdapter() {			
 			
 		});
-				
+			
+		
+	
 		gm.painter.getPanel().addKeyListener( new KeyAdapter() {
 			private long lastPressProcessed = 0;
 			@Override
@@ -119,6 +131,9 @@ public class GMEventHandler implements EventHandler {
 				break;
 			case PLAYER_STAND:
 				gm.w.getPlayer(a.getInt("client")).toggleCrouch(false);
+				break;
+			case OPEN_MENU:
+				gm.openMenu();
 				break;
 			case CLOSE_GAME: 
 				System.exit(0);
@@ -210,15 +225,22 @@ public class GMEventHandler implements EventHandler {
 				if (gm.multiplayerGame) {
 					gm.inGame=false;
 					gm.multiplayerGame=false;
-					gm.menu.ChangeStatus("StartMenu");
+					gm.menu.ChangeStatus("GameOver");
 					gm.C.close();
 					if (gm.S!=null) {
 						gm.S.close();
 					}
-				}
-				else {
+					gm.inMenu=true;
+					gm.painter.setRenderers(gm.menu.getRenderers());
 					
 				}
+				else {
+					gm.inGame=false;
+					gm.menu.ChangeStatus("GameOver");
+					gm.inMenu=true;
+					gm.painter.setRenderers(gm.menu.getRenderers());
+				}
+				performAction(Action.OPEN_MENU);
 				break;
 			default:
 				break;

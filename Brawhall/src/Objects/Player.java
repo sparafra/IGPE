@@ -76,8 +76,8 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	public Player(float x,float y) 
 	{
 		super(x, y, ObjectId.PLAYER);
-		this.height = 20;
-		this.width = 10;
+		this.height = 40;
+		this.width = 20;
 		standHeight=20;
 		Name = "";
 	}
@@ -156,6 +156,13 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 			
 			GameObject t=list.get(i);
 			
+			if(t.id==ObjectId.BORDER) {
+				if(dead==false&& this.getBounds(Side.Bottom).intersects( ((Border)t).getBounds(Side.Left))) {
+				dead=true;
+				lives-=1;
+				}
+			}
+			
 			if(t.id==ObjectId.BLOCK ) {
 				
 				if(this.getBounds(Side.Bottom).intersects( ((Block)t).getBounds(Side.Top)) ){
@@ -169,15 +176,15 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 					if(height<standHeight) {
 						crouching=true;
 					}
-					velY=0;
+					//velY=0;
 					posY=t.posY+t.height;
 				}
 				else if(this.getBounds(Side.Right).intersects( ((Block)t).getBounds(Side.Left)) ){
-					velX=0;
+					//velX=0;
 					posX=t.posX-width;	
 				}
 				else if(this.getBounds(Side.Left).intersects( ((Block)t).getBounds(Side.Left)) ){
-					velX=0;
+					//velX=0;
 					posX=t.posX+t.width;
 				}
 				else {
@@ -310,11 +317,11 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 		//se è stato hittato più volte consecutivamente
 		
 		if(p.hitCount>2) {
-			p.velY-=1.0f*p.damage;
+			p.velY-=0.8f+p.damage/10;
 		if(facing==Direction.RIGHT)
-			p.velX+=1.5f*p.damage;
+			p.velX+=1.5f+p.damage/10;
 		else
-			p.velX-=1.5f*p.damage;
+			p.velX-=1.5f+p.damage/10;
 		}
 		p.getDamage(baseAttack);
 	}
@@ -362,14 +369,14 @@ public class Player extends DynamicGameObject implements Collides, CanFight, Can
 	}
 	@Override
 	public void getDamage(float dmg) {
-		damage+=dmg/50;
+		damage+=dmg;
 		life-=dmg;
 		staggering=true;
 	}
 	public PlayerState getState()
 	{
 		if (dead)
-			return PlayerState.DEAD;
+			return PlayerState.CROUCHINGBACK;
 		if(attacking)
 		{
 			//System.out.println("Attacking");
